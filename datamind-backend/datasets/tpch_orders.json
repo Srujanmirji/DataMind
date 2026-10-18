@@ -16,35 +16,144 @@
       "description": "Number of orders",
       "label": "Order count",
       "aggregation": "count",
-      "supports_share": true
+      "supports_share": true,
+      "question_terms": [
+        "orders",
+        "order count",
+        "order"
+      ]
     },
     "total_order_value": {
       "sql": "SUM(o.O_TOTALPRICE)",
       "description": "Sum of order total prices; not profit or a separately defined revenue measure. Currency is unspecified.",
       "label": "Total order value",
       "aggregation": "sum",
-      "supports_share": true
+      "supports_share": true,
+      "question_terms": [
+        "order value",
+        "order values",
+        "order total",
+        "order prices",
+        "order amount"
+      ]
     },
     "average_order_value": {
       "sql": "AVG(CAST(o.O_TOTALPRICE AS NUMBER(38, 6)))",
       "description": "Average order total price; currency unspecified",
       "label": "Average order value",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "average order",
+        "mean order",
+        "order value",
+        "average value"
+      ]
     },
     "customer_count": {
       "sql": "COUNT(DISTINCT o.O_CUSTKEY)",
       "description": "Distinct customers with orders, not all customers in CUSTOMER",
       "label": "Customers with orders",
       "aggregation": "count",
-      "supports_share": true
+      "supports_share": true,
+      "question_terms": [
+        "customers",
+        "customer count",
+        "customer"
+      ]
     }
   },
   "dimensions": {
     "nation": {
       "sql": "n.N_NAME",
       "type": "text",
-      "description": "Customer nation, uppercase e.g. FRANCE"
+      "description": "Customer nation, uppercase e.g. FRANCE",
+      "value_aliases": {
+        "ALGERIA": [
+          "ALGERIA"
+        ],
+        "ARGENTINA": [
+          "ARGENTINA"
+        ],
+        "BRAZIL": [
+          "BRAZIL"
+        ],
+        "CANADA": [
+          "CANADA"
+        ],
+        "EGYPT": [
+          "EGYPT"
+        ],
+        "ETHIOPIA": [
+          "ETHIOPIA"
+        ],
+        "FRANCE": [
+          "FRANCE"
+        ],
+        "GERMANY": [
+          "GERMANY"
+        ],
+        "INDIA": [
+          "INDIA"
+        ],
+        "INDONESIA": [
+          "INDONESIA"
+        ],
+        "IRAN": [
+          "IRAN"
+        ],
+        "IRAQ": [
+          "IRAQ"
+        ],
+        "JAPAN": [
+          "JAPAN"
+        ],
+        "JORDAN": [
+          "JORDAN"
+        ],
+        "KENYA": [
+          "KENYA"
+        ],
+        "MOROCCO": [
+          "MOROCCO"
+        ],
+        "MOZAMBIQUE": [
+          "MOZAMBIQUE"
+        ],
+        "PERU": [
+          "PERU"
+        ],
+        "CHINA": [
+          "CHINA"
+        ],
+        "ROMANIA": [
+          "ROMANIA"
+        ],
+        "SAUDI ARABIA": [
+          "SAUDI ARABIA"
+        ],
+        "VIETNAM": [
+          "VIETNAM"
+        ],
+        "RUSSIA": [
+          "RUSSIA"
+        ],
+        "UNITED KINGDOM": [
+          "UNITED KINGDOM",
+          "UK",
+          "U.K.",
+          "Britain",
+          "Great Britain"
+        ],
+        "UNITED STATES": [
+          "UNITED STATES",
+          "US",
+          "U.S.",
+          "USA",
+          "United States of America"
+        ]
+      },
+      "require_mentioned_values": true
     },
     "region": {
       "sql": "r.R_NAME",
@@ -69,12 +178,48 @@
     "order_status": {
       "sql": "o.O_ORDERSTATUS",
       "type": "text",
-      "description": "F=fulfilled, O=open, P=partially fulfilled"
+      "description": "F=fulfilled, O=open, P=partially fulfilled",
+      "value_aliases": {
+        "F": [
+          "F",
+          "fulfilled"
+        ],
+        "O": [
+          "O",
+          "open"
+        ],
+        "P": [
+          "P",
+          "partially fulfilled"
+        ]
+      }
     },
     "order_priority": {
       "sql": "o.O_ORDERPRIORITY",
       "type": "text",
-      "description": "Order priority, e.g. 1-URGENT or 2-HIGH"
+      "description": "Order priority, e.g. 1-URGENT or 2-HIGH",
+      "value_aliases": {
+        "1-URGENT": [
+          "1-URGENT",
+          "URGENT"
+        ],
+        "2-HIGH": [
+          "2-HIGH",
+          "HIGH"
+        ],
+        "3-MEDIUM": [
+          "3-MEDIUM",
+          "MEDIUM"
+        ],
+        "4-NOT SPECIFIED": [
+          "4-NOT SPECIFIED",
+          "NOT SPECIFIED"
+        ],
+        "5-LOW": [
+          "5-LOW",
+          "LOW"
+        ]
+      }
     }
   },
   "filter_fields": {

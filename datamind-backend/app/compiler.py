@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import date
+from decimal import Decimal, InvalidOperation
 
 from app.models import Plan
 
@@ -11,7 +12,7 @@ OPERATORS = {"eq": "=", "ne": "<>", "gt": ">", "gte": ">=", "lt": "<", "lte": "<
 @dataclass
 class CompiledQuery:
     sql: str
-    parameters: list[str | int]
+    parameters: list[str | int | Decimal]
     limit: int
     columns: list[str] | None = None
 
@@ -58,6 +59,13 @@ def compile_plan(plan: Plan, dataset: dict, database: str, schema: str) -> Compi
             elif field["type"] == "integer":
                 if type(value) is not int:
                     raise ValueError("This filter needs integer values.")
+            elif field["type"] == "number":
+                try:
+                    value = Decimal(str(value))
+                except InvalidOperation as exc:
+                    raise ValueError("This filter needs a numeric value.") from exc
+                if not value.is_finite():
+                    raise ValueError("Numeric filters must be finite.")
             elif not isinstance(value, str):
                 raise ValueError("This filter needs text values.")
             values.append(value)
@@ -74,6 +82,33 @@ def compile_plan(plan: Plan, dataset: dict, database: str, schema: str) -> Compi
         else:
             clauses.append(f"{expression} {OPERATORS[item.operator]} {placeholder}")
         parameters.extend(values)
+    if plan.time_selection == "latest_available":
+        time = dataset.get("time_coverage")
+        if not time or time["field"] not in dimensions or time["field"] not in plan.dimensions:
+            raise ValueError("Latest available results must show the dataset year dimension.")
+        if any(item.field == time["field"] for item in plan.filters):
+            raise ValueError("Latest available time cannot also impose a fixed year.")
+        missing_fields = [
+            name for name in plan.metrics if name not in fields and name != dataset.get("count_metric")
+        ]
+        if missing_fields:
+            raise ValueError("Latest available selection needs a configured measurement field.")
+        available = [f"{fields[name]['sql']} IS NOT NULL" for name in plan.metrics if name in fields]
+        latest_where = clauses + available
+        year_expression = dimensions[time["field"]]["sql"]
+        groups = [dimensions[name]["sql"] for name in plan.dimensions if name != time["field"]]
+        latest = "SELECT " + ", ".join([f"MAX({year_expression})", *groups]) + f" FROM {source}"
+        if joins:
+            latest += "\n" + "\n".join(joins)
+        if latest_where:
+            latest += " WHERE " + " AND ".join(latest_where)
+        if groups:
+            latest += " GROUP BY " + ", ".join(groups)
+        parameters += parameters.copy()
+        if groups:
+            clauses.append("(" + ", ".join([year_expression, *groups]) + f") IN ({latest})")
+        else:
+            clauses.append(f"{year_expression} = ({latest})")
     if clauses:
         sql += "\nWHERE " + " AND ".join(clauses)
     if plan.dimensions:

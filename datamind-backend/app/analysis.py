@@ -49,7 +49,7 @@ def analysis_steps(plan: Plan, dataset: dict, settings: Settings):
                 **first.model_dump(),
                 "dimensions": plan.dimensions,
                 "sort": [item.model_dump() for item in plan.sort],
-                "limit": 100,
+                "limit": 500,
             }
         )
     return [
@@ -94,7 +94,7 @@ def derive(plan: Plan, evidence: list[dict], dataset: dict) -> tuple[dict, list[
     if plan.analysis == "above_average":
         if first["truncated"]:
             raise BackendError(
-                "incomplete_groups", "More than 100 groups exist; narrow the filters first.", 422
+                "incomplete_groups", "More than 500 groups exist; narrow the filters first.", 422
             )
         dimension = plan.dimensions[0]
         selected = []

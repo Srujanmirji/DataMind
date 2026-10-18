@@ -1,7 +1,7 @@
 {
   "id": "worldbank_wdi",
   "name": "World Bank World Development Indicators — countries, 1990–2024",
-  "description": "Real World Bank indicators for 217 economies (countries and territories), one row per country and year from 1990 to 2024: population, GDP, growth, inflation, unemployment, life expectancy, infant mortality, fertility, urbanisation, internet use, electricity access, renewable energy, CO2 per person and health spending.",
+  "description": "Real World Bank indicators for 217 economies (countries and territories), one row per country and year from 1990 to 2024: population, GDP, growth, inflation, unemployment, life expectancy, infant mortality, fertility, urbanisation, internet use, electricity access, renewable energy, CO2 per person and health spending. Also includes education spending, trade as a share of GDP and adult literacy.",
   "source": "https://datacatalog.worldbank.org/search/dataset/0037712",
   "licence_note": "CC BY 4.0. World Bank (2026), World Development Indicators, accessed through the World Bank API on 18 October 2026 (indicators last updated 8 October 2026). Aggregates (World, regions, income groups) were dropped; values rounded half-up to 6 decimals; missing values kept as NULL.",
   "database": "DATAMIND_DEMO",
@@ -16,112 +16,228 @@
       "label": "Number of countries",
       "description": "Distinct economies (countries) in scope",
       "aggregation": "count",
-      "supports_share": true
+      "supports_share": true,
+      "question_terms": [
+        "countries",
+        "country count",
+        "economies",
+        "territories"
+      ]
     },
     "total_population": {
       "sql": "SUM(w.POPULATION)",
       "label": "Population",
       "description": "Total population (people); sum over the selected countries (missing values are skipped, so totals can be incomplete)",
       "aggregation": "sum",
-      "supports_share": true
+      "supports_share": true,
+      "question_terms": [
+        "population",
+        "people",
+        "residents"
+      ]
     },
     "total_gdp_usd": {
       "sql": "SUM(w.GDP_USD)",
       "label": "GDP (current US$)",
       "description": "Gross domestic product in current US dollars; sum over the selected countries (missing values are skipped, so totals can be incomplete)",
       "aggregation": "sum",
-      "supports_share": true
+      "supports_share": true,
+      "question_terms": [
+        "gdp",
+        "gross domestic product"
+      ],
+      "incompatible_terms": [
+        "gdp per capita",
+        "gdp per person",
+        "per capita gdp",
+        "gdp growth"
+      ]
     },
     "gdp_per_capita_usd": {
       "sql": "AVG(CAST(w.GDP_PER_CAPITA_USD AS NUMBER(38, 6)))",
       "label": "GDP per capita (current US$)",
       "description": "GDP per person in current US dollars. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "gdp per capita",
+        "gdp per person",
+        "gdp per head",
+        "per capita gdp"
+      ]
     },
     "gdp_growth_pct": {
       "sql": "AVG(CAST(w.GDP_GROWTH_PCT AS NUMBER(38, 6)))",
       "label": "GDP growth (annual %)",
       "description": "Real GDP growth rate, percent per year. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "growth",
+        "gdp growth"
+      ]
     },
     "inflation_pct": {
       "sql": "AVG(CAST(w.INFLATION_PCT AS NUMBER(38, 6)))",
       "label": "Inflation, consumer prices (annual %)",
       "description": "Consumer price inflation, percent per year. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "inflation",
+        "consumer prices"
+      ]
     },
     "unemployment_pct": {
       "sql": "AVG(CAST(w.UNEMPLOYMENT_PCT AS NUMBER(38, 6)))",
       "label": "Unemployment (% of labour force)",
       "description": "Unemployment rate, ILO modelled estimate. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "unemployment",
+        "unemployed",
+        "jobless"
+      ]
     },
     "life_expectancy_years": {
       "sql": "AVG(CAST(w.LIFE_EXPECTANCY_YEARS AS NUMBER(38, 6)))",
       "label": "Life expectancy at birth (years)",
       "description": "Life expectancy at birth in years. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "life expectancy",
+        "lifespan",
+        "life span"
+      ]
     },
     "infant_mortality_per_1000": {
       "sql": "AVG(CAST(w.INFANT_MORTALITY_PER_1000 AS NUMBER(38, 6)))",
       "label": "Infant mortality (per 1,000 live births)",
       "description": "Infant deaths per 1,000 live births. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "infant mortality",
+        "infant deaths"
+      ]
     },
     "fertility_rate": {
       "sql": "AVG(CAST(w.FERTILITY_RATE AS NUMBER(38, 6)))",
       "label": "Fertility rate (births per woman)",
       "description": "Births per woman. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "fertility",
+        "births per woman"
+      ]
     },
     "urban_population_pct": {
       "sql": "AVG(CAST(w.URBAN_POPULATION_PCT AS NUMBER(38, 6)))",
       "label": "Urban population (% of total)",
       "description": "Share of people living in urban areas. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "urban",
+        "urbanisation",
+        "urbanization"
+      ]
     },
     "internet_users_pct": {
       "sql": "AVG(CAST(w.INTERNET_USERS_PCT AS NUMBER(38, 6)))",
       "label": "Internet users (% of population)",
       "description": "Share of people using the internet. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "internet",
+        "online access"
+      ]
     },
     "electricity_access_pct": {
       "sql": "AVG(CAST(w.ELECTRICITY_ACCESS_PCT AS NUMBER(38, 6)))",
       "label": "Access to electricity (% of population)",
       "description": "Share of people with access to electricity. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "electricity",
+        "electrical access"
+      ]
     },
     "renewable_energy_pct": {
       "sql": "AVG(CAST(w.RENEWABLE_ENERGY_PCT AS NUMBER(38, 6)))",
       "label": "Renewable energy (% of final energy use)",
       "description": "Renewable share of total final energy consumption. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "renewable",
+        "renewables"
+      ]
     },
     "co2_per_capita_tonnes": {
       "sql": "AVG(CAST(w.CO2_PER_CAPITA_TONNES AS NUMBER(38, 6)))",
       "label": "CO2 emissions per person (tonnes)",
       "description": "CO2 emissions excluding land use, tonnes per person. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "co2",
+        "carbon dioxide",
+        "carbon emissions"
+      ]
     },
     "health_spending_pct_gdp": {
       "sql": "AVG(CAST(w.HEALTH_SPENDING_PCT_GDP AS NUMBER(38, 6)))",
       "label": "Health spending (% of GDP)",
       "description": "Current health expenditure as a share of GDP. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
       "aggregation": "average",
-      "supports_share": false
+      "supports_share": false,
+      "question_terms": [
+        "health spending",
+        "health expenditure",
+        "healthcare spending",
+        "health care spending"
+      ]
+    },
+    "education_spending_pct_gdp": {
+      "sql": "AVG(CAST(w.EDUCATION_SPENDING_PCT_GDP AS NUMBER(38, 6)))",
+      "label": "Education spending (% of GDP)",
+      "description": "Government expenditure on education as a share of GDP. For several countries or years this is an unweighted mean; missing values are skipped.",
+      "aggregation": "average",
+      "supports_share": false,
+      "question_terms": [
+        "education spending",
+        "education expenditure",
+        "education funding"
+      ]
+    },
+    "trade_pct_gdp": {
+      "sql": "AVG(CAST(w.TRADE_PCT_GDP AS NUMBER(38, 6)))",
+      "label": "Trade (% of GDP)",
+      "description": "Exports plus imports of goods and services as a share of GDP. For several countries or years this is an unweighted mean; missing values are skipped.",
+      "aggregation": "average",
+      "supports_share": false,
+      "question_terms": [
+        "trade",
+        "exports plus imports"
+      ]
+    },
+    "adult_literacy_pct": {
+      "sql": "AVG(CAST(w.ADULT_LITERACY_PCT AS NUMBER(38, 6)))",
+      "label": "Adult literacy (% ages 15 and above)",
+      "description": "Share of adults age 15 and above who can read and write. For several countries or years this is an unweighted mean; missing values are skipped.",
+      "aggregation": "average",
+      "supports_share": false,
+      "question_terms": [
+        "adult literacy",
+        "literacy",
+        "read and write"
+      ]
     }
   },
   "dimensions": {
@@ -138,7 +254,36 @@
     "region": {
       "sql": "UPPER(w.REGION)",
       "type": "text",
-      "description": "World Bank region, uppercase. Values: EAST ASIA & PACIFIC; EUROPE & CENTRAL ASIA; LATIN AMERICA & CARIBBEAN; MIDDLE EAST, NORTH AFRICA, AFGHANISTAN & PAKISTAN; NORTH AMERICA; SOUTH ASIA; SUB-SAHARAN AFRICA"
+      "description": "World Bank region, uppercase. Values: EAST ASIA & PACIFIC; EUROPE & CENTRAL ASIA; LATIN AMERICA & CARIBBEAN; MIDDLE EAST, NORTH AFRICA, AFGHANISTAN & PAKISTAN; NORTH AMERICA; SOUTH ASIA; SUB-SAHARAN AFRICA",
+      "value_aliases": {
+        "SUB-SAHARAN AFRICA": [
+          "Sub-Saharan Africa",
+          "Sub-Saharan African"
+        ],
+        "SOUTH ASIA": [
+          "South Asia",
+          "South Asian"
+        ],
+        "EAST ASIA & PACIFIC": [
+          "East Asia and Pacific",
+          "East Asia & Pacific"
+        ],
+        "EUROPE & CENTRAL ASIA": [
+          "Europe and Central Asia",
+          "Europe & Central Asia"
+        ],
+        "LATIN AMERICA & CARIBBEAN": [
+          "Latin America and Caribbean",
+          "Latin America & Caribbean"
+        ],
+        "MIDDLE EAST, NORTH AFRICA, AFGHANISTAN & PAKISTAN": [
+          "Middle East, North Africa, Afghanistan and Pakistan"
+        ],
+        "NORTH AMERICA": [
+          "North America",
+          "North American"
+        ]
+      }
     },
     "income_group": {
       "sql": "UPPER(w.INCOME_GROUP)",
@@ -150,15 +295,1009 @@
     "country_code": {
       "sql": "w.COUNTRY_CODE",
       "type": "text",
-      "description": "ISO 3166 alpha-3 code, uppercase (India=IND). Use ONLY for countries the question explicitly names; never add countries the question does not name. Rankings over all countries have no country_code filter"
+      "description": "ISO 3166 alpha-3 code, uppercase (India=IND). Use ONLY for countries the question explicitly names; never add countries the question does not name. Rankings over all countries have no country_code filter",
+      "value_aliases": {
+        "ABW": [
+          "ABW",
+          "Aruba"
+        ],
+        "AFG": [
+          "AFG",
+          "Afghanistan"
+        ],
+        "AGO": [
+          "AGO",
+          "Angola"
+        ],
+        "ALB": [
+          "ALB",
+          "Albania"
+        ],
+        "AND": [
+          "AND",
+          "Andorra"
+        ],
+        "ARE": [
+          "ARE",
+          "United Arab Emirates"
+        ],
+        "ARG": [
+          "ARG",
+          "Argentina"
+        ],
+        "ARM": [
+          "ARM",
+          "Armenia"
+        ],
+        "ASM": [
+          "ASM",
+          "American Samoa"
+        ],
+        "ATG": [
+          "ATG",
+          "Antigua and Barbuda"
+        ],
+        "AUS": [
+          "AUS",
+          "Australia"
+        ],
+        "AUT": [
+          "AUT",
+          "Austria"
+        ],
+        "AZE": [
+          "AZE",
+          "Azerbaijan"
+        ],
+        "BDI": [
+          "BDI",
+          "Burundi"
+        ],
+        "BEL": [
+          "BEL",
+          "Belgium"
+        ],
+        "BEN": [
+          "BEN",
+          "Benin"
+        ],
+        "BFA": [
+          "BFA",
+          "Burkina Faso"
+        ],
+        "BGD": [
+          "BGD",
+          "Bangladesh"
+        ],
+        "BGR": [
+          "BGR",
+          "Bulgaria"
+        ],
+        "BHR": [
+          "BHR",
+          "Bahrain"
+        ],
+        "BHS": [
+          "BHS",
+          "Bahamas, The"
+        ],
+        "BIH": [
+          "BIH",
+          "Bosnia and Herzegovina"
+        ],
+        "BLR": [
+          "BLR",
+          "Belarus"
+        ],
+        "BLZ": [
+          "BLZ",
+          "Belize"
+        ],
+        "BMU": [
+          "BMU",
+          "Bermuda"
+        ],
+        "BOL": [
+          "BOL",
+          "Bolivia",
+          "Bolivia"
+        ],
+        "BRA": [
+          "BRA",
+          "Brazil"
+        ],
+        "BRB": [
+          "BRB",
+          "Barbados"
+        ],
+        "BRN": [
+          "BRN",
+          "Brunei Darussalam"
+        ],
+        "BTN": [
+          "BTN",
+          "Bhutan"
+        ],
+        "BWA": [
+          "BWA",
+          "Botswana"
+        ],
+        "CAF": [
+          "CAF",
+          "Central African Republic"
+        ],
+        "CAN": [
+          "CAN",
+          "Canada"
+        ],
+        "CHE": [
+          "CHE",
+          "Switzerland"
+        ],
+        "CHI": [
+          "CHI",
+          "Channel Islands"
+        ],
+        "CHL": [
+          "CHL",
+          "Chile"
+        ],
+        "CHN": [
+          "CHN",
+          "China"
+        ],
+        "CIV": [
+          "CIV",
+          "Cote d'Ivoire"
+        ],
+        "CMR": [
+          "CMR",
+          "Cameroon"
+        ],
+        "COD": [
+          "COD",
+          "Congo, Dem. Rep.",
+          "Democratic Republic of the Congo",
+          "DR Congo"
+        ],
+        "COG": [
+          "COG",
+          "Congo, Rep.",
+          "Republic of the Congo"
+        ],
+        "COL": [
+          "COL",
+          "Colombia"
+        ],
+        "COM": [
+          "COM",
+          "Comoros"
+        ],
+        "CPV": [
+          "CPV",
+          "Cabo Verde"
+        ],
+        "CRI": [
+          "CRI",
+          "Costa Rica"
+        ],
+        "CUB": [
+          "CUB",
+          "Cuba"
+        ],
+        "CUW": [
+          "CUW",
+          "Curacao"
+        ],
+        "CYM": [
+          "CYM",
+          "Cayman Islands"
+        ],
+        "CYP": [
+          "CYP",
+          "Cyprus"
+        ],
+        "CZE": [
+          "CZE",
+          "Czechia",
+          "Czech Republic",
+          "Czechia"
+        ],
+        "DEU": [
+          "DEU",
+          "Germany"
+        ],
+        "DJI": [
+          "DJI",
+          "Djibouti"
+        ],
+        "DMA": [
+          "DMA",
+          "Dominica"
+        ],
+        "DNK": [
+          "DNK",
+          "Denmark"
+        ],
+        "DOM": [
+          "DOM",
+          "Dominican Republic"
+        ],
+        "DZA": [
+          "DZA",
+          "Algeria"
+        ],
+        "ECU": [
+          "ECU",
+          "Ecuador"
+        ],
+        "EGY": [
+          "EGY",
+          "Egypt, Arab Rep.",
+          "Egypt"
+        ],
+        "ERI": [
+          "ERI",
+          "Eritrea"
+        ],
+        "ESP": [
+          "ESP",
+          "Spain"
+        ],
+        "EST": [
+          "EST",
+          "Estonia"
+        ],
+        "ETH": [
+          "ETH",
+          "Ethiopia"
+        ],
+        "FIN": [
+          "FIN",
+          "Finland"
+        ],
+        "FJI": [
+          "FJI",
+          "Fiji"
+        ],
+        "FRA": [
+          "FRA",
+          "France"
+        ],
+        "FRO": [
+          "FRO",
+          "Faroe Islands"
+        ],
+        "FSM": [
+          "FSM",
+          "Micronesia, Fed. Sts."
+        ],
+        "GAB": [
+          "GAB",
+          "Gabon"
+        ],
+        "GBR": [
+          "GBR",
+          "United Kingdom",
+          "UK",
+          "U.K.",
+          "Britain",
+          "Great Britain"
+        ],
+        "GEO": [
+          "GEO",
+          "Georgia"
+        ],
+        "GHA": [
+          "GHA",
+          "Ghana"
+        ],
+        "GIB": [
+          "GIB",
+          "Gibraltar"
+        ],
+        "GIN": [
+          "GIN",
+          "Guinea"
+        ],
+        "GMB": [
+          "GMB",
+          "Gambia, The"
+        ],
+        "GNB": [
+          "GNB",
+          "Guinea-Bissau"
+        ],
+        "GNQ": [
+          "GNQ",
+          "Equatorial Guinea"
+        ],
+        "GRC": [
+          "GRC",
+          "Greece"
+        ],
+        "GRD": [
+          "GRD",
+          "Grenada"
+        ],
+        "GRL": [
+          "GRL",
+          "Greenland"
+        ],
+        "GTM": [
+          "GTM",
+          "Guatemala"
+        ],
+        "GUM": [
+          "GUM",
+          "Guam"
+        ],
+        "GUY": [
+          "GUY",
+          "Guyana"
+        ],
+        "HKG": [
+          "HKG",
+          "Hong Kong SAR, China"
+        ],
+        "HND": [
+          "HND",
+          "Honduras"
+        ],
+        "HRV": [
+          "HRV",
+          "Croatia"
+        ],
+        "HTI": [
+          "HTI",
+          "Haiti"
+        ],
+        "HUN": [
+          "HUN",
+          "Hungary"
+        ],
+        "IDN": [
+          "IDN",
+          "Indonesia"
+        ],
+        "IMN": [
+          "IMN",
+          "Isle of Man"
+        ],
+        "IND": [
+          "IND",
+          "India"
+        ],
+        "IRL": [
+          "IRL",
+          "Ireland"
+        ],
+        "IRN": [
+          "IRN",
+          "Iran, Islamic Rep.",
+          "Iran"
+        ],
+        "IRQ": [
+          "IRQ",
+          "Iraq"
+        ],
+        "ISL": [
+          "ISL",
+          "Iceland"
+        ],
+        "ISR": [
+          "ISR",
+          "Israel"
+        ],
+        "ITA": [
+          "ITA",
+          "Italy"
+        ],
+        "JAM": [
+          "JAM",
+          "Jamaica"
+        ],
+        "JOR": [
+          "JOR",
+          "Jordan"
+        ],
+        "JPN": [
+          "JPN",
+          "Japan"
+        ],
+        "KAZ": [
+          "KAZ",
+          "Kazakhstan"
+        ],
+        "KEN": [
+          "KEN",
+          "Kenya"
+        ],
+        "KGZ": [
+          "KGZ",
+          "Kyrgyz Republic",
+          "Kyrgyzstan"
+        ],
+        "KHM": [
+          "KHM",
+          "Cambodia"
+        ],
+        "KIR": [
+          "KIR",
+          "Kiribati"
+        ],
+        "KNA": [
+          "KNA",
+          "St. Kitts and Nevis"
+        ],
+        "KOR": [
+          "KOR",
+          "Korea, Rep.",
+          "South Korea"
+        ],
+        "KWT": [
+          "KWT",
+          "Kuwait"
+        ],
+        "LAO": [
+          "LAO",
+          "Lao PDR",
+          "Laos"
+        ],
+        "LBN": [
+          "LBN",
+          "Lebanon"
+        ],
+        "LBR": [
+          "LBR",
+          "Liberia"
+        ],
+        "LBY": [
+          "LBY",
+          "Libya"
+        ],
+        "LCA": [
+          "LCA",
+          "St. Lucia"
+        ],
+        "LIE": [
+          "LIE",
+          "Liechtenstein"
+        ],
+        "LKA": [
+          "LKA",
+          "Sri Lanka"
+        ],
+        "LSO": [
+          "LSO",
+          "Lesotho"
+        ],
+        "LTU": [
+          "LTU",
+          "Lithuania"
+        ],
+        "LUX": [
+          "LUX",
+          "Luxembourg"
+        ],
+        "LVA": [
+          "LVA",
+          "Latvia"
+        ],
+        "MAC": [
+          "MAC",
+          "Macao SAR, China"
+        ],
+        "MAF": [
+          "MAF",
+          "St. Martin (French part)"
+        ],
+        "MAR": [
+          "MAR",
+          "Morocco"
+        ],
+        "MCO": [
+          "MCO",
+          "Monaco"
+        ],
+        "MDA": [
+          "MDA",
+          "Moldova"
+        ],
+        "MDG": [
+          "MDG",
+          "Madagascar"
+        ],
+        "MDV": [
+          "MDV",
+          "Maldives"
+        ],
+        "MEX": [
+          "MEX",
+          "Mexico"
+        ],
+        "MHL": [
+          "MHL",
+          "Marshall Islands"
+        ],
+        "MKD": [
+          "MKD",
+          "North Macedonia"
+        ],
+        "MLI": [
+          "MLI",
+          "Mali"
+        ],
+        "MLT": [
+          "MLT",
+          "Malta"
+        ],
+        "MMR": [
+          "MMR",
+          "Myanmar"
+        ],
+        "MNE": [
+          "MNE",
+          "Montenegro"
+        ],
+        "MNG": [
+          "MNG",
+          "Mongolia"
+        ],
+        "MNP": [
+          "MNP",
+          "Northern Mariana Islands"
+        ],
+        "MOZ": [
+          "MOZ",
+          "Mozambique"
+        ],
+        "MRT": [
+          "MRT",
+          "Mauritania"
+        ],
+        "MUS": [
+          "MUS",
+          "Mauritius"
+        ],
+        "MWI": [
+          "MWI",
+          "Malawi"
+        ],
+        "MYS": [
+          "MYS",
+          "Malaysia"
+        ],
+        "NAM": [
+          "NAM",
+          "Namibia"
+        ],
+        "NCL": [
+          "NCL",
+          "New Caledonia"
+        ],
+        "NER": [
+          "NER",
+          "Niger"
+        ],
+        "NGA": [
+          "NGA",
+          "Nigeria"
+        ],
+        "NIC": [
+          "NIC",
+          "Nicaragua"
+        ],
+        "NLD": [
+          "NLD",
+          "Netherlands"
+        ],
+        "NOR": [
+          "NOR",
+          "Norway"
+        ],
+        "NPL": [
+          "NPL",
+          "Nepal"
+        ],
+        "NRU": [
+          "NRU",
+          "Naoero"
+        ],
+        "NZL": [
+          "NZL",
+          "New Zealand"
+        ],
+        "OMN": [
+          "OMN",
+          "Oman"
+        ],
+        "PAK": [
+          "PAK",
+          "Pakistan"
+        ],
+        "PAN": [
+          "PAN",
+          "Panama"
+        ],
+        "PER": [
+          "PER",
+          "Peru"
+        ],
+        "PHL": [
+          "PHL",
+          "Philippines"
+        ],
+        "PLW": [
+          "PLW",
+          "Palau"
+        ],
+        "PNG": [
+          "PNG",
+          "Papua New Guinea"
+        ],
+        "POL": [
+          "POL",
+          "Poland"
+        ],
+        "PRI": [
+          "PRI",
+          "Puerto Rico (US)"
+        ],
+        "PRK": [
+          "PRK",
+          "Korea, Dem. People's Rep.",
+          "North Korea"
+        ],
+        "PRT": [
+          "PRT",
+          "Portugal"
+        ],
+        "PRY": [
+          "PRY",
+          "Paraguay"
+        ],
+        "PSE": [
+          "PSE",
+          "West Bank and Gaza"
+        ],
+        "PYF": [
+          "PYF",
+          "French Polynesia"
+        ],
+        "QAT": [
+          "QAT",
+          "Qatar"
+        ],
+        "ROU": [
+          "ROU",
+          "Romania"
+        ],
+        "RUS": [
+          "RUS",
+          "Russian Federation",
+          "Russia"
+        ],
+        "RWA": [
+          "RWA",
+          "Rwanda"
+        ],
+        "SAU": [
+          "SAU",
+          "Saudi Arabia"
+        ],
+        "SDN": [
+          "SDN",
+          "Sudan"
+        ],
+        "SEN": [
+          "SEN",
+          "Senegal"
+        ],
+        "SGP": [
+          "SGP",
+          "Singapore"
+        ],
+        "SLB": [
+          "SLB",
+          "Solomon Islands"
+        ],
+        "SLE": [
+          "SLE",
+          "Sierra Leone"
+        ],
+        "SLV": [
+          "SLV",
+          "El Salvador"
+        ],
+        "SMR": [
+          "SMR",
+          "San Marino"
+        ],
+        "SOM": [
+          "SOM",
+          "Somalia, Fed. Rep."
+        ],
+        "SRB": [
+          "SRB",
+          "Serbia"
+        ],
+        "SSD": [
+          "SSD",
+          "South Sudan"
+        ],
+        "STP": [
+          "STP",
+          "Sao Tome and Principe"
+        ],
+        "SUR": [
+          "SUR",
+          "Suriname"
+        ],
+        "SVK": [
+          "SVK",
+          "Slovak Republic",
+          "Slovakia"
+        ],
+        "SVN": [
+          "SVN",
+          "Slovenia"
+        ],
+        "SWE": [
+          "SWE",
+          "Sweden"
+        ],
+        "SWZ": [
+          "SWZ",
+          "Eswatini"
+        ],
+        "SXM": [
+          "SXM",
+          "Sint Maarten (Dutch part)"
+        ],
+        "SYC": [
+          "SYC",
+          "Seychelles"
+        ],
+        "SYR": [
+          "SYR",
+          "Syrian Arab Republic",
+          "Syria"
+        ],
+        "TCA": [
+          "TCA",
+          "Turks and Caicos Islands"
+        ],
+        "TCD": [
+          "TCD",
+          "Chad"
+        ],
+        "TGO": [
+          "TGO",
+          "Togo"
+        ],
+        "THA": [
+          "THA",
+          "Thailand"
+        ],
+        "TJK": [
+          "TJK",
+          "Tajikistan"
+        ],
+        "TKM": [
+          "TKM",
+          "Turkmenistan"
+        ],
+        "TLS": [
+          "TLS",
+          "Timor-Leste"
+        ],
+        "TON": [
+          "TON",
+          "Tonga"
+        ],
+        "TTO": [
+          "TTO",
+          "Trinidad and Tobago"
+        ],
+        "TUN": [
+          "TUN",
+          "Tunisia"
+        ],
+        "TUR": [
+          "TUR",
+          "Turkiye",
+          "Turkey",
+          "Türkiye"
+        ],
+        "TUV": [
+          "TUV",
+          "Tuvalu"
+        ],
+        "TZA": [
+          "TZA",
+          "Tanzania"
+        ],
+        "UGA": [
+          "UGA",
+          "Uganda"
+        ],
+        "UKR": [
+          "UKR",
+          "Ukraine"
+        ],
+        "URY": [
+          "URY",
+          "Uruguay"
+        ],
+        "USA": [
+          "USA",
+          "United States",
+          "US",
+          "U.S.",
+          "U.S.A.",
+          "United States of America"
+        ],
+        "UZB": [
+          "UZB",
+          "Uzbekistan"
+        ],
+        "VCT": [
+          "VCT",
+          "St. Vincent and the Grenadines"
+        ],
+        "VEN": [
+          "VEN",
+          "Venezuela, RB",
+          "Venezuela"
+        ],
+        "VGB": [
+          "VGB",
+          "British Virgin Islands"
+        ],
+        "VIR": [
+          "VIR",
+          "Virgin Islands (U.S.)"
+        ],
+        "VNM": [
+          "VNM",
+          "Viet Nam",
+          "Vietnam"
+        ],
+        "VUT": [
+          "VUT",
+          "Vanuatu"
+        ],
+        "WSM": [
+          "WSM",
+          "Samoa"
+        ],
+        "XKX": [
+          "XKX",
+          "Kosovo"
+        ],
+        "YEM": [
+          "YEM",
+          "Yemen, Rep.",
+          "Yemen"
+        ],
+        "ZAF": [
+          "ZAF",
+          "South Africa"
+        ],
+        "ZMB": [
+          "ZMB",
+          "Zambia"
+        ],
+        "ZWE": [
+          "ZWE",
+          "Zimbabwe"
+        ]
+      },
+      "require_mentioned_values": true
+    },
+    "total_population": {
+      "sql": "w.POPULATION",
+      "type": "number",
+      "description": "Population; filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "total_gdp_usd": {
+      "sql": "w.GDP_USD",
+      "type": "number",
+      "description": "GDP (current US$); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "gdp_per_capita_usd": {
+      "sql": "w.GDP_PER_CAPITA_USD",
+      "type": "number",
+      "description": "GDP per capita (current US$); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "gdp_growth_pct": {
+      "sql": "w.GDP_GROWTH_PCT",
+      "type": "number",
+      "description": "GDP growth (annual %); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "inflation_pct": {
+      "sql": "w.INFLATION_PCT",
+      "type": "number",
+      "description": "Inflation, consumer prices (annual %); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "unemployment_pct": {
+      "sql": "w.UNEMPLOYMENT_PCT",
+      "type": "number",
+      "description": "Unemployment (% of labour force); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "life_expectancy_years": {
+      "sql": "w.LIFE_EXPECTANCY_YEARS",
+      "type": "number",
+      "description": "Life expectancy at birth (years); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "infant_mortality_per_1000": {
+      "sql": "w.INFANT_MORTALITY_PER_1000",
+      "type": "number",
+      "description": "Infant mortality (per 1,000 live births); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "fertility_rate": {
+      "sql": "w.FERTILITY_RATE",
+      "type": "number",
+      "description": "Fertility rate (births per woman); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "urban_population_pct": {
+      "sql": "w.URBAN_POPULATION_PCT",
+      "type": "number",
+      "description": "Urban population (% of total); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "internet_users_pct": {
+      "sql": "w.INTERNET_USERS_PCT",
+      "type": "number",
+      "description": "Internet users (% of population); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "electricity_access_pct": {
+      "sql": "w.ELECTRICITY_ACCESS_PCT",
+      "type": "number",
+      "description": "Access to electricity (% of population); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "renewable_energy_pct": {
+      "sql": "w.RENEWABLE_ENERGY_PCT",
+      "type": "number",
+      "description": "Renewable energy (% of final energy use); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "co2_per_capita_tonnes": {
+      "sql": "w.CO2_PER_CAPITA_TONNES",
+      "type": "number",
+      "description": "CO2 emissions per person (tonnes); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "health_spending_pct_gdp": {
+      "sql": "w.HEALTH_SPENDING_PCT_GDP",
+      "type": "number",
+      "description": "Health spending (% of GDP); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "education_spending_pct_gdp": {
+      "sql": "w.EDUCATION_SPENDING_PCT_GDP",
+      "type": "number",
+      "description": "Education spending (% of GDP); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "trade_pct_gdp": {
+      "sql": "w.TRADE_PCT_GDP",
+      "type": "number",
+      "description": "Trade (% of GDP); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
+    },
+    "adult_literacy_pct": {
+      "sql": "w.ADULT_LITERACY_PCT",
+      "type": "number",
+      "description": "Adult literacy (% ages 15 and above); filter underlying country-year measurements using exact thresholds in these units. Missing measurements do not match numeric comparisons."
     }
   },
-  "planning_notes": "Rows are country-years. An average or total 'across' or 'of' the countries in a region, income group or the world is ONE value: dimensions=[] and a filter on that region/group. A change 'from year A to year B' is a compare: filters (target) contain year eq B ONLY, reference_filters (baseline) contain year eq A ONLY, and any country/region filter is copied into BOTH lists; never put both years in one list. Always filter a year (year eq YYYY) unless the question asks about a span of years or a trend by year; if a ranking or country value names no year, use needs_clarification. Filter a named country ONLY with country_code (ISO3, e.g. India=IND), never with country. Regions and income groups use the uppercase values listed. Totals of people or money use total_population / total_gdp_usd; per-person, percentage and rate indicators use their average metric. 'Top N countries by X' groups by country, sorts X desc and sets limit N. Never invent indicators that are not in the catalog (no literacy, trade, education, poverty, or sub-national data).",
+  "planning_notes": "Rows are country-years. An average or total 'across' or 'of' the countries in a region, income group or the world is ONE value: dimensions=[] and a filter on that region/group. A change 'from year A to year B' is a compare: filters (target) contain year eq B ONLY, reference_filters (baseline) contain year eq A ONLY, and any country/region filter is copied into BOTH lists; never put both years in one list. Always filter a year (year eq YYYY) unless the question explicitly asks for latest available measurements, a span of years or a trend by year; if a ranking or country value names no year and does not explicitly ask for latest available data, use needs_clarification. Filter a named country ONLY with country_code (ISO3, e.g. India=IND), never with country. Regions and income groups use the uppercase values listed. Totals of people or money use total_population / total_gdp_usd; per-person, percentage and rate indicators use their average metric. 'Top N countries by X' groups by country, sorts X desc and sets limit N. Never invent indicators that are not in the catalog (no poverty or sub-national data). Numeric thresholds may filter any listed indicator using its matching numeric filter field. Explicit latest requests use latest_available time selection and show year; SQL finds the most recent year with all selected indicators present within the filtered scope. Three or more named countries can be compared as a country-grouped aggregate list, retaining every named country. All listed indicators may be requested together.",
   "limitations": [
     "World Bank estimates; recent years are often missing for some countries and indicators, and values may be revised in later releases.",
     "Averages over several countries are unweighted means of country values, not population-weighted; totals skip countries with missing values.",
     "Regional and income-group results are computed from the countries in this table, not the World Bank's own published aggregates.",
     "Only the listed indicators are loaded; no sub-national, monthly or forecast data.",
-    "Multi-step support is bounded to two scalar scopes, subset shares, and groups above the row-weighted population average; arbitrary chains and conversational follow-ups are unsupported."
-  ]
+    "Multi-step support is bounded to two scalar scopes, subset shares, and groups above the row-weighted population average; side-by-side grouped comparisons of multiple entities are supported; arbitrary chains and conversational follow-ups are unsupported."
+  ],
+  "time_coverage": {
+    "field": "year",
+    "start": 1990,
+    "end": 2024
+  }
 }

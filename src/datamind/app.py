@@ -67,10 +67,8 @@ with st.sidebar:
     st.header("⚙️ Configuration")
     dataset_choice = st.selectbox(
         "Active Dataset",
-        ["tpch_orders", "uci_wine_quality"],
-        format_func=lambda x: (
-            "TPC-H Orders (1.5M rows)" if x == "tpch_orders" else "UCI Wine Quality (6,497 samples)"
-        ),
+        ["worldbank_wdi"],
+        format_func=lambda x: "World Bank WDI (217 Economies · 18 Indicators · 1990–2024)",
     )
 
     st.divider()
@@ -98,7 +96,7 @@ submit_clicked = False
 with tab_text:
     question_text = st.text_input(
         "Ask a plain-language question:",
-        placeholder="e.g. Which five customer nations have the highest total order value?",
+        placeholder="e.g. What were the top 5 countries by GDP per capita in 2023?",
         key="text_question_input",
     )
     if st.button("Submit Question", type="primary", key="btn_text"):

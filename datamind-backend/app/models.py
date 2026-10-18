@@ -49,12 +49,13 @@ class Sort(StrictModel):
 class Plan(StrictModel):
     status: Literal["query", "needs_clarification", "unsupported"]
     message: str = Field(default="", max_length=1000)
-    metrics: list[str] = Field(default_factory=list, max_length=4)
+    metrics: list[str] = Field(default_factory=list, max_length=20)
     dimensions: list[str] = Field(default_factory=list, max_length=3)
     filters: list[Filter] = Field(default_factory=list, max_length=10)
     sort: list[Sort] = Field(default_factory=list, max_length=3)
-    limit: int = Field(default=20, ge=1, le=100, strict=True)
+    limit: int = Field(default=20, ge=1, le=500, strict=True)
     analysis: Literal["aggregate", "compare", "share", "above_average"] = "aggregate"
+    time_selection: Literal["explicit", "latest_available"] = "explicit"
     reference_filters: list[Filter] = Field(default_factory=list, max_length=10)
 
     @model_validator(mode="after")
@@ -68,6 +69,8 @@ class Plan(StrictModel):
         if len(set(self.dimensions)) != len(self.dimensions):
             raise ValueError("Duplicate dimensions.")
         if self.status == "query":
+            if self.time_selection == "latest_available" and self.analysis != "aggregate":
+                raise ValueError("Latest available time requires a grouped or scalar aggregate.")
             if self.analysis == "aggregate" and self.reference_filters:
                 raise ValueError("Aggregate plans cannot contain unused reference filters.")
             if self.analysis != "aggregate" and len(self.metrics) != 1:

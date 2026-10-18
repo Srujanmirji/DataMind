@@ -256,6 +256,24 @@ References:
 [Snowflake sample data](https://docs.snowflake.com/en/user-guide/sample-data),
 [Snowflake key-pair authentication](https://docs.snowflake.com/en/user-guide/key-pair-auth).
 
+## Answers restricted to the selected dataset
+
+The selected dataset is the only source for answers. General knowledge, forecasts,
+unavailable fields and requests mixing supported and unsupported questions are refused.
+Both routing and planning may request clarification. Neither step may silently choose
+an unspecified year, country, metric or baseline.
+
+Before SQL runs, conservative checks compare planned numeric and category filters with
+explicit question values and the selected dataset's trusted aliases. World Bank questions
+require an explicit year or year range in 1990–2024. Uncertain or conflicting scopes ask
+for clarification instead of executing. Unknown country spellings or unsupported wording
+may therefore need to be restated. Missing measurements are reported as unavailable;
+the UI does not turn missing inputs or zero denominators into numeric conclusions.
+
+Validated plans are still cached; each answer runs fresh SQL. A change to the grounding
+rules, model or dataset metadata invalidates old plans. This reduces accidental scope
+errors but does not prove the model's semantic interpretation is perfect.
+
 ## Plan caching
 
 Repeated identical questions reuse a validated Gemma plan for up to one hour.
@@ -290,7 +308,7 @@ test is in `scripts/check_gemma.py`; it never contacts Snowflake.
 Real World Bank data for **217 countries, 1990–2024** (7,595 country-years): population,
 GDP, GDP per capita, growth, inflation, unemployment, life expectancy, infant mortality,
 fertility, urbanisation, internet use, electricity access, renewable energy, CO₂ per person
-and health spending. Licence **CC BY 4.0**; source, preparation and coverage per indicator
+health spending, education spending, trade (% of GDP), and adult literacy. Licence **CC BY 4.0**; source, preparation and coverage per indicator
 are in [WORLDBANK_DATA.md](WORLDBANK_DATA.md).
 
 | Object | Purpose |
@@ -319,7 +337,7 @@ Other examples: "How did the percentage of India's population using the internet
 from 2015 to 2023?", "In 2023, what percentage of the total population of all countries
 lived in India?", "In 2022, which regions had an average life expectancy above the average
 across all countries?". Countries are filtered by ISO3 code (India = IND); a ranking or
-country value without a year gets a clarification question. Averages across several
+country value without a year gets a clarification question unless latest available data is explicitly requested. Averages across several
 countries are unweighted; forecasts, sub-national data and unlisted indicators are
 unsupported. Questions without a `dataset_id` still select TPC-H.
 
@@ -341,7 +359,7 @@ Each response includes both source query IDs, target/reference filters, formulas
 cell references, and a calculation evidence table. Percentage change is undefined
 when the baseline is zero; return null and a warning. No infinite/NaN result is used.
 
-Limits: one metric per multi-step analysis, two query scopes, at most 100 complete
+Limits: one metric per multi-step analysis, two query scopes, at most 500 complete
 groups. Arbitrary analysis chains, forecasts and conversational follow-ups remain
 unsupported. The two SQL executions are separate snapshots; do not edit data during
 comparisons. Final prose is rendered from verified cells. Evidence validates the
@@ -385,3 +403,15 @@ an answer. The existing server picks up this model setting on its next restart.
 credentials. This is separate from verifying actual query results in Snowflake.
 The answer evaluator checks required ground-truth columns, row cardinality and values;
 additional context labels are recorded, and missing metrics/wrong values still fail.
+
+Natural-language questions are interpreted against the selected catalog; examples are not a question allowlist. Literal metric keywords are optional for paraphrases. Missing metric, period, entity or comparison baseline prompts clarification; unavailable measurements produce no factual claims. Supported calculations remain aggregates, grouped lists/rankings, two-scope comparisons, additive shares and above-average groups.
+
+
+Flexible World Bank queries also support numeric indicator thresholds (including decimals),
+side-by-side comparisons of multiple named countries, and several metrics in the same query.
+For explicit latest-available requests, SQL selects the most recent non-missing year within
+the requested filters and grouping and includes that year in the answer. It never assumes
+that the coverage end year contains a measurement. Year-by-year trends retain each requested
+year; endpoint difference calculations remain a separate analysis. Up to 20 metrics and 500
+groups allow all 18 loaded indicators and all 217 economies to be considered. Numeric filters
+apply to underlying country-year measurements, before aggregation.

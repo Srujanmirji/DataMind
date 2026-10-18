@@ -52,6 +52,44 @@ def wdi_oracle(name):
 
     with localcontext() as context:
         context.prec = 50
+        if name == "wdi_three_country_gdp_per_capita_2022":
+            gdp = series("NY.GDP.PCAP.CD")
+            return {
+                "columns": ["country", "gdp_per_capita_usd"],
+                "rows": [[upper(iso, "name"), gdp[(iso, 2022)]] for iso in ("IND", "BRA", "CHN")],
+            }
+        if name == "wdi_unemployment_over_8_5_2022":
+            unemployment = series("SL.UEM.TOTL.ZS")
+            return {
+                "columns": ["country", "unemployment_pct"],
+                "rows": [
+                    [upper(iso, "name"), value]
+                    for (iso, year), value in unemployment.items()
+                    if year == 2022 and value > Decimal("8.5")
+                ],
+            }
+        if name == "wdi_india_latest_gdp":
+            gdp = series("NY.GDP.MKTP.CD")
+            latest = max(year for iso, year in gdp if iso == "IND")
+            return {"columns": ["year", "total_gdp_usd"], "rows": [[latest, gdp[("IND", latest)]]]}
+        if name == "wdi_india_gdp_population_trend_2019_2023":
+            gdp, population = series("NY.GDP.MKTP.CD"), series("SP.POP.TOTL")
+            return {
+                "columns": ["year", "total_gdp_usd", "total_population"],
+                "rows": [[year, gdp[("IND", year)], population[("IND", year)]] for year in range(2019, 2024)],
+            }
+        if name == "wdi_india_gdp_life_expectancy_2022":
+            return {
+                "columns": ["total_gdp_usd", "life_expectancy_years"],
+                "rows": [[series("NY.GDP.MKTP.CD")[("IND", 2022)], series("SP.DYN.LE00.IN")[("IND", 2022)]]],
+            }
+        if name == "wdi_lowest10_total_gdp_2023":
+            gdp = series("NY.GDP.MKTP.CD")
+            ranked = sorted(((v, upper(iso, "name")) for (iso, year), v in gdp.items() if year == 2023))[:10]
+            return {
+                "columns": ["country", "total_gdp_usd"],
+                "rows": [[name, value] for value, name in ranked],
+            }
         if name == "wdi_top5_gdp_per_capita_2023":
             gdp = series("NY.GDP.PCAP.CD")
             ranked = sorted(((v, iso) for (iso, year), v in gdp.items() if year == 2023), reverse=True)[:5]

@@ -181,7 +181,10 @@ def test_null_and_zero_sums_are_not_assumed_empty(settings, dataset):
     for value in [None, "0.00"]:
         service = make_service(settings, dataset, Plan(status="query", metrics=["total_order_value"]))
         service.warehouse.execute.return_value.update(columns=["total_order_value"], rows=[[value]])
-        assert service.ask(Question(question="Total order value?"))["status"] == "answered"
+        result = service.ask(Question(question="Total order value?"))
+        assert result["status"] == ("empty" if value is None else "answered")
+        if value is None:
+            assert "unavailable" in result["answer"] and not result["claims"]
 
 
 def test_model_failure_and_lock_release(settings, dataset):

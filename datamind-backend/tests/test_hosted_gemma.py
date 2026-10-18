@@ -57,3 +57,54 @@ def test_hosted_missing_key_and_rate_limit_are_clear():
         settings.google_api_key = SecretStr("test-key")
         with pytest.raises(BackendError, match="rate limited"):
             planner._generate(client, {"messages": [{"role": "system", "content": "test"}], "format": {}})
+
+
+@pytest.mark.parametrize(
+    "status,code",
+    [
+        (400, "model_request_rejected"),
+        (401, "model_access_denied"),
+        (403, "model_access_denied"),
+        (404, "model_configuration"),
+        (429, "model_rate_limited"),
+        (503, "model_unavailable"),
+    ],
+)
+def test_provider_errors_are_specific_without_leaking_details(status, code):
+    settings = Settings(_env_file=None, llm_backend="ai_studio", google_api_key=SecretStr("private-test-key"))
+    with (
+        httpx.Client(
+            transport=httpx.MockTransport(
+                lambda r: httpx.Response(
+                    status, json={"error": {"message": "private-test-key sensitive provider detail"}}
+                )
+            )
+        ) as client,
+        pytest.raises(BackendError) as error,
+    ):
+        Planner(settings, {})._generate(
+            client, {"messages": [{"role": "system", "content": "test"}], "format": {}}
+        )
+    assert error.value.code == code
+    assert "private-test-key" not in str(error.value) and "sensitive provider detail" not in str(error.value)
+
+
+def test_transient_google_failure_is_retried_once(monkeypatch):
+    monkeypatch.setattr("app.planner.sleep", lambda _: None)
+    settings = Settings(_env_file=None, llm_backend="ai_studio", google_api_key=SecretStr("test-key"))
+    requests = []
+
+    def handle(request):
+        requests.append(request)
+        if len(requests) == 1:
+            return httpx.Response(503)
+        return httpx.Response(200, json={"candidates": [{"content": {"parts": [{"text": "{}"}]}}]})
+
+    with httpx.Client(transport=httpx.MockTransport(handle)) as client:
+        assert (
+            Planner(settings, {})._generate(
+                client, {"messages": [{"role": "system", "content": "test"}], "format": {}}
+            )
+            == "{}"
+        )
+    assert len(requests) == 2
