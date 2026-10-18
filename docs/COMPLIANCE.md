@@ -11,7 +11,7 @@ Status: ✅ done & verified · 🟡 scaffolded / unverified · ❌ not started
 | Gate | Requirement | Where | Status |
 |---|---|---|---|
 | G1 | Public repo + OSS licence file | `LICENSE` (MIT); repo visibility set to public | 🟡 make repo public |
-| G2 | Judge can run without undisclosed creds/paid services, or feasible path documented | README "Evaluation path for judges"; Snowflake trial + Ollama/free AI Studio key | 🟡 |
+| G2 | Judge can run without undisclosed creds/paid services, or feasible path documented | README "Evaluation path for judges"; Snowflake trial + free AI Studio key (Ollama as fallback) | 🟡 |
 | G3 | Demo shows the real system | Recording of live run with query IDs | ❌ |
 | G4 | Dataset sources + licences disclosed; no non-redistributable data committed | `docs/DATASETS.md`; `.gitignore` blocks `data/`, `*.csv` | 🟡 |
 | G5 | No keys/tokens/passwords in repo | `.env` ignored; `.env.example` only; placeholder password in `00_setup.sql` | 🟡 add a secret scan to CI |
@@ -38,7 +38,7 @@ Status: ✅ done & verified · 🟡 scaffolded / unverified · ❌ not started
 |---|---|---|---|
 | S1 | Public repo + licence | `LICENSE` | 🟡 |
 | S2 | README: overview, setup, run, config, troubleshooting | `README.md` | 🟡 |
-| S3 | Pinned deps, tool versions, OS/hardware tested, model sizes | `pyproject.toml`; README "Tested environment" | 🟡 fill hardware + model size |
+| S3 | Pinned deps, tool versions, OS/hardware tested, model sizes | `pyproject.toml`; README "Tested environment" | 🟡 fill OS + model id + test date |
 | S4 | Architecture diagram | `docs/ARCHITECTURE.md` | ✅ |
 | S5 | Dataset sources, licences, prep, attribution | `docs/DATASETS.md` | 🟡 record OWID snapshot |
 | S6 | How Snowflake and Gemma are used | `docs/ARCHITECTURE.md` | 🟡 |

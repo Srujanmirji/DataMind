@@ -1,4 +1,4 @@
-"""Gemma backends. Select with $DATAMIND_LLM_BACKEND (``ollama`` | ``ai_studio``)."""
+"""Gemma backends. Select with $DATAMIND_LLM_BACKEND (``ai_studio`` default | ``ollama``)."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ BACKENDS: dict[str, type] = {"ollama": OllamaBackend, "ai_studio": AIStudioBacke
 
 
 def get_backend(name: str | None = None) -> LLMBackend:
-    name = name or os.environ.get("DATAMIND_LLM_BACKEND", "ollama")
+    name = name or os.environ.get("DATAMIND_LLM_BACKEND", "ai_studio")
     try:
         return BACKENDS[name]()
     except KeyError:

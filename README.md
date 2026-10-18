@@ -39,10 +39,8 @@ docs/                architecture, datasets & licences, compliance tracker
 
 - Python 3.10+ (CI tests 3.11 and 3.12)
 - A Snowflake account — a [30-day trial](https://signup.snowflake.com) needs only an email
-- Gemma 4 via **one** of:
-  - [Ollama](https://ollama.com) (local; Gemma 4 needs a recent version — check the
-    [library page](https://ollama.com/library/gemma4)), or
-  - a free [Google AI Studio](https://aistudio.google.com) API key (hosted)
+- A free [Google AI Studio](https://aistudio.google.com/apikey) API key for Gemma 4 (hosted, default)
+- Optional: [Ollama](https://ollama.com) to run Gemma 4 locally instead
 
 ### 1. Install
 
@@ -61,20 +59,23 @@ cp .env.example .env        # then edit .env
 2. Optional second dataset: follow [`snowflake/10_load_owid_energy.sql`](snowflake/10_load_owid_energy.sql).
 3. Put the account identifier, user and password in `.env`.
 
-### 3. Gemma 4
-
-Local:
+### 3. Gemma 4 (Gemini API)
 
 ```bash
-ollama pull gemma4:e4b
-# .env: DATAMIND_LLM_BACKEND=ollama, OLLAMA_MODEL=gemma4:e4b
+# .env
+DATAMIND_LLM_BACKEND=ai_studio
+GOOGLE_API_KEY=<your free key>
+AI_STUDIO_MODEL=gemma-4-26b-a4b-it   # confirm in AI Studio's model list
 ```
 
-Hosted:
+The free tier is rate-limited per Google Cloud project; each question uses up to
+3–5 model calls (classify, SQL, repairs, explain). Check current limits on AI
+Studio's rate-limit page.
 
-```bash
-# .env: DATAMIND_LLM_BACKEND=ai_studio, GOOGLE_API_KEY=..., AI_STUDIO_MODEL=<id from AI Studio's model list>
-```
+**Data handling:** on this backend the question, the schema description and the
+capped result rows are sent to Google. Use datasets you are allowed to share
+with a third-party API. To keep everything local, switch to Ollama:
+`ollama pull gemma4:e4b` and set `DATAMIND_LLM_BACKEND=ollama`.
 
 Model licence: confirm the terms on Google's official Gemma 4 model card before use.
 
@@ -91,9 +92,9 @@ datamind-eval --dataset tpch        # evaluation (not yet implemented)
 | Variable | Purpose | Default |
 |---|---|---|
 | `DATAMIND_DATASET` | dataset file under `config/datasets/` | `tpch` |
-| `DATAMIND_LLM_BACKEND` | `ollama` or `ai_studio` | `ollama` |
-| `OLLAMA_MODEL` / `OLLAMA_HOST` | local model and server | `gemma4:e4b` / `http://localhost:11434` |
-| `AI_STUDIO_MODEL` / `GOOGLE_API_KEY` | hosted model and key | `gemma-4-31b-it` (verify) / — |
+| `DATAMIND_LLM_BACKEND` | `ai_studio` or `ollama` | `ai_studio` |
+| `AI_STUDIO_MODEL` / `GOOGLE_API_KEY` | hosted model and key | `gemma-4-26b-a4b-it` / — |
+| `OLLAMA_MODEL` / `OLLAMA_HOST` | optional local model and server | `gemma4:e4b` / `http://localhost:11434` |
 | `SNOWFLAKE_*` | connection; see `.env.example` | — |
 | `DATAMIND_CONFIG_DIR` | alternative dataset config directory | `config/datasets` |
 
@@ -106,9 +107,9 @@ Data energy (CC BY 4.0). No data files are committed. Full details: [`docs/DATAS
 
 ## Evaluation path for judges
 
-_TODO before submission:_ either (a) a judge-run path — trial account + `00_setup.sql`
-+ Ollama, ~15 minutes — or (b) recorded evidence from our run: eval report with
-Snowflake query IDs in `eval/results/` and the demo video.
+_TODO before submission:_ either (a) a judge-run path — Snowflake trial + `00_setup.sql`
++ a free AI Studio key, ~15 minutes, no payment details — or (b) recorded evidence from
+our run: eval report with Snowflake query IDs in `eval/results/` and the demo video.
 
 ## Tested environment
 
@@ -116,8 +117,8 @@ Snowflake query IDs in `eval/results/` and the demo video.
 |---|---|
 | OS / hardware | _TODO_ |
 | Python | _TODO_ |
-| Ollama version / Gemma variant / quantization / model file size | _TODO_ |
-| Peak RAM, median answer latency | _TODO_ |
+| Gemma variant / API model id / date tested | _TODO_ |
+| Median answer latency, model calls per answer | _TODO_ |
 | Snowflake edition / cloud region | _TODO_ |
 
 ## Testing results and known limitations
@@ -129,7 +130,8 @@ Known limitations (current):
 
 - Agent pipeline not implemented yet.
 - Snowflake setup scripts have not been executed by the maintainers yet.
-- The AI Studio model id for Gemma 4 is unverified.
+- Gemma 4 support for system instructions and JSON mode on the Gemini API is unverified.
+- Free-tier rate limits bound how many questions per minute the demo can answer.
 
 ## Reproduce the demo
 
@@ -149,7 +151,10 @@ answer to hand-written ground-truth SQL._
 | Snowflake `250001` / auth errors | Wrong account identifier format — use `orgname-accountname` |
 | `Object does not exist` on sample data | Run step 1 of `00_setup.sql`; check `IMPORTED PRIVILEGES` grant |
 | Warehouse suspended unexpectedly | Resource monitor quota reached — raise `CREDIT_QUOTA` |
-| `model "gemma4:e4b" not found` | `ollama pull gemma4:e4b`; upgrade Ollama |
+| Gemini API `429 RESOURCE_EXHAUSTED` | Free-tier rate limit; wait, or reduce model calls per question |
+| Gemini API `404 model not found` | `AI_STUDIO_MODEL` doesn't match an id in AI Studio's model list |
+| Gemini API `400` mentioning system/developer instruction or JSON mode | Not supported for this model; see `ai_studio_backend.py` TODO |
+| `model "gemma4:e4b" not found` (Ollama) | `ollama pull gemma4:e4b`; upgrade Ollama |
 
 ## Licence
 

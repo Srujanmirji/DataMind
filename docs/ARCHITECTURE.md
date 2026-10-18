@@ -57,8 +57,11 @@ Backends (config switch only, `DATAMIND_LLM_BACKEND`):
 
 | Backend | Default model | Runs where | Notes |
 |---|---|---|---|
-| `ollama` | `gemma4:e4b` | Local machine | `ollama pull gemma4:e4b`; record RAM/latency in README |
-| `ai_studio` | `gemma-4-31b-it` (**verify id**) | Google-hosted | Free API key; question, schema and result rows leave the machine |
+| `ai_studio` (**default**) | `gemma-4-26b-a4b-it` | Google-hosted (Gemini API) | Free key; rate-limited per project; question, schema and capped rows leave the machine |
+| `ollama` (fallback) | `gemma4:e4b` | Local machine | No data leaves the machine; weaker SQL expected from the smaller model |
+
+Inference (Google) and data/query processing (Snowflake) are separate services;
+Gemma never receives Snowflake credentials and cannot issue queries itself.
 
 Temperature is 0 for reproducibility. Every `LLMResponse` records the exact
 model id and backend, and the UI shows it.
@@ -76,7 +79,9 @@ model id and backend, and the UI shows it.
 
 ## Known design risks
 
-- Small Gemma variants (E2B/E4B) may write weaker multi-join SQL than larger
-  variants. Measure on `eval/` before choosing the default.
+- Free-tier rate limits: each question costs 3–5 model calls, so a judge firing
+  questions quickly can hit 429s. Back off, and show a clear message when it happens.
+- Gemma on the Gemini API has historically not supported system instructions or
+  JSON mode; prompts must work without them. Verify for Gemma 4.
 - Number verification is lexical; rounding and unit formatting need care to
   avoid false alarms.

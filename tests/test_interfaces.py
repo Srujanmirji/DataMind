@@ -22,3 +22,11 @@ def test_answer_defaults_have_no_shared_state():
     b = AgentAnswer(question="q", status=AnswerStatus.NO_DATA, answer="", explanation="")
     a.queries.append(object())
     assert b.queries == []
+
+
+def test_default_backend_is_gemini_api(monkeypatch):
+    monkeypatch.delenv("DATAMIND_LLM_BACKEND", raising=False)
+    monkeypatch.delenv("AI_STUDIO_MODEL", raising=False)
+    backend = get_backend()
+    assert backend.name == "ai_studio"
+    assert backend.model.startswith("gemma-4")
