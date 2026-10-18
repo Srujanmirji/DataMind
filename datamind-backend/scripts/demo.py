@@ -240,5 +240,5 @@ def _prove_change(app, connection, settings: Settings, output: Path | None = Non
         "The application reader was never granted UPDATE. Only the explicit admin demo changed the labelled working copy. Source observations were verified unchanged.",
         "",
     ]
-    (output / "REPORT.md").write_text("\n".join(lines))
+    (output / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")
     return report

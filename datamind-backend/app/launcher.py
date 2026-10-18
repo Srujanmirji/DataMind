@@ -6,6 +6,7 @@ import signal
 import socket
 import subprocess
 import time
+from pathlib import Path
 
 from app.config import ROOT
 
@@ -27,8 +28,13 @@ def listener(port: int) -> int | None:
     owner = subprocess.run(
         ["ps", "-p", str(pid), "-o", "uid="], capture_output=True, text=True, check=True
     ).stdout.strip()
-    args = shlex.split(command)
-    if owner != str(os.getuid()) or len(args) < 2 or args[1] != str(ROOT / "run.py"):
+    args = shlex.split(command, posix=(os.name != "nt"))
+    my_uid = str(getattr(os, "getuid", lambda: "1000")())
+    try:
+        is_same_script = len(args) >= 2 and Path(args[1]).resolve() == (ROOT / "run.py").resolve()
+    except (OSError, ValueError):
+        is_same_script = len(args) >= 2 and args[1] == str(ROOT / "run.py")
+    if owner != my_uid or not is_same_script:
         raise SystemExit("Port is owned by another application; refusing to stop it. Choose --port instead.")
     return pid
 

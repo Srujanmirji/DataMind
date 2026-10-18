@@ -20,7 +20,8 @@ def setup_probe(monkeypatch, occupied=True):
 )
 def test_refuses_unrelated_process(monkeypatch, owner, command):
     setup_probe(monkeypatch)
-    outputs = iter(["42", command, str(launcher.os.getuid()) if owner == "self" else owner])
+    my_uid = str(getattr(launcher.os, "getuid", lambda: "1000")())
+    outputs = iter(["42", command, my_uid if owner == "self" else owner])
     monkeypatch.setattr(launcher.subprocess, "run", lambda *a, **k: SimpleNamespace(stdout=next(outputs)))
     with pytest.raises(SystemExit, match="another application"):
         launcher.listener(8000)
@@ -35,7 +36,8 @@ def test_refuses_multiple_listeners(monkeypatch):
 
 def test_recognizes_own_process(monkeypatch):
     setup_probe(monkeypatch)
-    outputs = iter(["42", f"python {ROOT}/run.py --demo", str(launcher.os.getuid())])
+    my_uid = str(getattr(launcher.os, "getuid", lambda: "1000")())
+    outputs = iter(["42", f"python {ROOT}/run.py --demo", my_uid])
     monkeypatch.setattr(launcher.subprocess, "run", lambda *a, **k: SimpleNamespace(stdout=next(outputs)))
     assert launcher.listener(8000) == 42
 
