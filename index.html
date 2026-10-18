@@ -109,7 +109,8 @@
     html, body {
       width: 100%;
       height: 100%;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       background-color: #0a0d12;
       color: #ffffff;
       font-family: var(--font-text);
@@ -123,16 +124,36 @@
     .stage {
       position: fixed;
       inset: 0;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(244, 157, 112, 0.3) transparent;
       background: radial-gradient(ellipse at 50% 15%, #162447 0%, #0c1020 50%, #070913 100%);
     }
 
+    .stage::-webkit-scrollbar {
+      width: 8px;
+    }
+    .stage::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .stage::-webkit-scrollbar-thumb {
+      background: rgba(244, 157, 112, 0.25);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    .stage::-webkit-scrollbar-thumb:hover {
+      background: rgba(244, 157, 112, 0.55);
+    }
 
     .stage-canvas {
-      position: absolute;
+      position: fixed;
       inset: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       display: block;
       z-index: 0;
       pointer-events: none;
@@ -141,9 +162,10 @@
 
     /* 1560x1008 Reference Frame */
     .frame {
-      position: absolute;
-      inset: 0;
+      position: relative;
       z-index: 1;
+      width: 100%;
+      min-height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -1759,78 +1781,263 @@
     /* =========================================
        ANSWER & EVIDENCE PANEL
        ========================================= */
-    body.has-result .frame { overflow-y: auto; justify-content: flex-start; }
-    body.has-result main.hero { flex: none; justify-content: flex-start; gap: 20px; padding: 24px 0 48px; }
+    body.has-result .frame { justify-content: flex-start; }
+    body.has-result main.hero { flex: none; justify-content: flex-start; gap: 24px; padding: 18px 0 64px; }
     body.has-result .hero-badge,
     body.has-result .user-greeting-sub { display: none; }
 
+    /* Enhanced Result Panel Styling */
     .result {
       width: min(100%, calc(748 * var(--u)));
       min-width: min(100%, 320px);
       position: relative;
       z-index: 2;
-      border-radius: 20px;
-      background: rgba(22, 23, 26, .94);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .10);
-      padding: 20px 22px 22px;
+      border-radius: 22px;
+      background: rgba(18, 20, 28, 0.94);
+      backdrop-filter: blur(28px) saturate(135%);
+      -webkit-backdrop-filter: blur(28px) saturate(135%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      padding: 24px 26px 26px;
       color: #fff;
       font-size: 15px;
       line-height: 1.55;
       text-align: left;
+      animation: resultEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes resultEntrance {
+      from { opacity: 0; transform: translateY(12px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
     .result[hidden] { display: none; }
-    .result-question { color: rgba(255, 255, 255, .66); font-size: 14px; margin: 0 0 12px; }
-    .result-status {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .02em;
-      text-transform: uppercase;
-      padding: 3px 9px;
-      border-radius: 999px;
-      margin-bottom: 10px;
-      background: rgba(255, 255, 255, .10);
-      color: rgba(255, 255, 255, .86);
+    .result-question {
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0 0 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .result-status.is-answered { background: rgba(244, 157, 112, .16); color: #F7B48F; }
-    .result-status.is-error { background: rgba(255, 99, 99, .16); color: #FF9B9B; }
-    .result-headline { font-size: 22px; font-weight: 600; line-height: 1.3; margin: 0 0 6px; letter-spacing: -0.01em; }
-    .result-sub { color: rgba(255, 255, 255, .72); margin: 0 0 14px; }
-    .result-section { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: rgba(255, 255, 255, .62); margin: 16px 0 8px; }
-    .result-points { margin: 0 0 14px; padding-left: 20px; display: grid; gap: 6px; }
-    .result-points li { color: rgba(255, 255, 255, .90); }
-    .result-points li::marker { color: #F49D70; }
-    .result-scope { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; }
-    .result-scope li { font-size: 13px; padding: 4px 10px; border-radius: 8px; background: rgba(255, 255, 255, .07); color: rgba(255, 255, 255, .84); }
-    .result-table-wrap { overflow-x: auto; margin: 4px 0 14px; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); }
-    .result table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
-    .result th, .result td { padding: 8px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid rgba(255, 255, 255, .06); }
-    .result th { color: rgba(255, 255, 255, .66); font-weight: 500; font-size: 13px; }
+    .result-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .result-status.is-answered {
+      background: linear-gradient(135deg, rgba(244, 157, 112, 0.18), rgba(249, 115, 22, 0.12));
+      color: #f8b285;
+      border-color: rgba(244, 157, 112, 0.35);
+      box-shadow: 0 0 12px rgba(244, 157, 112, 0.18);
+    }
+    .result-status.is-error {
+      background: rgba(239, 68, 68, 0.18);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+    .result-headline {
+      font-size: 24px;
+      font-weight: 650;
+      line-height: 1.3;
+      margin: 0 0 8px;
+      letter-spacing: -0.015em;
+      color: #ffffff;
+    }
+    .result-sub {
+      color: rgba(255, 255, 255, 0.74);
+      margin: 0 0 16px;
+      font-size: 14.5px;
+    }
+    .result-section {
+      font-size: 11.5px;
+      font-weight: 650;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #93c5fd;
+      margin: 20px 0 10px;
+    }
+    .result-points {
+      margin: 0 0 16px;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+    .result-points li {
+      position: relative;
+      padding: 9px 14px 9px 32px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .result-points li::before {
+      content: "";
+      position: absolute;
+      left: 14px;
+      top: 16px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #f8b285;
+      box-shadow: 0 0 8px #f8b285;
+    }
+    .result-scope {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0 0 16px;
+      padding: 0;
+      list-style: none;
+    }
+    .result-scope li {
+      font-size: 12.5px;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.22);
+      color: #bfdbfe;
+    }
+    .result-table-wrap {
+      overflow-x: auto;
+      margin: 8px 0 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(14, 16, 22, 0.6);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+    .result table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      font-variant-numeric: tabular-nums;
+    }
+    .result th, .result td {
+      padding: 10px 14px;
+      text-align: left;
+      white-space: nowrap;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .result th {
+      color: rgba(255, 255, 255, 0.72);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: rgba(255, 255, 255, 0.04);
+      position: sticky;
+      top: 0;
+    }
+    .result tbody tr {
+      transition: background 0.15s ease;
+    }
+    .result tbody tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .result tbody tr:hover {
+      background: rgba(244, 157, 112, 0.08);
+    }
     .result td.num, .result th.num { text-align: right; }
-    .result details { margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, .08); padding-top: 10px; }
-    .result summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; color: rgba(255, 255, 255, .86); font-weight: 500; }
+    .result details {
+      margin-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
+      padding-top: 12px;
+    }
+    .result summary {
+      cursor: pointer;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      color: rgba(255, 255, 255, 0.88);
+      font-weight: 550;
+      font-size: 13.5px;
+      user-select: none;
+      transition: color 0.15s ease;
+    }
+    .result summary:hover {
+      color: #f8b285;
+    }
     .result summary:focus-visible { outline: 2px solid #F49D70; outline-offset: 2px; border-radius: 6px; }
+    .evidence-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 8px 0;
+    }
+    .btn-copy-sql {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-copy-sql:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      border-color: rgba(244, 157, 112, 0.4);
+    }
     .result pre {
       white-space: pre-wrap;
       word-break: break-word;
-      font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
-      background: rgba(0, 0, 0, .35);
-      color: #E8E8E8;
-      padding: 12px;
-      border-radius: 10px;
+      font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: rgba(6, 8, 14, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: #93c5fd;
+      padding: 14px;
+      border-radius: 12px;
       margin: 8px 0;
     }
-    .result .meta { font-size: 13px; color: rgba(255, 255, 255, .66); margin: 4px 0; }
-    .result .meta code { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: #F7B48F; user-select: all; }
-    .result ul.notes { margin: 6px 0 0; padding-left: 18px; color: rgba(255, 255, 255, .72); font-size: 14px; }
-    .result-loading { display: flex; align-items: center; gap: 12px; color: rgba(255, 255, 255, .80); }
+    .result .meta { font-size: 12.5px; color: rgba(255, 255, 255, 0.65); margin: 6px 0; }
+    .result .meta code {
+      font: 12px ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #f8b285;
+      background: rgba(244, 157, 112, 0.12);
+      padding: 2px 6px;
+      border-radius: 5px;
+      user-select: all;
+    }
+    .result ul.notes { margin: 8px 0 0; padding-left: 18px; color: rgba(255, 255, 255, 0.72); font-size: 13.5px; }
+    .result-loading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255, 255, 255, 0.88);
+      padding: 16px 0;
+      font-size: 14.5px;
+    }
     .result-loading::before {
       content: "";
-      width: 16px; height: 16px; flex: none;
+      width: 18px;
+      height: 18px;
+      flex: none;
       border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, .25);
-      border-top-color: #F49D70;
-      animation: result-spin .9s linear infinite;
+      border: 2.5px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #f8b285;
+      animation: result-spin 0.8s linear infinite;
     }
     @keyframes result-spin { to { transform: rotate(360deg); } }
     @media (prefers-reduced-motion: reduce) { .result-loading::before { animation: none; } }
@@ -1943,7 +2150,7 @@
           <!-- Ambient Badge -->
           <div class="hero-badge" id="heroBadge">
             <span class="badge-dot"></span>
-            <span class="badge-text" id="badgeText">Next-Gen Snowflake AI Engine</span>
+            <span class="badge-text" id="badgeText">World Bank Indicators • 217 Economies (1990–2024)</span>
           </div>
 
           <!-- Luminous Gradient Headline -->
@@ -1970,7 +2177,7 @@
               class="ai-textarea"
               id="aiTextarea"
               rows="1"
-              placeholder="Ask anything about your data in plain language..."
+              placeholder="Ask about GDP per capita, population, CO2, renewables, life expectancy..."
               aria-label="Message"
             ></textarea>
           </div>
@@ -1999,7 +2206,7 @@
 
               <!-- Left Chips -->
               <div class="chips">
-                <!-- Chip 1: Select Dataset -->
+                <!-- Chip 1: Top countries -->
                 <button
                   type="button"
                   class="chip"
@@ -2015,10 +2222,10 @@
                       d="M1.5 0.5C0.947715 0.5 0.5 0.947715 0.5 1.5V8.5C0.5 9.05228 0.947715 9.5 1.5 9.5H13.5C14.0523 9.5 14.5 9.05228 14.5 8.5V1.5C14.5 0.947715 14.0523 0.5 13.5 0.5H1.5ZM5 10.5C4.72386 10.5 4.5 10.7239 4.5 11C4.5 11.2761 4.72386 11.5 5 11.5H10C10.2761 11.5 10.5 11.2761 10.5 11C10.5 10.7239 10.2761 10.5 10 10.5H5Z"
                     />
                   </svg>
-                  <span class="chip-label">Example</span>
+                  <span class="chip-label">Top countries</span>
                 </button>
 
-                <!-- Chip 2: Explore Data -->
+                <!-- Chip 2: Change over time -->
                 <button
                   type="button"
                   class="chip"
@@ -2034,10 +2241,10 @@
                       d="M3 0C1.34315 0 0 1.34315 0 3C0 4.65685 1.34315 6 3 6H6V0H3ZM6 0H9C10.6569 0 12 1.34315 12 3C12 4.65685 10.6569 6 9 6H6V0ZM6 6H3C1.34315 6 0 7.34315 0 9C0 10.6569 1.34315 12 3 12C4.65685 12 6 10.6569 6 9V6ZM6 6H9C10.6569 6 12 7.34315 12 9C12 10.6569 10.6569 12 9 12C7.34315 12 6 10.6569 6 9V6ZM6 12H3C1.34315 12 0 12.8954 0 14H6V12Z"
                     />
                   </svg>
-                  <span class="chip-label">Example</span>
+                  <span class="chip-label">Change over time</span>
                 </button>
 
-                <!-- Chip 3: Suggested Questions -->
+                <!-- Chip 3: Share -->
                 <button
                   type="button"
                   class="chip"
@@ -2053,7 +2260,30 @@
                       d="M6 0C2.68629 0 0 2.68629 0 6C0 9.31371 2.68629 12 6 12C7.10457 12 8 11.1046 8 10C8 9.44772 7.77614 8.94772 7.41421 8.58579C7.05228 8.22386 6.82843 7.72386 6.82843 7.17157C6.82843 6.067 7.72386 5.17157 8.82843 5.17157H10C11.1046 5.17157 12 4.27614 12 3.17157C12 1.41996 9.31371 0 6 0ZM2.5 4.5C2.5 3.94772 2.94772 3.5 3.5 3.5C4.05228 3.5 4.5 3.94772 4.5 4.5C4.5 5.05228 4.05228 5.5 3.5 5.5C2.94772 5.5 2.5 5.05228 2.5 4.5ZM5.5 2.5C5.5 1.94772 5.94772 1.5 6.5 1.5C7.05228 1.5 7.5 1.94772 7.5 2.5C7.5 3.05228 7.05228 3.5 6.5 3.5C5.94772 3.5 5.5 3.05228 5.5 2.5ZM8.5 4.5C8.5 3.94772 8.94772 3.5 9.5 3.5C10.0523 3.5 10.5 3.94772 10.5 4.5C10.5 5.05228 10.0523 5.5 9.5 5.5C8.94772 5.5 8.5 5.05228 8.5 4.5Z"
                     />
                   </svg>
-                  <span class="chip-label">Example</span>
+                  <span class="chip-label">Share</span>
+                </button>
+
+                <!-- Chip 4: Above average -->
+                <button
+                  type="button"
+                  class="chip"
+                  data-prompt=""
+                >
+                  <svg
+                    class="chip-icon"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                  </svg>
+                  <span class="chip-label">Above average</span>
                 </button>
               </div>
             </div>
@@ -2411,7 +2641,7 @@
           if (prompt && textarea) {
             textarea.value = prompt;
             syncInput();
-            textarea.focus();
+            triggerSend();
           }
           closeAllDropdowns();
         });
@@ -2437,14 +2667,14 @@
         });
       }
 
-      // Action Chips Click-to-populate
+      // Action Chips Click-to-run
       document.querySelectorAll('.chip').forEach(function (chip) {
         chip.addEventListener('click', function () {
           const prompt = chip.getAttribute('data-prompt');
           if (prompt && textarea) {
             textarea.value = prompt;
             syncInput();
-            textarea.focus();
+            triggerSend();
           }
         });
       });
@@ -2949,9 +3179,47 @@
         const isCalc = item.kind === 'calculation';
         details.appendChild(el('summary', '', isCalc ? 'How the numbers were calculated' : 'Evidence ' + (index + 1) + ': SQL run in Snowflake'));
         if (!isCalc) {
+          const headerRow = el('div', 'evidence-header-row');
           const qid = el('p', 'meta', 'Snowflake query ID: ');
           qid.appendChild(el('code', '', item.query_id || 'not reported'));
-          details.appendChild(qid);
+          headerRow.appendChild(qid);
+
+          if (item.sql) {
+            const copyBtn = el('button', 'btn-copy-sql');
+            copyBtn.type = 'button';
+            copyBtn.setAttribute('aria-label', 'Copy SQL query');
+            copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> <span>Copy SQL</span>';
+            copyBtn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              function markCopied() {
+                copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span style="color:#4ade80">Copied!</span>';
+                setTimeout(function () {
+                  copyBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> <span>Copy SQL</span>';
+                }, 2000);
+              }
+              function fallbackCopy(text) {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); } catch (_) {}
+                document.body.removeChild(ta);
+              }
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(item.sql).then(markCopied).catch(function () {
+                  fallbackCopy(item.sql);
+                  markCopied();
+                });
+              } else {
+                fallbackCopy(item.sql);
+                markCopied();
+              }
+            });
+            headerRow.appendChild(copyBtn);
+          }
+          details.appendChild(headerRow);
           details.appendChild(el('pre', '', item.sql));
           if (item.parameters && item.parameters.length) details.appendChild(el('p', 'meta', 'Bound parameters: ' + item.parameters.join(', ')));
           details.appendChild(el('p', 'meta', item.row_count + ' row(s)' + (item.duration_ms ? ' in ' + item.duration_ms + ' ms' : '') + (item.truncated ? ', truncated' : '')));
@@ -3040,11 +3308,23 @@
         panel.hidden = false;
         document.body.classList.add('has-result');
         const started = Date.now();
-        const status = el('p', 'result-loading', 'Gemma is planning the query…');
+        const status = el('p', 'result-loading', 'Gemma 4 is reading your question…');
         panel.replaceChildren(el('p', 'result-question', question), status);
+        
+        // Smooth scroll to results immediately
+        setTimeout(function () {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 60);
+
         const ticker = setInterval(function () {
           const seconds = Math.round((Date.now() - started) / 1000);
-          status.textContent = (seconds < 12 ? 'Gemma is reading your question' : 'Gemma is planning, then Snowflake runs the query') + ' · ' + seconds + 's';
+          if (seconds < 3) {
+            status.textContent = 'Gemma 4 is parsing World Bank metrics & schema… · ' + seconds + 's';
+          } else if (seconds < 7) {
+            status.textContent = 'Formulating verified analytical query plan… · ' + seconds + 's';
+          } else {
+            status.textContent = 'Snowflake warehouse executing query & computing stats… · ' + seconds + 's';
+          }
         }, 1000);
         try {
           const response = await fetch(API + '/questions', {
@@ -3059,6 +3339,9 @@
           clearInterval(ticker);
           render(body, question);
           panel.appendChild(el('p', 'meta', 'Answered in ' + Math.round((Date.now() - started) / 1000) + 's.'));
+          setTimeout(function () {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 80);
         } catch (_) {
           clearInterval(ticker);
           render({ status: 'error', error: { code: 'backend_unreachable', message: 'Cannot reach the DataMind backend. Start it with python run.py and open http://127.0.0.1:8000/.' } }, question);
@@ -3070,27 +3353,41 @@
       function selectDataset(id) {
         current = datasets.find(function (d) { return d.id === id; }) || datasets[0];
         if (!current) return;
-        pickerLabel.textContent = current.name.split(' — ')[0];
+        pickerLabel.textContent = 'World Bank WDI (1990–2024)';
         pickerMenu.querySelectorAll('.dropdown-item').forEach(function (item) {
           const selected = item.getAttribute('data-dataset') === current.id;
           item.classList.toggle('is-selected', selected);
           item.setAttribute('aria-checked', selected ? 'true' : 'false');
         });
-        const examples = EXAMPLES[current.id] || [];
+        const examples = EXAMPLES[current.id] || EXAMPLES.worldbank_wdi || [];
         chips.forEach(function (chip, i) {
           const example = examples[i];
           chip.hidden = !example;
           if (!example) return;
           chip.setAttribute('data-prompt', example[1]);
-          chip.querySelector('.chip-label').textContent = example[0];
+          const labelEl = chip.querySelector('.chip-label');
+          if (labelEl) labelEl.textContent = example[0];
+          chip.title = example[1];
         });
         examplesMenu.replaceChildren();
-        examples.forEach(function (example) {
+        const fullExamples = [
+          ['Top countries by GDP', 'What were the top 5 countries by GDP per capita in 2023?'],
+          ['Internet adoption growth', "How did the percentage of India's population using the internet change from 2015 to 2023?"],
+          ['Population distribution share', 'In 2023, what percentage of the total population of all countries lived in India?'],
+          ['Life expectancy above average', 'In 2022, which regions had an average life expectancy above the average across all countries?'],
+          ['CO2 emissions per capita', 'Which 5 countries had the highest CO2 emissions per capita in 2020?'],
+          ['Renewable energy consumption', 'How did renewable energy consumption change in the United States from 2010 to 2022?'],
+          ['Regional inflation benchmark', 'What was the average inflation rate in South Asia in 2022?']
+        ];
+        fullExamples.forEach(function (example) {
           const item = el('button', 'dropdown-item');
           item.type = 'button';
           item.setAttribute('role', 'menuitem');
           item.setAttribute('data-prompt', example[1]);
-          item.appendChild(el('span', '', example[1]));
+          const content = el('div');
+          content.appendChild(el('div', 'dropdown-item-title', example[0]));
+          content.appendChild(el('div', 'dropdown-item-desc', example[1]));
+          item.appendChild(content);
           examplesMenu.appendChild(item);
         });
       }
@@ -3099,8 +3396,10 @@
         try {
           const response = await fetch(API + '/datasets');
           if (!response.ok) throw new Error('HTTP ' + response.status);
-          datasets = (await response.json()).datasets || [];
-          if (!datasets.length) throw new Error('No datasets configured');
+          const allDatasets = (await response.json()).datasets || [];
+          // Filter exclusively to World Bank dataset as user requested
+          datasets = allDatasets.filter(function (d) { return d.id === 'worldbank_wdi'; });
+          if (!datasets.length) datasets = allDatasets;
         } catch (_) {
           pickerLabel.textContent = 'Backend offline';
           panel.hidden = false;
@@ -3109,16 +3408,17 @@
         }
         pickerMenu.replaceChildren();
         datasets.forEach(function (d) {
-          const item = el('button', 'dropdown-item');
+          const item = el('button', 'dropdown-item is-selected');
           item.type = 'button';
           item.setAttribute('role', 'menuitemradio');
           item.setAttribute('data-dataset', d.id);
           const text = el('div');
-          text.appendChild(el('div', 'dropdown-item-title', d.name));
+          text.appendChild(el('div', 'dropdown-item-title', 'World Bank WDI (1990–2024)'));
+          text.appendChild(el('div', 'dropdown-item-desc', '217 Economies · 18 Key Indicators · Verified Snowflake'));
           item.appendChild(text);
           pickerMenu.appendChild(item);
         });
-        selectDataset(datasets.some(function (d) { return d.id === DEFAULT_DATASET; }) ? DEFAULT_DATASET : datasets[0].id);
+        selectDataset('worldbank_wdi');
       }
 
       document.addEventListener('datamind:ask', function (e) { ask(e.detail); });

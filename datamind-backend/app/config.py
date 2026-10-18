@@ -30,8 +30,8 @@ class Settings(BaseSettings):
     query_timeout_seconds: int = Field(default=30, ge=1, le=120)
     cors_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]
     api_key: SecretStr = SecretStr("")
-    dataset_path: Path = ROOT / "datasets" / "tpch_orders.json"
-    additional_dataset_paths: list[Path] = [ROOT / "datasets" / "worldbank_wdi.json"]
+    dataset_path: Path = ROOT / "datasets" / "worldbank_wdi.json"
+    additional_dataset_paths: list[Path] = [ROOT / "datasets" / "tpch_orders.json"]
     history_path: Path = ROOT / "data" / "runs.sqlite3"
     # Off until audio/image are actually interpreted by Gemma; today the processor guesses from file names.
     enable_multimodal: bool = False
