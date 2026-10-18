@@ -30,6 +30,11 @@ def main():
         help="Gracefully replace only a verified existing DataMind server on this port.",
     )
     parser.add_argument(
+        "--load-worldbank",
+        action="store_true",
+        help="Download World Bank WDI indicators and load them into Snowflake, then exit.",
+    )
+    parser.add_argument(
         "--dev",
         action="store_true",
         help="Start server in development mode without requiring Snowflake credentials.",
@@ -37,7 +42,7 @@ def main():
     args = parser.parse_args()
     if not 1 <= args.port <= 65535:
         parser.error("Port must be in 1..65535.")
-    if listener(args.port) is not None and not args.replace:
+    if listener(args.port) is not None and not args.replace and not args.load_worldbank:
         raise SystemExit("DataMind already occupies this port. Use --replace or choose another --port.")
     settings = Settings()
     if args.dev:
@@ -68,6 +73,16 @@ def main():
         serialization.Encoding.DER, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()
     )
     del passphrase, key
+    if args.load_worldbank:
+        from scripts.demo import admin_session
+        from scripts.worldbank_wdi import prepare_data as prepare_wdi
+        from scripts.worldbank_wdi import provision as provision_wdi
+
+        print("Loading World Bank WDI using ACCOUNTADMIN; the API stays DATAMIND_READER.", flush=True)
+        with admin_session(settings, private_key) as connection:
+            result = provision_wdi(connection, settings, prepare_wdi())
+        print(f"Loaded and verified {result['row_count']:,} rows in {result['table']}.", flush=True)
+        return
     app = create_app(settings, private_key)
     if args.demo:
         from scripts.demo import admin_session, count_from_answer, prove_change, record_failure
