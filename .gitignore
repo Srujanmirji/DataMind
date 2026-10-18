@@ -1,0 +1,20 @@
+# Secrets (gate G5)
+.env
+*.p8
+*.pem
+
+# Dataset files (gate G4)
+data/
+*.csv
+
+# Eval scratch runs (curated reports go in eval/results/)
+eval/runs/
+
+# Python / tooling
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+.DS_Store

@@ -1,0 +1,58 @@
+# Primary dataset: TPC-H scale factor 1, shared into every Snowflake account.
+# Referenced in place — nothing is copied into this repo (gate G4).
+name: tpch
+display_name: TPC-H sample (SF1) — orders, customers, suppliers, parts
+description: >
+  Synthetic wholesale-supplier benchmark: customers place orders made of line
+  items; parts are sourced from suppliers; customers and suppliers belong to
+  nations and regions. Order dates span 1992-01-01 to 1998-08-02.
+source:
+  provider: Snowflake sample data (TPC-H benchmark)
+  url: https://docs.snowflake.com/en/user-guide/sample-data
+  licence: No open licence stated. Used inside the Snowflake account only; not redistributed.
+
+snowflake:
+  database: SNOWFLAKE_SAMPLE_DATA
+  schema: TPCH_SF1
+
+# Allowlist: the SQL guard rejects any table not listed here.
+tables:
+  - name: CUSTOMER
+    description: One row per customer. C_MKTSEGMENT is the market segment.
+  - name: ORDERS
+    description: One row per order. O_ORDERDATE, O_TOTALPRICE, O_ORDERSTATUS (F/O/P).
+  - name: LINEITEM
+    description: One row per order line. Revenue lives here, not in ORDERS.
+  - name: PART
+    description: Product catalogue. P_TYPE, P_BRAND, P_RETAILPRICE.
+  - name: PARTSUPP
+    description: Which supplier offers which part, with available qty and supply cost.
+  - name: SUPPLIER
+    description: One row per supplier, with account balance and nation.
+  - name: NATION
+    description: 25 nations, each in one region.
+  - name: REGION
+    description: 5 regions.
+
+# Join paths given to the model and used to sanity-check generated joins.
+relationships:
+  - ORDERS.O_CUSTKEY = CUSTOMER.C_CUSTKEY
+  - LINEITEM.L_ORDERKEY = ORDERS.O_ORDERKEY
+  - LINEITEM.L_PARTKEY = PART.P_PARTKEY
+  - LINEITEM.L_SUPPKEY = SUPPLIER.S_SUPPKEY
+  - PARTSUPP.PS_PARTKEY = PART.P_PARTKEY
+  - PARTSUPP.PS_SUPPKEY = SUPPLIER.S_SUPPKEY
+  - CUSTOMER.C_NATIONKEY = NATION.N_NATIONKEY
+  - SUPPLIER.S_NATIONKEY = NATION.N_NATIONKEY
+  - NATION.N_REGIONKEY = REGION.R_REGIONKEY
+
+# Business definitions. When a question uses one of these terms, the
+# explanation must state which definition was applied (M4).
+glossary:
+  revenue: SUM(L_EXTENDEDPRICE * (1 - L_DISCOUNT)) from LINEITEM
+  order value: O_TOTALPRICE from ORDERS
+  late shipment: L_RECEIPTDATE > L_COMMITDATE
+
+guardrails:
+  max_rows: 200
+  query_timeout_s: 60
