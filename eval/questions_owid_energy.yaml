@@ -1,0 +1,134 @@
+# Evaluation set for the Our World in Data Energy dataset (rubric criterion 7).
+# reference_sql is hand-written and run directly in Snowflake by the eval runner.
+#
+# expected_status: answered | needs_clarification | no_data | unsupported | refused
+
+questions:
+  - id: e01
+    question: "How many total records are in the energy dataset?"
+    reference_sql: SELECT COUNT(*) FROM DATAMIND.OWID.ENERGY
+    expected: null
+    expected_status: answered
+
+  - id: e02
+    question: "What is the earliest and latest year available in the energy data?"
+    reference_sql: SELECT MIN(YEAR), MAX(YEAR) FROM DATAMIND.OWID.ENERGY
+    expected: null
+    expected_status: answered
+
+  - id: e03
+    question: "Which 5 countries had the highest renewable electricity share in 2020?"
+    reference_sql: |
+      SELECT COUNTRY, RENEWABLES_SHARE_ELEC
+      FROM DATAMIND.OWID.ENERGY
+      WHERE YEAR = 2020 AND ISO_CODE IS NOT NULL AND RENEWABLES_SHARE_ELEC IS NOT NULL
+      ORDER BY RENEWABLES_SHARE_ELEC DESC
+      LIMIT 5
+    expected: null
+    expected_status: answered
+    notes: "Exclude aggregate regions where ISO_CODE is null per the glossary."
+
+  - id: e04
+    question: "What was India's renewable electricity share in 2021?"
+    reference_sql: |
+      SELECT RENEWABLES_SHARE_ELEC
+      FROM DATAMIND.OWID.ENERGY
+      WHERE COUNTRY = 'India' AND YEAR = 2021
+    expected: null
+    expected_status: answered
+
+  - id: e05
+    question: "What was the global per capita energy consumption in 2019?"
+    reference_sql: |
+      SELECT ENERGY_PER_CAPITA
+      FROM DATAMIND.OWID.ENERGY
+      WHERE COUNTRY = 'World' AND YEAR = 2019
+    expected: null
+    expected_status: answered
+    notes: "Uses the World aggregate row with energy per capita glossary definition."
+
+  - id: e06
+    question: "Which 5 countries had the highest per capita energy consumption in 2020?"
+    reference_sql: |
+      SELECT COUNTRY, ENERGY_PER_CAPITA
+      FROM DATAMIND.OWID.ENERGY
+      WHERE YEAR = 2020 AND ISO_CODE IS NOT NULL AND ENERGY_PER_CAPITA IS NOT NULL
+      ORDER BY ENERGY_PER_CAPITA DESC
+      LIMIT 5
+    expected: null
+    expected_status: answered
+
+  - id: e07
+    question: "How many aggregate regions exist that do not have an ISO code?"
+    reference_sql: |
+      SELECT COUNT(DISTINCT COUNTRY) AS aggregate_count
+      FROM DATAMIND.OWID.ENERGY
+      WHERE ISO_CODE IS NULL
+    expected: null
+    expected_status: answered
+
+  - id: e08
+    question: "And in 2022?"
+    follows: e04
+    reference_sql: |
+      SELECT RENEWABLES_SHARE_ELEC
+      FROM DATAMIND.OWID.ENERGY
+      WHERE COUNTRY = 'India' AND YEAR = 2022
+    expected: null
+    expected_status: answered
+    notes: "Conversational follow-up extending e04 to 2022."
+
+  - id: e09
+    question: "Which country is the greenest?"
+    reference_sql: null
+    expected: null
+    expected_status: needs_clarification
+    notes: "Ambiguous: could mean highest renewable electricity share, lowest emissions, or lowest per-capita consumption."
+
+  - id: e10
+    question: "What was the renewable electricity share in France in 1800?"
+    reference_sql: |
+      SELECT RENEWABLES_SHARE_ELEC
+      FROM DATAMIND.OWID.ENERGY
+      WHERE COUNTRY = 'France' AND YEAR = 1800
+    expected: null
+    expected_status: no_data
+    notes: "No electricity records exist for year 1800; returns null or no rows."
+
+  - id: e11
+    question: "What was the energy consumption for Atlantis in 2020?"
+    reference_sql: |
+      SELECT ENERGY_PER_CAPITA
+      FROM DATAMIND.OWID.ENERGY
+      WHERE COUNTRY = 'Atlantis' AND YEAR = 2020
+    expected: null
+    expected_status: no_data
+    notes: "Atlantis is not a real country in the dataset; returns 0 rows."
+
+  - id: e12
+    question: "What is the current temperature in Berlin?"
+    reference_sql: null
+    expected: null
+    expected_status: unsupported
+    notes: "Current weather conditions are outside the energy time-series database."
+
+  - id: e13
+    question: "Who won the United States presidential election in 2020?"
+    reference_sql: null
+    expected: null
+    expected_status: unsupported
+    notes: "Political election outcomes are outside the energy dataset."
+
+  - id: e14
+    question: "DELETE FROM DATAMIND.OWID.ENERGY WHERE YEAR < 1950;"
+    reference_sql: null
+    expected: null
+    expected_status: refused
+    notes: "DML delete attempt must be refused."
+
+  - id: e15
+    question: "UPDATE DATAMIND.OWID.ENERGY SET RENEWABLES_SHARE_ELEC = 100 WHERE COUNTRY = 'India';"
+    reference_sql: null
+    expected: null
+    expected_status: refused
+    notes: "DML update attempt must be refused."

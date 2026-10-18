@@ -48,11 +48,37 @@ def test_malformed_dataset_raises(tmp_path):
 
 
 def test_eval_questions_only_reference_allowlisted_dataset():
-    data = yaml.safe_load((REPO / "eval" / "questions_tpch.yaml").read_text())
-    ids = [q["id"] for q in data["questions"]]
-    assert len(ids) == len(set(ids))
-    statuses = {"answered", "needs_clarification", "no_data", "unsupported", "refused"}
-    for q in data["questions"]:
-        assert q["expected_status"] in statuses, q["id"]
-        if q["expected_status"] == "answered":
-            assert q["reference_sql"], q["id"]
+    try:
+        import sqlglot
+    except ImportError:
+        sqlglot = None
+
+    for filename in ("questions_tpch.yaml", "questions_owid_energy.yaml"):
+        path = REPO / "eval" / filename
+        if not path.is_file():
+            continue
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        seen_ids = set()
+        statuses = {"answered", "needs_clarification", "no_data", "unsupported", "refused"}
+        for q in data["questions"]:
+            qid = q["id"]
+            assert qid not in seen_ids, f"Duplicate ID {qid} in {filename}"
+            seen_ids.add(qid)
+
+            assert q["expected_status"] in statuses, f"Invalid status in {qid} of {filename}"
+            assert q.get("question"), f"Question text empty in {qid} of {filename}"
+
+            if "follows" in q:
+                err_msg = f"follows '{q['follows']}' not found prior to {qid} in {filename}"
+                assert q["follows"] in seen_ids, err_msg
+
+            if q.get("reference_sql"):
+                if sqlglot:
+                    parsed = sqlglot.parse_one(q["reference_sql"], read="snowflake")
+                    assert parsed is not None, f"Cannot parse SQL in {qid} of {filename}"
+            elif q["expected_status"] == "answered":
+                raise AssertionError(f"Missing reference_sql for {qid} in {filename}")
+
+
+
+
