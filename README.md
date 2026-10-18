@@ -3,7 +3,8 @@
 ## Working backend and team setup
 
 The implemented FastAPI backend lives in [`datamind-backend/`](datamind-backend/).
-It uses local **Gemma 3 12B**, Snowflake **TPC-H SF1**, and real **UCI Wine Quality**.
+It supports hosted **Gemma 4 via Google AI Studio** (configured locally) and a local Gemma fallback, real **World Bank World Development Indicators** loaded into
+Snowflake, and Snowflake's **TPC-H SF1** sample data.
 It supports aggregates, two-cohort comparisons, subset percentages and pooled-average
 analysis with SQL, query IDs and calculation evidence.
 
@@ -12,10 +13,9 @@ analysis with SQL, query IDs and calculation evidence.
 - [Connect a teammate's laptop to Snowflake](datamind-backend/TEAM_ACCESS.md)
 - [Measured results and remaining live-verification limits](datamind-backend/VALIDATION.md)
 
-The backend passes **18/18** cases in the live evaluation (real Gemma 3 12B plus real
-Snowflake, checked against independent oracles), along with 85 automated tests.
-The cases are developer-authored, not an external blind benchmark. Details and
-Snowflake query IDs are in the validation record.
+The backend has **96 passing automated tests**. Hosted Gemma has passed live single-value
+and comparison checks against Snowflake. Full hosted evaluation is still pending;
+see the validation record for earlier local-model results.
 
 > **Problem statement (ZeroDay OSS Hacktoberfest 2026, PS1).** Organizations hold large
 > amounts of data, but getting answers from it usually takes SQL skills or hours of manual
@@ -28,7 +28,7 @@ Snowflake query IDs are in the validation record.
 ## DataMind — our solution
 
 Ask a question in plain language; get an answer **computed by SQL in Snowflake**,
-explained by **Gemma 3 12B** (local, via Ollama), with the executed query, the Snowflake query ID and the
+planned by **Gemma**, with the executed query, the Snowflake query ID and the
 result rows shown beside it. If the question is ambiguous, unanswerable from the
 data, or unsafe, DataMind says so instead of guessing.
 
@@ -41,19 +41,19 @@ Built for ZeroDay OSS Hacktoberfest 2026 — PS1 "DataMind: Talk to Your Data".
 ```mermaid
 flowchart TD
     subgraph Client["Client Tier"]
-        UI["Modern Web UI / Streamlit App<br/>(Text, Audio Voice, Chart Images)"]
+        UI["Web UI<br/>(Text questions)"]
     end
 
     subgraph Backend["FastAPI Backend Tier"]
         API["REST API Router (/questions)"]
-        P["Planner & Gemma 3 12B<br/>(Classify, Metrics & Dimensions)"]
+        P["Planner & Hosted Gemma 4<br/>(Classify, Metrics & Dimensions)"]
         VAL["Plan Validator<br/>(Schema Allowlist, Scope Verification)"]
         COMP["Deterministic SQL Compiler<br/>(Parameterized SQL)"]
         STORE[("SQLite Run Store<br/>Audited Execution History")]
     end
 
     subgraph Cloud["Snowflake Warehouse Tier"]
-        SNOW[("Snowflake Data Cloud<br/>TPC-H / UCI Wine Quality / World Bank<br/>(Read-Only JWT, Query Tagging)")]
+        SNOW[("Snowflake Data Cloud<br/>TPC-H / World Bank<br/>(Read-Only JWT, Query Tagging)")]
     end
 
     UI -->|"Natural Question"| API
@@ -92,20 +92,22 @@ works; no paid services are required. A teammate's laptop is set up with
 
 ## Datasets and licences
 
+- **World Bank World Development Indicators** (CC BY 4.0): 18 real indicators (GDP, population,
+  life expectancy, inflation, internet use, CO₂ and more) for 217 countries, 1990–2024, loaded
+  into Snowflake from the World Bank API. Source, preparation and reload steps:
+  [WORLDBANK_DATA.md](datamind-backend/WORLDBANK_DATA.md).
 - **TPC-H SF1** from Snowflake's shared sample database, queried in place, not redistributed.
-- **UCI Wine Quality** (CC BY 4.0), 6,497 observations, loaded into Snowflake with a pinned
-  source hash. Citation, licence and preparation: [UCI_DATA.md](datamind-backend/UCI_DATA.md).
 
 No data files are committed.
 
 ## Testing results
 
-- **Live evaluation: 18/18** (6 TPC-H, 12 UCI) with Gemma 3 12B and Snowflake, checked
-  against independent oracles: static SQL for TPC-H, Python arithmetic on the original
-  source files for UCI. The cases are developer-authored, not an external blind benchmark.
-- **Data-change proof:** a disclosed temporary edit to a working copy moved a live count
-  1,277 → 1,278 → 1,277, each with its own Snowflake query ID.
-- **85 automated tests**, Ruff and mypy pass.
+- **96 automated tests** pass; Ruff passes.
+- **Hosted Gemma smoke checks:** India's 2022 life expectancy and 2015–2023 internet-use
+  comparison returned correct values with Snowflake query IDs.
+- **Plan cache:** a live repeat dropped from 16.11s to 1.43s, with different Snowflake
+  query IDs. Only validated plans are cached; SQL executes on every request.
+- Full hosted evaluation and the World Bank data-change proof remain pending.
 
 Full record, including the precision bug the first live run caught:
 [VALIDATION.md](datamind-backend/VALIDATION.md).
@@ -126,7 +128,7 @@ Full record, including the precision bug the first live run caught:
 - One question at a time on a local development server (127.0.0.1); not for public exposure.
 - Each answer takes two model calls; on the tested Mac that can be tens of seconds.
 - No conversation memory: follow-up questions must be self-contained.
-- No frontend is included in this repository yet; the API contract is in
+- The frontend is served at `http://127.0.0.1:8000/`; the API contract is in
   [UI_HANDOFF.md](datamind-backend/UI_HANDOFF.md).
 
 ## Reproduce the demo

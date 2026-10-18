@@ -1214,169 +1214,7 @@
       width: calc(11.5 * var(--u));
       height: auto;
       display: block;
-    /* Results & Snowflake Evidence Display */
-    .results-container {
-      margin-top: calc(24 * var(--u));
-      width: 100%;
-      max-width: calc(880 * var(--u));
-      margin-left: auto;
-      margin-right: auto;
-      display: flex;
-      flex-direction: column;
-      gap: calc(16 * var(--u));
-    }
-
-    .evidence-card {
-      background: rgba(18, 24, 38, 0.85);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: calc(16 * var(--u));
-      padding: calc(22 * var(--u));
-      color: #e2e8f0;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
-      animation: fadeInSlide .35s ease-out;
-    }
-
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .evidence-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: calc(14 * var(--u));
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .evidence-badge {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .badge-success {
-      background: rgba(16, 185, 129, 0.18);
-      color: #34d399;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .badge-dev {
-      background: rgba(245, 158, 11, 0.18);
-      color: #fbbf24;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
-
-    .query-tag-pill {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 11px;
-      color: #93c5fd;
-      background: rgba(59, 130, 246, 0.15);
-      padding: 3px 8px;
-      border-radius: 4px;
-      border: 1px solid rgba(59, 130, 246, 0.25);
-    }
-
-    .evidence-answer {
-      font-size: calc(16 * var(--u));
-      font-weight: 500;
-      color: #f8fafc;
-      line-height: 1.5;
-      margin-bottom: calc(12 * var(--u));
-    }
-
-    .evidence-explanation {
-      font-size: calc(13.5 * var(--u));
-      color: #94a3b8;
-      line-height: 1.6;
-      margin-bottom: calc(16 * var(--u));
-      background: rgba(255, 255, 255, 0.03);
-      padding: calc(12 * var(--u));
-      border-radius: calc(8 * var(--u));
-      border-left: 3px solid #3b82f6;
-    }
-
-    .sql-box-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      color: #94a3b8;
-      margin-bottom: 6px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .sql-code-block {
-      background: #090d16;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: calc(8 * var(--u));
-      padding: calc(12 * var(--u));
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: calc(12.5 * var(--u));
-      color: #38bdf8;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-all;
-      margin-bottom: calc(16 * var(--u));
-    }
-
-    .evidence-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: calc(12.5 * var(--u));
-      margin-top: calc(8 * var(--u));
-      border-radius: calc(8 * var(--u));
-      overflow: hidden;
-    }
-
-    .evidence-table th {
-      background: rgba(255, 255, 255, 0.06);
-      color: #cbd5e1;
-      text-align: left;
-      padding: 8px 12px;
-      font-weight: 600;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .evidence-table td {
-      padding: 8px 12px;
-      color: #f1f5f9;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .evidence-table tr:hover td {
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .loading-pulse {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      color: #94a3b8;
-      font-size: 14px;
-    }
-
-    .loading-spinner {
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(244, 157, 112, 0.2);
-      border-top-color: #F49D70;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+      fill: currentColor;
     }
 
 
@@ -1915,6 +1753,96 @@
         transform: none !important;
         filter: none !important;
       }
+    }
+
+    /* =========================================
+       ANSWER & EVIDENCE PANEL
+       ========================================= */
+    body.has-result .frame { overflow-y: auto; justify-content: flex-start; }
+    body.has-result main.hero { flex: none; justify-content: flex-start; gap: 20px; padding: 24px 0 48px; }
+    body.has-result .hero-badge,
+    body.has-result .user-greeting-sub { display: none; }
+
+    .result {
+      width: min(100%, calc(748 * var(--u)));
+      min-width: min(100%, 320px);
+      position: relative;
+      z-index: 2;
+      border-radius: 20px;
+      background: rgba(22, 23, 26, .94);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .10);
+      padding: 20px 22px 22px;
+      color: #fff;
+      font-size: 15px;
+      line-height: 1.55;
+      text-align: left;
+    }
+    .result[hidden] { display: none; }
+    .result-question { color: rgba(255, 255, 255, .66); font-size: 14px; margin: 0 0 12px; }
+    .result-status {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, .10);
+      color: rgba(255, 255, 255, .86);
+    }
+    .result-status.is-answered { background: rgba(244, 157, 112, .16); color: #F7B48F; }
+    .result-status.is-error { background: rgba(255, 99, 99, .16); color: #FF9B9B; }
+    .result-headline { font-size: 22px; font-weight: 600; line-height: 1.3; margin: 0 0 6px; letter-spacing: -0.01em; }
+    .result-sub { color: rgba(255, 255, 255, .72); margin: 0 0 14px; }
+    .result-section { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: rgba(255, 255, 255, .62); margin: 16px 0 8px; }
+    .result-points { margin: 0 0 14px; padding-left: 20px; display: grid; gap: 6px; }
+    .result-points li { color: rgba(255, 255, 255, .90); }
+    .result-points li::marker { color: #F49D70; }
+    .result-scope { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; }
+    .result-scope li { font-size: 13px; padding: 4px 10px; border-radius: 8px; background: rgba(255, 255, 255, .07); color: rgba(255, 255, 255, .84); }
+    .result-table-wrap { overflow-x: auto; margin: 4px 0 14px; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08); }
+    .result table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+    .result th, .result td { padding: 8px 12px; text-align: left; white-space: nowrap; border-bottom: 1px solid rgba(255, 255, 255, .06); }
+    .result th { color: rgba(255, 255, 255, .66); font-weight: 500; font-size: 13px; }
+    .result td.num, .result th.num { text-align: right; }
+    .result details { margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, .08); padding-top: 10px; }
+    .result summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; color: rgba(255, 255, 255, .86); font-weight: 500; }
+    .result summary:focus-visible { outline: 2px solid #F49D70; outline-offset: 2px; border-radius: 6px; }
+    .result pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+      background: rgba(0, 0, 0, .35);
+      color: #E8E8E8;
+      padding: 12px;
+      border-radius: 10px;
+      margin: 8px 0;
+    }
+    .result .meta { font-size: 13px; color: rgba(255, 255, 255, .66); margin: 4px 0; }
+    .result .meta code { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: #F7B48F; user-select: all; }
+    .result ul.notes { margin: 6px 0 0; padding-left: 18px; color: rgba(255, 255, 255, .72); font-size: 14px; }
+    .result-loading { display: flex; align-items: center; gap: 12px; color: rgba(255, 255, 255, .80); }
+    .result-loading::before {
+      content: "";
+      width: 16px; height: 16px; flex: none;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, .25);
+      border-top-color: #F49D70;
+      animation: result-spin .9s linear infinite;
+    }
+    @keyframes result-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .result-loading::before { animation: none; } }
+    .send[aria-disabled="true"] { opacity: .5; cursor: progress; }
+    /* Closed menus are transparent; also hide them from keyboard focus and screen readers. */
+    .dropdown-floating:not(.open) { visibility: hidden; }
+    #modelDropdown .dropdown-item.is-selected { background: rgba(244, 157, 112, .12); }
+    #modelDropdown .dropdown-item-title { font-weight: 500; color: #fff; text-align: left; }
+    #plusDropdown .dropdown-item { text-align: left; white-space: normal; min-height: 44px; }
+    @media (max-width: 599px) {
+      .result { padding: 16px; font-size: 14px; }
+      .result-headline { font-size: 19px; }
+    }
   </style>
 </head>
 <body>
@@ -2056,7 +1984,7 @@
                   type="button"
                   class="btn-plus"
                   id="btnPlus"
-                  aria-label="More options"
+                  aria-label="Example questions"
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
@@ -2065,34 +1993,7 @@
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
                 </button>
-                <div class="dropdown-floating" id="plusDropdown">
-                  <button type="button" class="dropdown-item" data-prompt="Select enterprise dataset for Q3 analytics...">
-                    <div class="dropdown-item-content">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                      <span>Select Dataset</span>
-                    </div>
-                    <span class="dropdown-shortcut">⌘D</span>
-                  </button>
-                  <button type="button" class="dropdown-item" data-prompt="Explore revenue, costs, and consumption metrics...">
-                    <div class="dropdown-item-content">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                      <span>Explore Data</span>
-                    </div>
-                  </button>
-                  <button type="button" class="dropdown-item" data-prompt="What are the highest cost anomalies detected this month?">
-                    <div class="dropdown-item-content">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                      <span>Suggested Questions</span>
-                    </div>
-                  </button>
-                  <div class="dropdown-divider"></div>
-                  <button type="button" class="dropdown-item" data-prompt="Run Snowflake SQL analytical query on aggregated sales data...">
-                    <div class="dropdown-item-content">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                      <span>Snowflake SQL Engine</span>
-                    </div>
-                  </button>
-                </div>
+                <div class="dropdown-floating" id="plusDropdown" role="menu" aria-label="Example questions"></div>
               </div>
 
               <!-- Left Chips -->
@@ -2101,7 +2002,7 @@
                 <button
                   type="button"
                   class="chip"
-                  data-prompt="Select enterprise dataset for Q3 analytics..."
+                  data-prompt=""
                 >
                   <svg
                     class="chip-icon"
@@ -2113,14 +2014,14 @@
                       d="M1.5 0.5C0.947715 0.5 0.5 0.947715 0.5 1.5V8.5C0.5 9.05228 0.947715 9.5 1.5 9.5H13.5C14.0523 9.5 14.5 9.05228 14.5 8.5V1.5C14.5 0.947715 14.0523 0.5 13.5 0.5H1.5ZM5 10.5C4.72386 10.5 4.5 10.7239 4.5 11C4.5 11.2761 4.72386 11.5 5 11.5H10C10.2761 11.5 10.5 11.2761 10.5 11C10.5 10.7239 10.2761 10.5 10 10.5H5Z"
                     />
                   </svg>
-                  <span class="chip-label">Select Dataset</span>
+                  <span class="chip-label">Example</span>
                 </button>
 
                 <!-- Chip 2: Explore Data -->
                 <button
                   type="button"
                   class="chip"
-                  data-prompt="Explore revenue, costs, and consumption metrics..."
+                  data-prompt=""
                 >
                   <svg
                     class="chip-icon"
@@ -2132,14 +2033,14 @@
                       d="M3 0C1.34315 0 0 1.34315 0 3C0 4.65685 1.34315 6 3 6H6V0H3ZM6 0H9C10.6569 0 12 1.34315 12 3C12 4.65685 10.6569 6 9 6H6V0ZM6 6H3C1.34315 6 0 7.34315 0 9C0 10.6569 1.34315 12 3 12C4.65685 12 6 10.6569 6 9V6ZM6 6H9C10.6569 6 12 7.34315 12 9C12 10.6569 10.6569 12 9 12C7.34315 12 6 10.6569 6 9V6ZM6 12H3C1.34315 12 0 12.8954 0 14H6V12Z"
                     />
                   </svg>
-                  <span class="chip-label">Explore Data</span>
+                  <span class="chip-label">Example</span>
                 </button>
 
                 <!-- Chip 3: Suggested Questions -->
                 <button
                   type="button"
                   class="chip"
-                  data-prompt="What are the highest cost anomalies detected this month?"
+                  data-prompt=""
                 >
                   <svg
                     class="chip-icon"
@@ -2151,12 +2052,12 @@
                       d="M6 0C2.68629 0 0 2.68629 0 6C0 9.31371 2.68629 12 6 12C7.10457 12 8 11.1046 8 10C8 9.44772 7.77614 8.94772 7.41421 8.58579C7.05228 8.22386 6.82843 7.72386 6.82843 7.17157C6.82843 6.067 7.72386 5.17157 8.82843 5.17157H10C11.1046 5.17157 12 4.27614 12 3.17157C12 1.41996 9.31371 0 6 0ZM2.5 4.5C2.5 3.94772 2.94772 3.5 3.5 3.5C4.05228 3.5 4.5 3.94772 4.5 4.5C4.5 5.05228 4.05228 5.5 3.5 5.5C2.94772 5.5 2.5 5.05228 2.5 4.5ZM5.5 2.5C5.5 1.94772 5.94772 1.5 6.5 1.5C7.05228 1.5 7.5 1.94772 7.5 2.5C7.5 3.05228 7.05228 3.5 6.5 3.5C5.94772 3.5 5.5 3.05228 5.5 2.5ZM8.5 4.5C8.5 3.94772 8.94772 3.5 9.5 3.5C10.0523 3.5 10.5 3.94772 10.5 4.5C10.5 5.05228 10.0523 5.5 9.5 5.5C8.94772 5.5 8.5 5.05228 8.5 4.5Z"
                     />
                   </svg>
-                  <span class="chip-label">Suggested Questions</span>
+                  <span class="chip-label">Example</span>
                 </button>
               </div>
             </div>
 
-            <!-- Right Controls: Model, Send -->
+            <!-- Right Controls: Dataset, Send -->
             <div class="tools-right">
               <!-- Model Dropdown -->
               <div class="dropdown-menu-wrap" id="modelMenuWrap">
@@ -2164,6 +2065,7 @@
                   type="button"
                   class="model"
                   id="btnModel"
+                  aria-label="Choose dataset"
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
@@ -2180,26 +2082,12 @@
                     <rect x="5.75" y="5" width="2.5" height="7.5" rx="1" fill="currentColor"></rect>
                     <rect x="10" y="2" width="2.5" height="10.5" rx="1" fill="currentColor"></rect>
                   </svg>
-                  <span id="modelNameText">Gemma AI</span>
+                  <span id="modelNameText">Loading datasets…</span>
                   <svg class="chevron" viewBox="0 0 7 4" fill="none">
                     <path d="M1 1L3.5 3L6 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </button>
-                <div class="dropdown-floating" id="modelDropdown" style="right: 0; left: auto; min-width: calc(210 * var(--u));">
-                  <button type="button" class="dropdown-item" data-model="Gemma AI">
-                    <div>
-                      <div style="font-weight: 500; color: #fff;">Gemma AI</div>
-                      <div class="dropdown-item-desc">Most capable analytical model</div>
-                    </div>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F49D70" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  </button>
-                  <button type="button" class="dropdown-item" data-model="Gemma AI Fast">
-                    <div>
-                      <div style="font-weight: 500; color: #fff;">Gemma AI Fast</div>
-                      <div class="dropdown-item-desc">Faster responses for quick queries</div>
-                    </div>
-                  </button>
-                </div>
+                <div class="dropdown-floating" id="modelDropdown" role="menu" aria-label="Datasets" style="right: 0; left: auto; min-width: calc(260 * var(--u));"></div>
               </div>
 
               <!-- Send Button -->
@@ -2217,8 +2105,8 @@
           </div>
         </div>
 
-        <!-- Result / Evidence Display Container -->
-        <div id="resultsContainer" class="results-container" style="display: none;"></div>
+        <!-- Answer and evidence (filled by the DataMind API client below) -->
+        <section class="result" id="resultPanel" aria-live="polite" aria-busy="false" hidden></section>
       </main>
 
 
@@ -2485,6 +2373,7 @@
           }, 950);
         }
 
+        document.dispatchEvent(new CustomEvent('datamind:ask', { detail: val }));
         textarea.value = '';
         syncInput();
       }
@@ -2505,16 +2394,16 @@
           }
         });
 
-        plusDropdown.querySelectorAll('.dropdown-item').forEach(function (item) {
-          item.addEventListener('click', function () {
-            const prompt = item.getAttribute('data-prompt');
-            if (prompt && textarea) {
-              textarea.value = prompt;
-              syncInput();
-              textarea.focus();
-            }
-            closeAllDropdowns();
-          });
+        plusDropdown.addEventListener('click', function (e) {
+          const item = e.target.closest('.dropdown-item');
+          if (!item) return;
+          const prompt = item.getAttribute('data-prompt');
+          if (prompt && textarea) {
+            textarea.value = prompt;
+            syncInput();
+            textarea.focus();
+          }
+          closeAllDropdowns();
         });
       }
 
@@ -2530,14 +2419,11 @@
           }
         });
 
-        modelDropdown.querySelectorAll('.dropdown-item').forEach(function (item) {
-          item.addEventListener('click', function () {
-            const model = item.getAttribute('data-model');
-            if (model && modelNameText) {
-              modelNameText.textContent = model;
-            }
-            closeAllDropdowns();
-          });
+        modelDropdown.addEventListener('click', function (e) {
+          const item = e.target.closest('.dropdown-item');
+          if (!item) return;
+          document.dispatchEvent(new CustomEvent('datamind:dataset', { detail: item.getAttribute('data-dataset') }));
+          closeAllDropdowns();
         });
       }
 
@@ -2553,172 +2439,11 @@
         });
       });
 
-      // Question Submission & Evidence Renderer
-      const btnSend = document.getElementById('btnSend');
-      const resultsContainer = document.getElementById('resultsContainer');
-      const BACKEND_URL = 'http://127.0.0.1:8000';
-
-      const SAMPLE_ORACLES = {
-        "how many orders": {
-          status: "answered",
-          answer: "There are 1,500,000 orders in the TPC-H SF1 dataset.",
-          explanation: "Aggregated order_count across all rows in SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.ORDERS.",
-          query_id: "01b8e4f1-0001-c892-0000-0001a2b3c4d5",
-          sql: "SELECT COUNT(*) AS order_count FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.ORDERS",
-          columns: ["ORDER_COUNT"],
-          rows: [[1500000]]
-        },
-        "wine": {
-          status: "answered",
-          answer: "There are 1,277 wine samples with a sensory quality score of at least 7.",
-          explanation: "Filtered quality >= 7 on DATAMIND_DEMO.UCI.WINE_QUALITY_WORKING_V1 (19.7% of all 6,497 samples).",
-          query_id: "01b8e4f1-0002-c892-0000-0001a2b3c4d6",
-          sql: "SELECT COUNT(*) AS sample_count FROM DATAMIND_DEMO.UCI.WINE_QUALITY_WORKING_V1 WHERE QUALITY >= 7",
-          columns: ["SAMPLE_COUNT"],
-          rows: [[1277]]
-        },
-        "default": {
-          status: "answered",
-          answer: "Analysis completed successfully.",
-          explanation: "Computed live aggregate from dataset schema.",
-          query_id: "01b8e4f1-0003-c892-0000-0001a2b3c4d7",
-          sql: "SELECT COUNT(*) AS total_count FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.ORDERS",
-          columns: ["TOTAL_COUNT"],
-          rows: [[1500000]]
-        }
-      };
-
-      async function submitUserQuestion() {
-        if (!textarea) return;
-        const query = textarea.value.trim();
-        if (!query) return;
-
-        resultsContainer.style.display = 'flex';
-        resultsContainer.innerHTML = `
-          <div class="evidence-card">
-            <div class="loading-pulse">
-              <div class="loading-spinner"></div>
-              <span>Synthesizing plan with Gemma & querying Snowflake...</span>
-            </div>
-          </div>
-        `;
-
-        const datasetId = query.toLowerCase().includes('wine') ? 'uci_wine_quality' : 'tpch_orders';
-
-        try {
-          const resp = await fetch(`${BACKEND_URL}/questions`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ dataset_id: datasetId, question: query })
-          });
-
-          if (resp.ok) {
-            const data = await resp.json();
-            renderEvidenceCard(data, false);
-            return;
-          }
-
-          const errJson = await resp.json().catch(() => ({}));
-          // If key_not_loaded (--dev mode) or error, render graceful dev evidence preview
-          renderDevFallback(query, errJson.error?.message || 'Snowflake credentials not unlocked.');
-        } catch (e) {
-          // Backend offline or dev mode fallback
-          renderDevFallback(query, 'Backend offline or running in local dev simulation mode.');
-        }
-      }
-
-      function renderEvidenceCard(data, isDev) {
-        const statusBadge = isDev 
-          ? `<span class="evidence-badge badge-dev">⚡ DEV SPEC PREVIEW</span>`
-          : `<span class="evidence-badge badge-success">✅ SNOWFLAKE VERIFIED</span>`;
-
-        const queryIdBadge = data.evidence && data.evidence[0]?.query_id
-          ? `<span class="query-tag-pill">ID: ${data.evidence[0].query_id}</span>`
-          : (data.query_id ? `<span class="query-tag-pill">ID: ${data.query_id}</span>` : '');
-
-        let sqlBlock = '';
-        let tableHtml = '';
-
-        if (data.evidence && data.evidence.length > 0) {
-          const ev = data.evidence[0];
-          sqlBlock = `
-            <div class="sql-box-header">
-              <span>Executed Parameterized SQL</span>
-              <button type="button" class="btn-copy-sql" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy', 2000)" style="cursor:pointer; background:none; border:none; color:#38bdf8; font-size:11px;">Copy</button>
-            </div>
-            <div class="sql-code-block">${escapeHtml(ev.sql || '')}</div>
-          `;
-
-          if (ev.columns && ev.rows && ev.rows.length > 0) {
-            tableHtml = `
-              <div class="sql-box-header"><span>Query Result Table</span></div>
-              <div style="overflow-x:auto;">
-                <table class="evidence-table">
-                  <thead>
-                    <tr>${ev.columns.map(c => `<th>${escapeHtml(String(c))}</th>`).join('')}</tr>
-                  </thead>
-                  <tbody>
-                    ${ev.rows.map(r => `<tr>${r.map(v => `<td>${escapeHtml(String(v))}</td>`).join('')}</tr>`).join('')}
-                  </tbody>
-                </table>
-              </div>
-            `;
-          }
-        }
-
-        resultsContainer.innerHTML = `
-          <div class="evidence-card">
-            <div class="evidence-header">
-              ${statusBadge}
-              ${queryIdBadge}
-            </div>
-            <div class="evidence-answer">${escapeHtml(data.answer || data.message || 'Analysis complete.')}</div>
-            ${data.explanation ? `<div class="evidence-explanation">${escapeHtml(data.explanation)}</div>` : ''}
-            ${sqlBlock}
-            ${tableHtml}
-          </div>
-        `;
-      }
-
-      function renderDevFallback(query, reason) {
-        const lower = query.toLowerCase();
-        let sample = SAMPLE_ORACLES['default'];
-        if (lower.includes('order')) sample = SAMPLE_ORACLES['how many orders'];
-        if (lower.includes('wine')) sample = SAMPLE_ORACLES['wine'];
-
-        const fallbackData = {
-          answer: sample.answer,
-          explanation: `${sample.explanation} (${reason})`,
-          evidence: [{
-            query_id: sample.query_id,
-            sql: sample.sql,
-            columns: sample.columns,
-            rows: sample.rows
-          }]
-        };
-        renderEvidenceCard(fallbackData, true);
-      }
-
-      function escapeHtml(str) {
-        return String(str)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;');
-      }
-
-      if (btnSend) {
-        btnSend.addEventListener('click', submitUserQuestion);
-      }
-
-      if (textarea) {
-        textarea.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            submitUserQuestion();
-          }
-        });
-      }
+      // Close dropdowns on outside click or Escape
+      document.addEventListener('click', closeAllDropdowns);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeAllDropdowns();
+      });
     })();
 
     // User Authentication & Personalization Engine
@@ -2969,5 +2694,424 @@
       </div>
     </div>
   </div>
+  <script>
+    // DataMind API client: datasets, questions, answers and evidence.
+    (function () {
+      // Same origin when served by the backend (http://127.0.0.1:8000/); local file falls back to it.
+      const API = location.protocol.startsWith('http') ? '' : 'http://127.0.0.1:8000';
+      const DEFAULT_DATASET = 'worldbank_wdi';
+      const EXAMPLES = {
+        worldbank_wdi: [
+          ['Top countries', 'What were the top 5 countries by GDP per capita in 2023?'],
+          ['Change over time', "How did the percentage of India's population using the internet change from 2015 to 2023?"],
+          ['Share', 'In 2023, what percentage of the total population of all countries lived in India?'],
+          ['Above average', 'In 2022, which regions had an average life expectancy above the average across all countries?'],
+        ],
+        tpch_orders: [
+          ['Count', 'How many orders were placed in 1995?'],
+          ['Change over time', 'From 1993 to 1994, how did the number of orders change in absolute and percentage terms?'],
+          ['Share', 'In 1996, what percentage of all orders came from customers in Germany?'],
+          ['Ranking', 'Which five customer nations have the highest total order value?'],
+        ],
+      };
+      const OPERATORS = { eq: '=', ne: '≠', gt: '>', gte: '≥', lt: '<', lte: '≤', in: 'in', between: 'between' };
+      const STATUS_TEXT = {
+        answered: 'Answer',
+        empty: 'No matching data',
+        needs_clarification: 'Clarification needed',
+        unsupported: 'Not answerable from this data',
+        error: 'Error',
+      };
+
+      const panel = document.getElementById('resultPanel');
+      const btnSend = document.getElementById('btnSend');
+      const pickerLabel = document.getElementById('modelNameText');
+      const pickerMenu = document.getElementById('modelDropdown');
+      const examplesMenu = document.getElementById('plusDropdown');
+      const chips = document.querySelectorAll('.chips .chip');
+      let datasets = [];
+      let current = null;
+      let busy = false;
+
+      function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined && text !== null) node.textContent = String(text);
+        return node;
+      }
+
+      function humanize(name) {
+        const metric = current && current.metrics[name];
+        if (metric) return metric.label;
+        const words = String(name).replace(/_code$/, '').replace(/_/g, ' ');
+        return words.charAt(0).toUpperCase() + words.slice(1);
+      }
+
+      function displayText(value) {
+        if (value === null || value === undefined) return '—';
+        const text = String(value);
+        if (text !== text.toUpperCase() || !/[A-Z]/.test(text) || /^[A-Z]{2,3}$/.test(text)) return text;
+        return text.toLowerCase().replace(/(^|[\s(\-\/])([a-z])/g, function (_, sep, ch) { return sep + ch.toUpperCase(); });
+      }
+
+      function isNumeric(value) {
+        return value !== null && value !== '' && !isNaN(Number(value));
+      }
+
+      function fmt(value) {
+        if (value === null || value === undefined) return '—';
+        if (!isNumeric(value)) return String(value);
+        const n = Number(value);
+        const abs = Math.abs(n);
+        if (abs >= 1e12) return (n / 1e12).toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' trillion';
+        if (abs >= 1e9) return (n / 1e9).toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' billion';
+        if (abs >= 1e6) return (n / 1e6).toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' million';
+        return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+
+      function describeFilters(filters) {
+        return (filters || []).map(function (f) {
+          return humanize(f.field) + ' ' + (OPERATORS[f.operator] || f.operator) + ' ' + f.values.join(f.operator === 'between' ? '–' : ', ');
+        });
+      }
+
+      function scopeList(filters, prefix) {
+        const items = describeFilters(filters);
+        if (!items.length) return null;
+        const list = el('ul', 'result-scope');
+        list.setAttribute('aria-label', prefix);
+        items.forEach(function (text) { list.appendChild(el('li', '', (prefix ? prefix + ': ' : '') + text)); });
+        return list;
+      }
+
+      function table(columns, rows, limit) {
+        const wrap = el('div', 'result-table-wrap');
+        const t = el('table');
+        const head = el('tr');
+        const numeric = columns.map(function (_, i) { return rows.some(function (r) { return isNumeric(r[i]); }); });
+        columns.forEach(function (c, i) { head.appendChild(el('th', numeric[i] ? 'num' : '', humanize(c))); });
+        const thead = el('thead'); thead.appendChild(head); t.appendChild(thead);
+        const body = el('tbody');
+        rows.slice(0, limit || 50).forEach(function (r) {
+          const tr = el('tr');
+          r.forEach(function (v, i) { tr.appendChild(el('td', numeric[i] ? 'num' : '', numeric[i] ? fmt(v) : displayText(v))); });
+          body.appendChild(tr);
+        });
+        t.appendChild(body);
+        wrap.appendChild(t);
+        return wrap;
+      }
+
+      function pct(value) {
+        return (Number(value) >= 0 ? '+' : '') + fmt(value) + '%';
+      }
+
+      function times(a, b) {
+        const ratio = Number(a) / Number(b);
+        if (!isFinite(ratio) || Number(b) <= 0 || Number(a) <= 0) return null;
+        if (ratio >= 1.5) return fmt(ratio) + '×';
+        if (ratio <= 0.67) return fmt(1 / ratio) + '× smaller';
+        return null;
+      }
+
+      function scopeText(filters) {
+        return (filters || []).map(function (f) { return f.values.map(displayText).join(f.operator === 'between' ? '–' : ', '); }).join(', ');
+      }
+
+      function key(f) { return f.field + ' ' + f.operator + ' ' + f.values.join(','); }
+
+      // Split two scopes into what they share and what differs, e.g. IND | 2023 vs 2015.
+      function splitScopes(target, reference) {
+        const refKeys = (reference || []).map(key);
+        const tgtKeys = (target || []).map(key);
+        return {
+          shared: (target || []).filter(function (f) { return refKeys.indexOf(key(f)) >= 0; }),
+          target: (target || []).filter(function (f) { return refKeys.indexOf(key(f)) < 0; }),
+          reference: (reference || []).filter(function (f) { return tgtKeys.indexOf(key(f)) < 0; }),
+        };
+      }
+
+      function plural(word) {
+        return /y$/.test(word) ? word.slice(0, -1) + 'ies' : word + 's';
+      }
+
+      // Every key point below is arithmetic on cells returned by Snowflake; nothing is invented.
+      function summarize(result) {
+        const evidence = result.evidence || [];
+        const last = evidence[evidence.length - 1];
+        const analysis = result.analysis;
+        const plan = result.plan || {};
+        const points = [];
+
+        if (analysis && last && last.kind === 'calculation') {
+          const row = last.rows[0] || [];
+          const label = humanize(analysis.metric);
+          if (analysis.kind === 'compare') {
+            const parts = splitScopes(analysis.target_filters, analysis.reference_filters);
+            const target = scopeText(parts.target) || 'target';
+            const base = scopeText(parts.reference) || 'baseline';
+            const shared = scopeText(parts.shared);
+            const up = Number(row[2]) >= 0;
+            points.push(label + ' ' + (up ? 'rose' : 'fell') + ' from ' + fmt(row[1]) + ' (' + base + ') to ' + fmt(row[0]) + ' (' + target + ').');
+            points.push('Absolute change: ' + (up ? '+' : '') + fmt(row[2]) + '.');
+            points.push(row[3] === null ? 'Percentage change is undefined because the baseline is zero.' : 'Relative change: ' + pct(row[3]) + ' against the baseline.');
+            const ratio = times(row[0], row[1]);
+            if (ratio) points.push(target + ' is ' + ratio + (ratio.indexOf('smaller') < 0 ? ' ' : ' than ') + base + '.');
+            return { title: label + ': ' + fmt(row[0]) + ' vs ' + fmt(row[1]), sub: (shared ? shared + ': ' : '') + target + ' compared with ' + base + '.', points: points };
+          }
+          if (analysis.kind === 'share') {
+            const share = Number(row[2]);
+            points.push(fmt(row[0]) + ' out of ' + fmt(row[1]) + ' (' + label + ').');
+            if (share > 0 && share < 50) points.push('Roughly 1 in ' + fmt(Math.round(100 / share)) + ' of the total.');
+            if (isNumeric(row[0]) && isNumeric(row[1])) points.push('The remaining ' + fmt(100 - share) + '% is ' + fmt(Number(row[1]) - Number(row[0])) + '.');
+            const part = splitScopes(analysis.target_filters, analysis.reference_filters);
+            const whole = describeFilters(analysis.reference_filters).join(', ');
+            return { title: fmt(row[2]) + '%', sub: 'Share of ' + label + ': ' + (scopeText(part.target) || 'subset') + ' out of the total' + (whole ? ' for ' + whole : '') + '.', points: points };
+          }
+          if (analysis.kind === 'above_average') {
+            const rows = last.rows.slice().sort(function (x, y) { return Number(y[3]) - Number(x[3]); });
+            const overall = rows.length ? rows[0][2] : null;
+            if (rows.length) {
+              points.push('Overall average: ' + fmt(overall) + '.');
+              points.push('Furthest above: ' + displayText(rows[0][0]) + ' at ' + fmt(rows[0][1]) + ' (+' + fmt(rows[0][3]) + ').');
+              if (rows.length > 1) {
+                const close = rows[rows.length - 1];
+                points.push('Closest to the average: ' + displayText(close[0]) + ' at ' + fmt(close[1]) + ' (+' + fmt(close[3]) + ').');
+              }
+            } else {
+              points.push('No group is above the overall average.');
+            }
+            const group = humanize((plan.dimensions && plan.dimensions[0]) || 'group').toLowerCase();
+            return { title: rows.length + ' ' + (rows.length === 1 ? group + ' is' : plural(group) + ' are') + ' above the overall average', sub: label + ', grouped by ' + group + '.', points: points };
+          }
+        }
+
+        if (!last || !last.rows || !last.rows.length) {
+          return { title: result.answer || 'No rows returned.', sub: null, points: points };
+        }
+        const columns = last.columns;
+        const scope = scopeText(plan.filters);
+        if (last.rows.length === 1 && columns.length === 1) {
+          return { title: fmt(last.rows[0][0]), sub: humanize(columns[0]) + (scope ? ' — ' + scope : '') + '.', points: points };
+        }
+        const dims = plan.dimensions || [];
+        const metrics = plan.metrics || [];
+        if (dims.length === 1 && metrics.length >= 1 && last.rows.length > 1) {
+          const di = columns.indexOf(dims[0]);
+          const mi = columns.indexOf(metrics[0]);
+          const rows = last.rows.filter(function (r) { return isNumeric(r[mi]); });
+          const label = humanize(metrics[0]);
+          const ranked = (plan.sort || []).some(function (x) { return x.field === metrics[0]; });
+          const sorted = rows.slice().sort(function (x, y) { return Number(y[mi]) - Number(x[mi]); });
+          if (sorted.length) {
+            const values = sorted.map(function (r) { return Number(r[mi]); });
+            const top = sorted[0];
+            const bottom = sorted[sorted.length - 1];
+            points.push('Highest: ' + displayText(top[di]) + ' with ' + fmt(top[mi]) + '.');
+            if (sorted.length > 1) {
+              const second = sorted[1];
+              const lead = times(top[mi], second[mi]);
+              points.push(displayText(top[di]) + ' is ' + (lead || fmt(Number(top[mi]) - Number(second[mi])) + ' ahead of') + (lead ? ' ' + displayText(second[di]) + ' (next).' : ' ' + displayText(second[di]) + ' (next).'));
+              points.push('Lowest shown: ' + displayText(bottom[di]) + ' with ' + fmt(bottom[mi]) + '.');
+            }
+            const metric = current && current.metrics[metrics[0]];
+            if (metric && metric.aggregation === 'sum' && sorted.length > 1) {
+              const total = values.reduce(function (a, b) { return a + b; }, 0);
+              points.push(displayText(top[di]) + ' accounts for ' + fmt(Number(top[mi]) * 100 / total) + '% of the ' + fmt(total) + ' total shown.');
+            } else if (sorted.length > 2) {
+              points.push('Simple average of the ' + sorted.length + ' shown: ' + fmt(values.reduce(function (a, b) { return a + b; }, 0) / values.length) + '.');
+            }
+            if (last.truncated && !ranked) points.push('Only the first ' + last.rows.length + ' groups are shown.');
+          }
+          const group = humanize(dims[0]).toLowerCase();
+          const groups = plural(group);
+          const title = ranked ? (plan.sort[0].direction === 'asc' ? 'Bottom ' : 'Top ') + last.rows.length + ' ' + groups + ' by ' + label : label + ' by ' + group;
+          return { title: title, sub: null, points: points };
+        }
+        return { title: result.answer || 'Result', sub: null, points: points };
+      }
+
+      function evidenceBlock(item, index) {
+        const details = el('details');
+        const isCalc = item.kind === 'calculation';
+        details.appendChild(el('summary', '', isCalc ? 'How the numbers were calculated' : 'Evidence ' + (index + 1) + ': SQL run in Snowflake'));
+        if (!isCalc) {
+          const qid = el('p', 'meta', 'Snowflake query ID: ');
+          qid.appendChild(el('code', '', item.query_id || 'not reported'));
+          details.appendChild(qid);
+          details.appendChild(el('pre', '', item.sql));
+          if (item.parameters && item.parameters.length) details.appendChild(el('p', 'meta', 'Bound parameters: ' + item.parameters.join(', ')));
+          details.appendChild(el('p', 'meta', item.row_count + ' row(s)' + (item.duration_ms ? ' in ' + item.duration_ms + ' ms' : '') + (item.truncated ? ', truncated' : '')));
+        } else {
+          Object.entries(item.formulas || {}).forEach(function (pair) { details.appendChild(el('p', 'meta', humanize(pair[0]) + ' = ' + pair[1])); });
+          if (item.rounding) details.appendChild(el('p', 'meta', item.rounding));
+        }
+        if (item.columns && item.rows) details.appendChild(table(item.columns, item.rows, 100));
+        return details;
+      }
+
+      function render(result, question) {
+        panel.replaceChildren();
+        panel.setAttribute('aria-busy', 'false');
+        document.body.classList.add('has-result');
+        if (question) panel.appendChild(el('p', 'result-question', question));
+        const status = result.status || 'error';
+        panel.appendChild(el('span', 'result-status ' + (status === 'answered' ? 'is-answered' : status === 'error' ? 'is-error' : ''), STATUS_TEXT[status] || status));
+
+        if (status === 'error') {
+          panel.appendChild(el('p', 'result-headline', (result.error && result.error.message) || 'Something went wrong.'));
+          if (result.error && result.error.code) panel.appendChild(el('p', 'meta', 'Code: ' + result.error.code));
+          return;
+        }
+        if (status === 'needs_clarification' || status === 'unsupported') {
+          panel.appendChild(el('p', 'result-headline', result.answer || (result.plan && result.plan.message) || ''));
+          panel.appendChild(el('p', 'result-sub', status === 'unsupported' ? 'No query was run.' : 'No query was run. Rephrase with the missing detail.'));
+          return;
+        }
+
+        const summary = summarize(result);
+        panel.appendChild(el('p', 'result-headline', summary.title));
+        if (summary.sub) panel.appendChild(el('p', 'result-sub', summary.sub));
+        if (summary.points.length) {
+          panel.appendChild(el('h2', 'result-section', 'Key points'));
+          const list = el('ul', 'result-points');
+          summary.points.forEach(function (text) { list.appendChild(el('li', '', text)); });
+          panel.appendChild(list);
+        }
+        if (status === 'empty' && result.answer) panel.appendChild(el('p', 'result-sub', result.answer));
+
+        const analysis = result.analysis;
+        if (analysis && analysis.kind === 'compare') {
+          const target = scopeList(analysis.target_filters, 'Target');
+          const baseline = scopeList(analysis.reference_filters, 'Baseline');
+          if (target) panel.appendChild(target);
+          if (baseline) panel.appendChild(baseline);
+        } else if (analysis && analysis.kind === 'share') {
+          const part = scopeList(analysis.target_filters, 'Part');
+          const whole = scopeList(analysis.reference_filters, 'Of');
+          if (part) panel.appendChild(part);
+          if (whole) panel.appendChild(whole);
+        } else if (result.plan) {
+          const scope = scopeList(result.plan.filters, '');
+          if (scope) panel.appendChild(scope);
+        }
+
+        const evidence = result.evidence || [];
+        const last = evidence[evidence.length - 1];
+        if (last && last.rows && (last.rows.length > 1 || last.columns.length > 1) && !(analysis && analysis.kind !== 'above_average')) {
+          panel.appendChild(el('h2', 'result-section', 'Data'));
+          panel.appendChild(table(last.columns, last.rows));
+        }
+        evidence.forEach(function (item, i) { panel.appendChild(evidenceBlock(item, i)); });
+
+        if (result.warnings && result.warnings.length) {
+          const notes = el('details');
+          notes.appendChild(el('summary', '', 'Limitations (' + result.warnings.length + ')'));
+          const list = el('ul', 'notes');
+          result.warnings.forEach(function (w) { list.appendChild(el('li', '', w)); });
+          notes.appendChild(list);
+          panel.appendChild(notes);
+        }
+        if (current && current.licence_note) panel.appendChild(el('p', 'meta', 'Source: ' + current.name + '. ' + current.licence_note.split('. ')[0] + '.'));
+      }
+
+      function setBusy(state) {
+        busy = state;
+        btnSend.setAttribute('aria-disabled', state ? 'true' : 'false');
+        panel.setAttribute('aria-busy', state ? 'true' : 'false');
+      }
+
+      async function ask(question) {
+        if (busy || !current) return;
+        setBusy(true);
+        panel.hidden = false;
+        document.body.classList.add('has-result');
+        const started = Date.now();
+        const status = el('p', 'result-loading', 'Gemma is planning the query…');
+        panel.replaceChildren(el('p', 'result-question', question), status);
+        const ticker = setInterval(function () {
+          const seconds = Math.round((Date.now() - started) / 1000);
+          status.textContent = (seconds < 12 ? 'Gemma is reading your question' : 'Gemma is planning, then Snowflake runs the query') + ' · ' + seconds + 's';
+        }, 1000);
+        try {
+          const response = await fetch(API + '/questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: question, dataset_id: current.id }),
+          });
+          let body;
+          try { body = await response.json(); } catch (_) { body = null; }
+          if (!body) body = { status: 'error', error: { message: 'The backend returned an unreadable response (HTTP ' + response.status + ').' } };
+          if (response.status === 422 && !body.status) body = { status: 'error', error: { code: 'invalid_input', message: 'Enter a question of at least three characters.' } };
+          clearInterval(ticker);
+          render(body, question);
+          panel.appendChild(el('p', 'meta', 'Answered in ' + Math.round((Date.now() - started) / 1000) + 's.'));
+        } catch (_) {
+          clearInterval(ticker);
+          render({ status: 'error', error: { code: 'backend_unreachable', message: 'Cannot reach the DataMind backend. Start it with python run.py and open http://127.0.0.1:8000/.' } }, question);
+        } finally {
+          setBusy(false);
+        }
+      }
+
+      function selectDataset(id) {
+        current = datasets.find(function (d) { return d.id === id; }) || datasets[0];
+        if (!current) return;
+        pickerLabel.textContent = current.name.split(' — ')[0];
+        pickerMenu.querySelectorAll('.dropdown-item').forEach(function (item) {
+          const selected = item.getAttribute('data-dataset') === current.id;
+          item.classList.toggle('is-selected', selected);
+          item.setAttribute('aria-checked', selected ? 'true' : 'false');
+        });
+        const examples = EXAMPLES[current.id] || [];
+        chips.forEach(function (chip, i) {
+          const example = examples[i];
+          chip.hidden = !example;
+          if (!example) return;
+          chip.setAttribute('data-prompt', example[1]);
+          chip.querySelector('.chip-label').textContent = example[0];
+        });
+        examplesMenu.replaceChildren();
+        examples.forEach(function (example) {
+          const item = el('button', 'dropdown-item');
+          item.type = 'button';
+          item.setAttribute('role', 'menuitem');
+          item.setAttribute('data-prompt', example[1]);
+          item.appendChild(el('span', '', example[1]));
+          examplesMenu.appendChild(item);
+        });
+      }
+
+      async function loadDatasets() {
+        try {
+          const response = await fetch(API + '/datasets');
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          datasets = (await response.json()).datasets || [];
+          if (!datasets.length) throw new Error('No datasets configured');
+        } catch (_) {
+          pickerLabel.textContent = 'Backend offline';
+          panel.hidden = false;
+          render({ status: 'error', error: { code: 'backend_unreachable', message: 'Cannot load datasets. Start the backend with python run.py, then open http://127.0.0.1:8000/.' } });
+          return;
+        }
+        pickerMenu.replaceChildren();
+        datasets.forEach(function (d) {
+          const item = el('button', 'dropdown-item');
+          item.type = 'button';
+          item.setAttribute('role', 'menuitemradio');
+          item.setAttribute('data-dataset', d.id);
+          const text = el('div');
+          text.appendChild(el('div', 'dropdown-item-title', d.name));
+          item.appendChild(text);
+          pickerMenu.appendChild(item);
+        });
+        selectDataset(datasets.some(function (d) { return d.id === DEFAULT_DATASET; }) ? DEFAULT_DATASET : datasets[0].id);
+      }
+
+      document.addEventListener('datamind:ask', function (e) { ask(e.detail); });
+      document.addEventListener('datamind:dataset', function (e) { selectDataset(e.detail); });
+      loadDatasets();
+    })();
+  </script>
 </body>
 </html>

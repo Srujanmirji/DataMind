@@ -44,10 +44,10 @@ USE ROLE DATAMIND_READER;
 USE WAREHOUSE SNOWFLAKE_LEARNING_WH;
 SELECT CURRENT_USER(), CURRENT_ROLE();
 SELECT COUNT(*) FROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.ORDERS;
-SELECT COUNT(*) FROM DATAMIND_DEMO.UCI.WINE_QUALITY_WORKING_V1;
+SELECT COUNT(*) FROM DATAMIND_DEMO.WORLDBANK.WDI_COUNTRY_YEAR_V1;
 ```
 
-Expected observation counts: **1,500,000 orders** and **6,497 wine samples**.
+Expected counts: **1,500,000 orders** and **7,595 World Bank country-years**.
 These are the existing account tables. Resolve permission errors through the
 administrator rather than changing the application to ACCOUNTADMIN.
 
@@ -121,7 +121,7 @@ python run.py
 ```
 
 Enter their own key passphrase privately and keep the terminal open. Open
-`http://127.0.0.1:8000/docs` on that laptop. No `--demo` or admin privileges are
+`http://127.0.0.1:8000/docs` on that laptop. No `--load-worldbank` or admin privileges are
 needed to use the already loaded datasets. See [README.md](README.md) for model
 resource requirements, API usage and evaluation commands.
 

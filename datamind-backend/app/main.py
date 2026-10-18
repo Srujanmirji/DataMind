@@ -6,9 +6,10 @@ from uuid import UUID
 
 from fastapi import Depends, FastAPI, File, Form, Header, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
-from app.config import Settings
+from app.config import ROOT, Settings
 from app.datasets import load_datasets
 from app.models import Question
 from app.planner import BackendError, Planner
@@ -17,6 +18,7 @@ from app.store import RunStore
 from app.warehouse import Warehouse
 
 logger = logging.getLogger(__name__)
+FRONTEND = ROOT.parent / "frontend"
 
 
 def create_app(
@@ -68,8 +70,17 @@ def create_app(
             },
         )
 
-    @app.get("/")
-    def root():
+    @app.get("/", include_in_schema=False)
+    def frontend():
+        # Same-origin UI: no CORS setup needed when opened at http://127.0.0.1:8000/.
+        index = FRONTEND / "index.html"
+        return FileResponse(index) if index.is_file() else api_info()
+
+    if (FRONTEND / "assets").is_dir():
+        app.mount("/assets", StaticFiles(directory=FRONTEND / "assets"), name="assets")
+
+    @app.get("/api")
+    def api_info():
         return {
             "name": "DataMind Backend API",
             "version": "0.2.0",
@@ -85,7 +96,7 @@ def create_app(
         return {
             "status": "ok",
             "version": "0.2.0",
-            "model": settings.ollama_model,
+            "model": settings.model_name,
             "key_loaded": private_key is not None,
             "note": "Liveness only; does not query Snowflake or run inference.",
         }

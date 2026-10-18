@@ -1,0 +1,164 @@
+{
+  "id": "worldbank_wdi",
+  "name": "World Bank World Development Indicators — countries, 1990–2024",
+  "description": "Real World Bank indicators for 217 economies (countries and territories), one row per country and year from 1990 to 2024: population, GDP, growth, inflation, unemployment, life expectancy, infant mortality, fertility, urbanisation, internet use, electricity access, renewable energy, CO2 per person and health spending.",
+  "source": "https://datacatalog.worldbank.org/search/dataset/0037712",
+  "licence_note": "CC BY 4.0. World Bank (2026), World Development Indicators, accessed through the World Bank API on 18 October 2026 (indicators last updated 8 October 2026). Aggregates (World, regions, income groups) were dropped; values rounded half-up to 6 decimals; missing values kept as NULL.",
+  "database": "DATAMIND_DEMO",
+  "schema": "WORLDBANK",
+  "from": "{database}.{schema}.WDI_COUNTRY_YEAR_V1 w",
+  "joins": [],
+  "count_metric": "country_count",
+  "empty_message": "No matching countries or years were found for these filters. Countries are filtered by ISO3 code (e.g. IND, CHN, USA).",
+  "metrics": {
+    "country_count": {
+      "sql": "COUNT(DISTINCT w.COUNTRY_CODE)",
+      "label": "Number of countries",
+      "description": "Distinct economies (countries) in scope",
+      "aggregation": "count",
+      "supports_share": true
+    },
+    "total_population": {
+      "sql": "SUM(w.POPULATION)",
+      "label": "Population",
+      "description": "Total population (people); sum over the selected countries (missing values are skipped, so totals can be incomplete)",
+      "aggregation": "sum",
+      "supports_share": true
+    },
+    "total_gdp_usd": {
+      "sql": "SUM(w.GDP_USD)",
+      "label": "GDP (current US$)",
+      "description": "Gross domestic product in current US dollars; sum over the selected countries (missing values are skipped, so totals can be incomplete)",
+      "aggregation": "sum",
+      "supports_share": true
+    },
+    "gdp_per_capita_usd": {
+      "sql": "AVG(CAST(w.GDP_PER_CAPITA_USD AS NUMBER(38, 6)))",
+      "label": "GDP per capita (current US$)",
+      "description": "GDP per person in current US dollars. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "gdp_growth_pct": {
+      "sql": "AVG(CAST(w.GDP_GROWTH_PCT AS NUMBER(38, 6)))",
+      "label": "GDP growth (annual %)",
+      "description": "Real GDP growth rate, percent per year. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "inflation_pct": {
+      "sql": "AVG(CAST(w.INFLATION_PCT AS NUMBER(38, 6)))",
+      "label": "Inflation, consumer prices (annual %)",
+      "description": "Consumer price inflation, percent per year. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "unemployment_pct": {
+      "sql": "AVG(CAST(w.UNEMPLOYMENT_PCT AS NUMBER(38, 6)))",
+      "label": "Unemployment (% of labour force)",
+      "description": "Unemployment rate, ILO modelled estimate. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "life_expectancy_years": {
+      "sql": "AVG(CAST(w.LIFE_EXPECTANCY_YEARS AS NUMBER(38, 6)))",
+      "label": "Life expectancy at birth (years)",
+      "description": "Life expectancy at birth in years. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "infant_mortality_per_1000": {
+      "sql": "AVG(CAST(w.INFANT_MORTALITY_PER_1000 AS NUMBER(38, 6)))",
+      "label": "Infant mortality (per 1,000 live births)",
+      "description": "Infant deaths per 1,000 live births. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "fertility_rate": {
+      "sql": "AVG(CAST(w.FERTILITY_RATE AS NUMBER(38, 6)))",
+      "label": "Fertility rate (births per woman)",
+      "description": "Births per woman. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "urban_population_pct": {
+      "sql": "AVG(CAST(w.URBAN_POPULATION_PCT AS NUMBER(38, 6)))",
+      "label": "Urban population (% of total)",
+      "description": "Share of people living in urban areas. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "internet_users_pct": {
+      "sql": "AVG(CAST(w.INTERNET_USERS_PCT AS NUMBER(38, 6)))",
+      "label": "Internet users (% of population)",
+      "description": "Share of people using the internet. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "electricity_access_pct": {
+      "sql": "AVG(CAST(w.ELECTRICITY_ACCESS_PCT AS NUMBER(38, 6)))",
+      "label": "Access to electricity (% of population)",
+      "description": "Share of people with access to electricity. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "renewable_energy_pct": {
+      "sql": "AVG(CAST(w.RENEWABLE_ENERGY_PCT AS NUMBER(38, 6)))",
+      "label": "Renewable energy (% of final energy use)",
+      "description": "Renewable share of total final energy consumption. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "co2_per_capita_tonnes": {
+      "sql": "AVG(CAST(w.CO2_PER_CAPITA_TONNES AS NUMBER(38, 6)))",
+      "label": "CO2 emissions per person (tonnes)",
+      "description": "CO2 emissions excluding land use, tonnes per person. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "health_spending_pct_gdp": {
+      "sql": "AVG(CAST(w.HEALTH_SPENDING_PCT_GDP AS NUMBER(38, 6)))",
+      "label": "Health spending (% of GDP)",
+      "description": "Current health expenditure as a share of GDP. For one country and year this is the World Bank value; for several countries it is the UNWEIGHTED mean of country values (not population-weighted); missing values are skipped",
+      "aggregation": "average",
+      "supports_share": false
+    }
+  },
+  "dimensions": {
+    "country": {
+      "sql": "UPPER(w.COUNTRY_NAME)",
+      "type": "text",
+      "description": "Country name in uppercase. Group by country ONLY for per-country lists or rankings (top/bottom N, each country). To FILTER a named country use country_code"
+    },
+    "year": {
+      "sql": "w.YEAR",
+      "type": "integer",
+      "description": "Calendar year, 1990 to 2024"
+    },
+    "region": {
+      "sql": "UPPER(w.REGION)",
+      "type": "text",
+      "description": "World Bank region, uppercase. Values: EAST ASIA & PACIFIC; EUROPE & CENTRAL ASIA; LATIN AMERICA & CARIBBEAN; MIDDLE EAST, NORTH AFRICA, AFGHANISTAN & PAKISTAN; NORTH AMERICA; SOUTH ASIA; SUB-SAHARAN AFRICA"
+    },
+    "income_group": {
+      "sql": "UPPER(w.INCOME_GROUP)",
+      "type": "text",
+      "description": "World Bank income group, uppercase. Values: HIGH INCOME; UPPER MIDDLE INCOME; LOWER MIDDLE INCOME; LOW INCOME"
+    }
+  },
+  "filter_fields": {
+    "country_code": {
+      "sql": "w.COUNTRY_CODE",
+      "type": "text",
+      "description": "ISO 3166 alpha-3 code, uppercase (India=IND). Use ONLY for countries the question explicitly names; never add countries the question does not name. Rankings over all countries have no country_code filter"
+    }
+  },
+  "planning_notes": "Rows are country-years. An average or total 'across' or 'of' the countries in a region, income group or the world is ONE value: dimensions=[] and a filter on that region/group. A change 'from year A to year B' is a compare: filters (target) contain year eq B ONLY, reference_filters (baseline) contain year eq A ONLY, and any country/region filter is copied into BOTH lists; never put both years in one list. Always filter a year (year eq YYYY) unless the question asks about a span of years or a trend by year; if a ranking or country value names no year, use needs_clarification. Filter a named country ONLY with country_code (ISO3, e.g. India=IND), never with country. Regions and income groups use the uppercase values listed. Totals of people or money use total_population / total_gdp_usd; per-person, percentage and rate indicators use their average metric. 'Top N countries by X' groups by country, sorts X desc and sets limit N. Never invent indicators that are not in the catalog (no literacy, trade, education, poverty, or sub-national data).",
+  "limitations": [
+    "World Bank estimates; recent years are often missing for some countries and indicators, and values may be revised in later releases.",
+    "Averages over several countries are unweighted means of country values, not population-weighted; totals skip countries with missing values.",
+    "Regional and income-group results are computed from the countries in this table, not the World Bank's own published aggregates.",
+    "Only the listed indicators are loaded; no sub-national, monthly or forecast data.",
+    "Multi-step support is bounded to two scalar scopes, subset shares, and groups above the row-weighted population average; arbitrary chains and conversational follow-ups are unsupported."
+  ]
+}

@@ -3,9 +3,12 @@
 import csv
 import hashlib
 import json
+from contextlib import contextmanager
 from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 from urllib.request import urlopen
+
+import snowflake.connector
 
 from app.compiler import IDENTIFIER
 from app.config import ROOT, Settings
@@ -38,6 +41,27 @@ INDICATORS = [
 ]
 KEYS = ["COUNTRY_CODE", "COUNTRY_NAME", "REGION", "INCOME_GROUP", "YEAR"]
 COLUMNS = [*KEYS, *[column for _, column in INDICATORS]]
+
+
+@contextmanager
+def admin_session(settings: Settings, private_key: bytes):
+    """Keep admin authority in this explicit setup command, outside normal requests."""
+    with snowflake.connector.connect(
+        account=settings.snowflake_account,
+        user=settings.snowflake_user,
+        authenticator="SNOWFLAKE_JWT",
+        private_key=private_key,
+        role="ACCOUNTADMIN",
+        warehouse=settings.snowflake_warehouse,
+        login_timeout=30,
+        network_timeout=45,
+        autocommit=True,
+        enable_server_session_keep_alive_auto_detection=False,
+        session_parameters={"QUERY_TAG": "datamind:worldbank-setup", "STATEMENT_TIMEOUT_IN_SECONDS": 60},
+    ) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("USE SECONDARY ROLES NONE")
+        yield connection
 
 
 def fetch(path: str) -> bytes:

@@ -1,5 +1,8 @@
 # Multi-step evaluation — backend 0.2.0
 
+> **Historical record.** The UCI Wine Quality dataset described here was removed on
+> 18 October 2026 and replaced by World Bank WDI. Current results: [VALIDATION.md](VALIDATION.md).
+
 Existing datasets retained: Snowflake TPC-H SF1 and real UCI Wine Quality.
 Gemma runs locally through Ollama; validated plans compile into parameterized,
 read-only Snowflake SQL. Two source queries feed deterministic Decimal calculations.

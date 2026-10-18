@@ -9,6 +9,25 @@ compiler builds approved SQL, and Snowflake computes answers at question time.
 Each answer contains SQL, bound parameters, result rows, a Snowflake query ID,
 and references from answer claims to result cells. No frontend is included.
 
+## Hosted Gemma (Google AI Studio)
+
+To run Gemma online, create an API key at https://aistudio.google.com/apikey and
+set these in `datamind-backend/.env`:
+
+```dotenv
+LLM_BACKEND=ai_studio
+GOOGLE_API_KEY=YOUR_PRIVATE_KEY
+AI_STUDIO_MODEL=gemma-4-26b-a4b-it
+```
+
+Restart with `.venv/bin/python run.py` from `datamind-backend/`, then open
+http://127.0.0.1:8000/. Ollama is not needed. Questions and the dataset's semantic
+catalog are sent to Google; SQL execution and answer calculations stay in the backend.
+Hosted output is parsed and validated before any SQL runs. HTTP 429 is reported as
+rate limited. Hosted accuracy and latency must be evaluated separately from local Gemma.
+
+The settings below describe the local fallback (`LLM_BACKEND=ollama`).
+
 ## Run on this Mac
 
 The environment and non-secret `.env` settings have already been created.
@@ -144,10 +163,9 @@ This is an initial scoped backend, not the complete hackathon submission:
   should produce clarification; inspect the interpreted plan for semantic errors.
 - Gemma can still misinterpret a question even when its JSON is valid. Add an
   independently verified evaluation set before making broad accuracy claims.
-- Two dataset configurations are supplied: TPC-H orders and real UCI Wine Quality.
-  The second dataset and reversible data-change runner require `python run.py --demo`
-  to provision and verify against Snowflake. Public repo and recording remain
-  submission work. Shared Snowflake sample tables cannot be updated by consumers.
+- Two dataset configurations are supplied: TPC-H orders and real World Bank WDI
+  indicators. The World Bank table is loaded once with `python run.py --load-worldbank`.
+  Shared Snowflake sample tables cannot be updated by consumers.
 
 ## Architecture and safety
 
@@ -207,8 +225,8 @@ never from an uploaded user file. Schema discovery is not automatic.
 Tested locally on macOS / Apple M5, 16 GB RAM, Python 3.13. Current model:
 Gemma 3 12B (`gemma3:12b`), about 8.2 GB download; digest begins `b92b218582c5`.
 It needs about 8 GB GPU/unified memory at 8,192 context. On smaller machines set
-`OLLAMA_MODEL=gemma3:4b` (3.4 GB), but expect worse answers: it scored 4/8 on our
-held-out UCI evaluation versus 12/12 for 12B.
+`OLLAMA_MODEL=gemma3:4b` (3.4 GB), but expect worse answers: in our earlier held-out
+evaluation it scored 4/8 where 12B scored 12/12.
 Ollama client reported version 0.31.1. Pin/model-record your own environment.
 
 ```bash
@@ -225,11 +243,11 @@ Register your public RSA key on the login user; keep your encrypted private key
 outside the repository. Then run `ollama serve` and `python run.py` in separate
 Terminal tabs. See `sql/setup.sql` for role grants (admin setup only).
 
-The `.env` on this Mac contains connection identifiers but no passphrase.
+Keep the private-key passphrase out of `.env`; `run.py` asks for it at startup.
 `.env`, private keys, the virtual environment and run history are gitignored.
 Never commit credentials. Do not copy benchmark tables into the repository.
 The MIT licence covers this backend's source, not Gemma weights or dataset rights.
-UCI Wine Quality remains CC BY 4.0; attribution is in UCI_DATA.md.
+World Bank WDI data is CC BY 4.0; attribution is in WORLDBANK_DATA.md.
 
 References:
 [Google Gemma with Ollama](https://ai.google.dev/gemma/docs/integrations/ollama),
@@ -237,6 +255,14 @@ References:
 [Gemma model/licence](https://ollama.com/library/gemma3:12b),
 [Snowflake sample data](https://docs.snowflake.com/en/user-guide/sample-data),
 [Snowflake key-pair authentication](https://docs.snowflake.com/en/user-guide/key-pair-auth).
+
+## Plan caching
+
+Repeated identical questions reuse a validated Gemma plan for up to one hour.
+Every request still executes SQL in Snowflake and computes a new answer with new
+query IDs. The cache holds up to 256 plans per dataset in memory and clears on
+restart; model, dataset config or planner changes invalidate existing plans.
+Responses report `plan_cache_hit`. DataMind does not cache results or answers.
 
 ## Test and troubleshoot
 
@@ -259,96 +285,48 @@ test is in `scripts/check_gemma.py`; it never contacts Snowflake.
 - **CORS error:** allow the frontend's exact origin in `.env`, then restart.
 
 
-## Second dataset: real UCI Wine Quality
+## Second dataset: World Bank World Development Indicators
 
-The cafe prototype has been removed. The second dataset is now **UCI Wine Quality**,
-with all **6,497 original observations**: 1,599 red and 4,898 white wines. All 11
-physicochemical measurements and the sensory quality score are preserved.
-Source: https://archive.ics.uci.edu/dataset/186/wine+quality
-
-Licence: **CC BY 4.0**. Full citation, attribution, source SHA-256 and adaptation
-notes are in `UCI_DATA.md`. Original archive and normalized CSV are downloaded under
-ignored `data/uci/`; no manual download or additional package is needed.
-
-Dataset ID: **`uci_wine_quality`**. Normal questions query the labelled working
-copy, which is restored to original UCI values after each successful demonstration.
-The original source table is independently compared with all downloaded rows.
+Real World Bank data for **217 countries, 1990–2024** (7,595 country-years): population,
+GDP, GDP per capita, growth, inflation, unemployment, life expectancy, infant mortality,
+fertility, urbanisation, internet use, electricity access, renewable energy, CO₂ per person
+and health spending. Licence **CC BY 4.0**; source, preparation and coverage per indicator
+are in [WORLDBANK_DATA.md](WORLDBANK_DATA.md).
 
 | Object | Purpose |
 |---|---|
-| `DATAMIND_DEMO.UCI.WINE_QUALITY_SOURCE_V1` | Preserved original source observations |
-| `DATAMIND_DEMO.UCI.WINE_QUALITY_WORKING_V1` | Queryable working copy; only table changed in the demo |
-| `scripts/uci_wine.py` | Hash-verified download, parsing and transactional import |
-| `datasets/uci_wine_quality.json` | Dataset-specific semantics, no application-code rewrite |
-| `scripts/demo.py` | Reversible before/after proof with full execution evidence |
+| `DATAMIND_DEMO.WORLDBANK.WDI_COUNTRY_YEAR_V1` | One row per country and year; read-only for the API role |
+| `scripts/worldbank_wdi.py` | Hash-recorded download, row checks and transactional load |
+| `datasets/worldbank_wdi.json` | Metrics, groupings and filters; no application-code change |
 
-### Run the complete UCI import and demonstration
-
-Stop the existing backend with Ctrl+C in its terminal, then run:
+Load or verify it (asks for the key passphrase, uses an explicit ACCOUNTADMIN session,
+then exits; the API keeps using DATAMIND_READER):
 
 ```bash
-~/Codex/datamind-backend/.venv/bin/python ~/Codex/datamind-backend/run.py --demo
+~/Codex/datamind-backend/.venv/bin/python ~/Codex/datamind-backend/run.py --load-worldbank
 ```
 
-Enter the existing private-key passphrase locally once. The command automatically:
-
-1. Verifies/downloads the source archive and records provenance in `data/uci/manifest.json`.
-2. Opens an explicit ACCOUNTADMIN setup session. Creates only the fixed demo database,
-   schema and source/working tables; refuses to edit unmarked or mismatched tables.
-3. Loads all original observations transactionally and compares **every source value**.
-   Existing matching tables are reused; no table is replaced or dropped.
-4. Grants the application reader only USAGE on this database/schema and SELECT on
-   the working table. No UPDATE/INSERT/DELETE is granted to the reader.
-5. Asks: **How many wine samples have a quality score of at least 7?**
-6. Temporarily changes the first source sample with score 6 to score 7 in the working
-   copy only. Repeats the identical question and checks identical SQL/parameters,
-   a new Snowflake query ID, and an increase of exactly one.
-7. Restores the score after a confirmed mutation, including if the after-query fails.
-   Checks the restored answer and all source/working observations again.
-8. Saves `data/change-demo/proof.json` and `REPORT.md`, closes the admin connection,
-   and starts the ordinary read-only API on port 8000.
-
-Expected counts, independently computed from the real downloaded source:
-**1,277 -> 1,278 -> 1,277**. These are expectations until the live Snowflake run
-finishes; check the generated report for actual query IDs and observed answers.
-The threshold 7 is our explicit analysis rule, not a binary label supplied by UCI.
-The temporary quality adjustment is artificial and disclosed as a demo change;
-it is not represented as a correction to the research dataset.
-
-The proof uses the real `/questions` application route through FastAPI's in-process
-client, real Gemma inference and real Snowflake queries. Responses are not mocked.
-The source CSV is used for ingestion and independent ground truth, never to answer
-API questions. No HTTP mutation/admin endpoint is exposed.
-
-If setup, mutation or restoration fails, the proof status is failed rather than
-passed. Inspect `proof.json` before retrying. Do not run concurrent demos or edit
-these working rows during the test. Reports are invalidated at startup, before
-provisioning, so a failed rerun cannot leave an old successful report as current.
-Each restart requires a local key unlock; no passphrase is persisted.
-Normal `python run.py` does not load or modify datasets; use `--demo` explicitly.
-
-### Ask UCI questions after import
+Re-running compares every row with the downloaded snapshot and refuses to overwrite a
+table that differs. Ask questions with `"dataset_id": "worldbank_wdi"`:
 
 ```bash
 curl -sS http://127.0.0.1:8000/questions \
   -H 'Content-Type: application/json' \
-  -d '{"dataset_id":"uci_wine_quality","question":"How many wine samples have a quality score of at least 7?"}'
+  -d '{"dataset_id":"worldbank_wdi","question":"What were the top 5 countries by GDP per capita in 2023?"}'
 ```
 
-Other examples: "What is the average quality by wine type?", "How many red wine
-samples are there?", and "What is the average alcohol content for white wines?".
-Supported UCI metrics: sample count, average quality, average alcohol, average
-residual sugar; grouping/filtering by wine type and integer quality score.
-Dates, brands, grape varieties, prices and causal conclusions are unsupported.
-
-`GET /datasets` lists `tpch_orders` and `uci_wine_quality`. Questions without a
-`dataset_id` still select TPC-H. The backend must be restarted to pick up this
-replacement if it is still running the previous version.
+Other examples: "How did the percentage of India's population using the internet change
+from 2015 to 2023?", "In 2023, what percentage of the total population of all countries
+lived in India?", "In 2022, which regions had an average life expectancy above the average
+across all countries?". Countries are filtered by ISO3 code (India = IND); a ranking or
+country value without a year gets a clarification question. Averages across several
+countries are unweighted; forecasts, sub-national data and unlisted indicators are
+unsupported. Questions without a `dataset_id` still select TPC-H.
 
 
 ## Multi-step analysis (0.2.0)
 
-Both existing datasets remain enabled. A question may now request one of three
+Both datasets are enabled. A question may now request one of three
 bounded analyses, in addition to ordinary aggregates:
 
 - Compare one metric across two cohorts/periods: values, signed difference and
@@ -385,17 +363,15 @@ Failures are printed and saved rather than treated as passing checks.
 
 The developer-authored evaluation includes regression cases used during prompt
 iteration and separately marked first-run holdouts. It is not an external blind
-benchmark. Independent static SQL verifies TPC-H, and direct Python arithmetic on
-the original downloaded UCI observations verifies wine answers. Expected answers
+benchmark. Independent static SQL verifies TPC-H, and direct Python arithmetic on the
+raw World Bank API snapshot verifies World Bank answers. Expected answers
 and oracle code are never included in model prompts.
 
-Latest live result (18 October 2026): **18/18** with Gemma 3 12B and Snowflake.
+Historical live result: **18/18** with local Gemma 3 12B, TPC-H and the now-removed wine dataset.
+Current hosted Gemma has passed two live smoke checks; full evaluation is pending.
 See [VALIDATION.md](VALIDATION.md) for the run, the bug the first attempt caught,
 and sample query IDs.
 
-For private-key-free planner development, `.venv/bin/python -m scripts.evaluate`
-uses real Gemma plus SQLite loaded with the original UCI data. Its reports are
-explicitly labelled **NOT Snowflake** and cannot establish live warehouse integration.
 
 
 The tested local configuration now uses **Gemma 3 12B**. The earlier 4B model made

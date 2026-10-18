@@ -1,12 +1,17 @@
+import hashlib
+import json
+from collections import OrderedDict
 from datetime import UTC, datetime
+from pathlib import Path
 from threading import Lock
+from time import monotonic
 from typing import Any
 from uuid import uuid4
 
 from app.analysis import analysis_steps, derive
 from app.compiler import compile_plan
 from app.config import Settings
-from app.models import Question
+from app.models import Plan, Question
 from app.planner import BackendError, Planner
 from app.warehouse import Warehouse
 
@@ -18,6 +23,13 @@ class QuestionService:
         self.planner = planner
         self.warehouse = warehouse
         self.lock = lock if lock is not None else Lock()
+        self._plans: OrderedDict[str, tuple[float, str]] = OrderedDict()
+        self._planner_version = hashlib.sha256(
+            b"".join(
+                Path(__file__).with_name(name).read_bytes()
+                for name in ("planner.py", "models.py", "compiler.py", "analysis.py")
+            )
+        ).hexdigest()
 
     def ask(self, request: Question) -> dict:
         if request.dataset_id != self.dataset["id"]:
@@ -25,13 +37,40 @@ class QuestionService:
         if not self.lock.acquire(blocking=False):
             raise BackendError("busy", "Another question is running. Retry when it completes.", 429)
         try:
-            return self._ask(request)
+            key = hashlib.sha256(
+                json.dumps(
+                    {
+                        "question": request.question,
+                        "dataset": self.dataset,
+                        "backend": self.settings.llm_backend,
+                        "model": self.settings.model_name,
+                        "endpoint": self.settings.ollama_base_url
+                        if self.settings.llm_backend == "ollama"
+                        else "ai_studio",
+                        "database": self.settings.snowflake_database,
+                        "schema": self.settings.snowflake_schema,
+                        "planner": self._planner_version,
+                    },
+                    sort_keys=True,
+                ).encode()
+            ).hexdigest()
+            cached = self._plans.pop(key, None)
+            plan = Plan.model_validate_json(cached[1]) if cached and cached[0] > monotonic() else None
+            result = self._ask(request, plan)
+            result["plan_cache_hit"] = plan is not None
+            if result["status"] in ("answered", "empty"):
+                # shortcut: process-local cache clears on restart; use shared storage for multiple workers.
+                expires = cached[0] if plan is not None else monotonic() + 3600
+                self._plans[key] = (expires, json.dumps(result["plan"]))
+                if len(self._plans) > 256:
+                    self._plans.popitem(last=False)
+            return result
         finally:
             self.lock.release()
 
-    def _ask(self, request: Question) -> dict:
+    def _ask(self, request: Question, cached_plan: Plan | None = None) -> dict:
         run_id = str(uuid4())
-        plan = self.planner.plan(request.question)
+        plan = cached_plan if cached_plan is not None else self.planner.plan(request.question)
         result: dict[str, Any] = {
             "run_id": run_id,
             "dataset_id": request.dataset_id,

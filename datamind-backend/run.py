@@ -13,11 +13,6 @@ from app.main import create_app
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--demo",
-        action="store_true",
-        help="Load real UCI Wine Quality data, prove the answer changes, restore, then serve.",
-    )
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument(
         "--evaluate",
@@ -52,10 +47,6 @@ def main():
         print(f"DataMind server running in DEV mode on http://127.0.0.1:{args.port}...")
         uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
         return
-    if args.demo:
-        from scripts.demo import begin_report
-
-        begin_report()
     if not settings.snowflake_account or not settings.snowflake_user:
         raise SystemExit(
             "Missing account/login name. Copy .env.example to .env and edit it, or use --dev for local mode."
@@ -74,7 +65,7 @@ def main():
     )
     del passphrase, key
     if args.load_worldbank:
-        from scripts.demo import admin_session
+        from scripts.worldbank_wdi import admin_session
         from scripts.worldbank_wdi import prepare_data as prepare_wdi
         from scripts.worldbank_wdi import provision as provision_wdi
 
@@ -84,28 +75,6 @@ def main():
         print(f"Loaded and verified {result['row_count']:,} rows in {result['table']}.", flush=True)
         return
     app = create_app(settings, private_key)
-    if args.demo:
-        from scripts.demo import admin_session, count_from_answer, prove_change, record_failure
-        from scripts.uci_wine import prepare_data, provision
-
-        print(
-            "Provisioning real UCI Wine Quality using ACCOUNTADMIN; normal API stays DATAMIND_READER.",
-            flush=True,
-        )
-        try:
-            with admin_session(settings, private_key) as connection:
-                provision(connection, settings, prepare_data())
-                report = prove_change(app, connection, settings)
-        except BaseException as exc:
-            record_failure(exc)
-            raise
-        totals = [count_from_answer(report[stage]) for stage in ("before", "after", "restored_answer")]
-        print(
-            "UCI DATA-CHANGE PROOF PASSED (quality >= 7 count): "
-            + " -> ".join(f"{value:,}" for value in totals),
-            flush=True,
-        )
-        print("Evidence: data/change-demo/REPORT.md and proof.json", flush=True)
     if args.evaluate:
         from scripts.evaluate import run_evaluation
 

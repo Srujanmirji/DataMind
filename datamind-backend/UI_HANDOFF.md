@@ -19,10 +19,10 @@ label. Descriptions, metric definitions, licence notes and limitations are inclu
 | ID | Source | Good starter questions |
 |---|---|---|
 | `tpch_orders` | Snowflake TPC-H SF1 order data | How many orders are in the dataset? / Which five customer nations have the highest total order value? |
-| `uci_wine_quality` | Real UCI Wine Quality, 6,497 red/white samples | How many wine samples have a quality score of at least 7? / Show sample count and average quality by wine type. |
+| `worldbank_wdi` | Real World Bank indicators, 217 countries, 1990–2024 | What were the top 5 countries by GDP per capita in 2023? / How did the percentage of India's population using the internet change from 2015 to 2023? |
 
 Do not mix the datasets' example questions or metrics. Send the selected ID on
-every request; omission defaults to TPC-H. The cafe dataset has been removed.
+every request; omission defaults to TPC-H.
 
 ## Submit a question
 
@@ -30,7 +30,7 @@ every request; omission defaults to TPC-H. The cafe dataset has been removed.
 POST /questions
 Content-Type: application/json
 
-{"dataset_id":"uci_wine_quality","question":"How many wine samples have a quality score of at least 7?"}
+{"dataset_id":"worldbank_wdi","question":"What were the top 5 countries by GDP per capita in 2023?"}
 ```
 
 ```javascript
@@ -131,36 +131,24 @@ shipped frontend code; use a suitable server-side proxy/authentication layer.
 
 ## Data provenance and demo
 
-TPC-H sample data is synthetic benchmark data hosted in Snowflake. Wine Quality
-is real UCI data, CC BY 4.0, cited in `UCI_DATA.md`; retain attribution in the product's
-data-source view. Wine results describe these samples, not all wines.
-
-The wine API uses a labelled working copy. The successful change demonstration
-showed **1,277 -> 1,278 -> 1,277** samples with quality >= 7, with different
-Snowflake query IDs. The original source table remained unchanged and the working
-score was restored. Proof: `data/change-demo/REPORT.md` and `proof.json`.
+TPC-H sample data is synthetic benchmark data hosted in Snowflake. The World Bank
+dataset is real WDI data, CC BY 4.0, cited in `WORLDBANK_DATA.md`; show "Source: World
+Bank, World Development Indicators (CC BY 4.0)" in the product's data-source view.
+Averages across several countries are unweighted; display the dataset's limitations.
 
 
 ## Verified integration examples
 
-All 13 live checks in the latest integration run passed: both datasets, count and
-ranking/aggregate correctness, empty states, clarification, refusal, validation,
-unknown dataset, saved evidence and both configured CORS origins.
+Real response bodies captured from earlier live runs are in `examples/responses/`:
 
-Real response bodies are included in `examples/responses/` for the UI team:
-
-- `uci_count.json`: scalar answer (6,497 observations).
-- `uci_groups.json`: grouped rows and decimal means, independently checked.
-- `uci_empty.json`: empty-data domain response with query evidence.
-- `uci_unsupported.json`: refusal without query evidence.
 - `tpch_clarification.json`: clarification without query evidence.
+- `tpch_multistep_comparison.json`: two-query comparison with calculation evidence.
 - `invalid_input.json`: HTTP 422 validation body.
 - `unknown_dataset.json`: HTTP 404 error body.
 
-These are captured examples for UI development, not canned backend answers.
-Live endpoints always plan and query at question time. UCI aggregates retain
-CC BY 4.0 attribution from UCI_DATA.md. Example query/run IDs are evidence IDs,
-not credentials. No keys, private-key files, passphrases or .env are needed by UI.
+These are captured examples for UI development, not canned backend answers. Live
+endpoints always plan and query at question time. Example query/run IDs are evidence
+IDs, not credentials. No keys, private-key files, passphrases or .env are needed by UI.
 
 
 ## Multi-step responses (0.2.0)
@@ -168,8 +156,8 @@ not credentials. No keys, private-key files, passphrases or .env are needed by U
 The request shape is unchanged. Examples:
 
 - TPC-H: "From 1993 to 1994, how did the number of orders change in absolute and percentage terms?"
-- Wine: "Among white wines, what percentage of samples scored 8 or higher?"
-- Wine: "Which wine types have average residual sugar above the overall average residual sugar?"
+- World Bank: "In 2023, what percentage of the total population of all countries lived in India?"
+- World Bank: "In 2022, which regions had an average life expectancy above the average across all countries?"
 
 Render `plan.analysis`: aggregate, compare, share, or above_average. Multi-step
 answers additionally include `analysis.target_filters` and `analysis.reference_filters`.

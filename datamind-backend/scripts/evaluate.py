@@ -2,10 +2,9 @@
 
 import hashlib
 import json
-import sqlite3
 import sys
 from datetime import UTC, datetime
-from decimal import Decimal, InvalidOperation, localcontext
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation, localcontext
 from pathlib import Path
 from uuid import uuid4
 
@@ -17,84 +16,96 @@ from fastapi.testclient import TestClient
 
 from app.compiler import CompiledQuery
 from app.config import ROOT, Settings
-from app.datasets import load_datasets
-from app.main import create_app
-from app.planner import Planner
-from app.service import QuestionService
 from app.warehouse import Warehouse
-from scripts.uci_wine import prepare_data
 
 
-def python_oracle(name, records):
-    """Independent arithmetic on the original downloaded UCI observations."""
-    red = [row for row in records if row[1] == "RED"]
-    white = [row for row in records if row[1] == "WHITE"]
+def wdi_oracle(name):
+    """Independent arithmetic on the raw World Bank API snapshot, without the loader's row builder."""
+    raw = ROOT / "data" / "worldbank" / "raw"
+    countries = {
+        c["id"]: c
+        for c in json.loads((raw / "countries.json").read_text())[1]
+        if c["region"]["value"] != "Aggregates"
+    }
 
-    def mean(rows, index):
-        return sum(Decimal(row[index]) for row in rows) / Decimal(len(rows))
+    def series(code):
+        values = {}
+        for record in json.loads((raw / f"{code}.json").read_text())[1]:
+            if record["countryiso3code"] in countries and record["value"] is not None:
+                number = Decimal(repr(record["value"])).quantize(Decimal("0.000001"), rounding=ROUND_HALF_UP)
+                values[(record["countryiso3code"], int(record["date"]))] = number
+        return values
+
+    def mean(values):
+        values = list(values)
+        return sum(values) / Decimal(len(values))
 
     def comparison(target, reference):
         difference = target - reference
-        percent = difference * 100 / reference if reference else None
         return {
             "columns": ["target_value", "reference_value", "difference", "percent_change"],
-            "rows": [[target, reference, difference, percent]],
+            "rows": [[target, reference, difference, difference * 100 / reference]],
         }
+
+    def upper(iso3, key):
+        return (countries[iso3][key] if key == "name" else countries[iso3][key]["value"]).strip().upper()
 
     with localcontext() as context:
         context.prec = 50
-        if name == "fresh_white_alcohol_cohorts":
-            return comparison(
-                mean([row for row in white if row[-1] == 3], -2),
-                mean([row for row in white if row[-1] == 7], -2),
-            )
-        if name == "fresh_sugar_comparison":
-            return comparison(mean(white, 5), mean(red, 5))
-        if name == "fresh_red_low_share":
-            target = sum(row[-1] <= 5 for row in red)
+        if name == "wdi_top5_gdp_per_capita_2023":
+            gdp = series("NY.GDP.PCAP.CD")
+            ranked = sorted(((v, iso) for (iso, year), v in gdp.items() if year == 2023), reverse=True)[:5]
+            return {
+                "columns": ["country", "gdp_per_capita_usd"],
+                "rows": [[upper(iso, "name"), value] for value, iso in ranked],
+            }
+        if name == "wdi_india_life_expectancy_2022":
+            return {"columns": ["life_expectancy_years"], "rows": [[series("SP.DYN.LE00.IN")[("IND", 2022)]]]}
+        if name == "wdi_india_internet_2015_2023":
+            internet = series("IT.NET.USER.ZS")
+            return comparison(internet[("IND", 2023)], internet[("IND", 2015)])
+        if name == "wdi_china_vs_india_gdp_per_capita_2023":
+            gdp = series("NY.GDP.PCAP.CD")
+            return comparison(gdp[("CHN", 2023)], gdp[("IND", 2023)])
+        if name == "wdi_india_population_share_2023":
+            population = series("SP.POP.TOTL")
+            target = population[("IND", 2023)]
+            reference = sum(v for (_, year), v in population.items() if year == 2023)
             return {
                 "columns": ["target_value", "reference_value", "share_percent"],
-                "rows": [[target, len(red), Decimal(target) * 100 / Decimal(len(red))]],
+                "rows": [[target, reference, target * 100 / reference]],
             }
-        if name == "fresh_score_six":
-            return comparison(
-                Decimal(sum(row[-1] == 6 for row in white)), Decimal(sum(row[-1] == 6 for row in red))
-            )
-        if name == "quality_comparison":
-            return comparison(mean(white, -1), mean(red, -1))
-        if name == "white_eight_share":
-            target = sum(row[-1] >= 8 for row in white)
+        if name == "wdi_regions_life_expectancy_2022":
+            life = {iso: v for (iso, year), v in series("SP.DYN.LE00.IN").items() if year == 2022}
+            overall = mean(life.values())
+            regions = {upper(iso, "region") for iso in life}
+            rows = []
+            for region in sorted(regions):
+                value = mean(v for iso, v in life.items() if upper(iso, "region") == region)
+                if value > overall:
+                    rows.append([region, value, overall, value - overall])
             return {
-                "columns": ["target_value", "reference_value", "share_percent"],
-                "rows": [[target, len(white), Decimal(target) * 100 / Decimal(len(white))]],
+                "columns": ["region", "life_expectancy_years", "overall_average", "difference"],
+                "rows": rows,
             }
-        if name == "population_sugar":
-            scope = [row for row in records if row[-1] >= 5]
-            population = mean(scope, 5)
-            groups = []
-            for kind in ("RED", "WHITE"):
-                value = mean([row for row in scope if row[1] == kind], 5)
-                if value > population:
-                    groups.append([kind, value, population, value - population])
+        if name == "wdi_gdp_by_income_group_2023":
+            gdp = {iso: v for (iso, year), v in series("NY.GDP.MKTP.CD").items() if year == 2023}
+            groups = sorted({upper(iso, "incomeLevel") for iso in countries})
             return {
-                "columns": ["wine_type", "average_residual_sugar", "overall_average", "difference"],
-                "rows": groups,
+                "columns": ["income_group", "total_gdp_usd"],
+                "rows": [
+                    [g, sum(v for iso, v in gdp.items() if upper(iso, "incomeLevel") == g)] for g in groups
+                ],
             }
-        if name == "eight_count_comparison":
-            return comparison(
-                Decimal(sum(row[-1] >= 8 for row in red)), Decimal(sum(row[-1] >= 8 for row in white))
-            )
-        if name == "zero_reference":
-            return comparison(
-                Decimal(sum(row[-1] == 9 for row in white)), Decimal(sum(row[-1] == 10 for row in white))
-            )
-        if name == "filtered_alcohol":
-            selected = [row for row in white if row[-1] in (8, 9)]
-            return {
-                "columns": ["sample_count", "average_alcohol"],
-                "rows": [[len(selected), mean(selected, -2)]],
-            }
-    raise ValueError("Unknown independent oracle.")
+        if name == "wdi_ssa_co2_2020":
+            co2 = series("EN.GHG.CO2.PC.CE.AR5")
+            scope = [
+                v
+                for (iso, year), v in co2.items()
+                if year == 2020 and upper(iso, "region") == "SUB-SAHARAN AFRICA"
+            ]
+            return {"columns": ["co2_per_capita_tonnes"], "rows": [[mean(scope)]]}
+    raise ValueError("Unknown World Bank oracle.")
 
 
 def tables_equal(actual, expected):
@@ -155,10 +166,10 @@ def verify_lineage(body, live):
                 assert 0 <= reference["row_index"] < len(source["rows"])
 
 
-def run_evaluation(app, settings: Settings, private_key: bytes | None, local_wine=False):
+def run_evaluation(app, settings: Settings, private_key: bytes | None, dataset_id: str | None = None):
     cases = json.loads((ROOT / "evaluation/questions.json").read_text())["cases"]
-    if local_wine:
-        cases = [case for case in cases if case["dataset_id"] == "uci_wine_quality"]
+    if dataset_id:
+        cases = [case for case in cases if case["dataset_id"] == dataset_id]
     seen_cases = set()
     for previous in (ROOT / "data/evaluations").glob("*/results.json"):
         previous_report = json.loads(previous.read_text())
@@ -169,21 +180,18 @@ def run_evaluation(app, settings: Settings, private_key: bytes | None, local_win
     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-" + str(uuid4())[:8]
     folder = ROOT / "data" / "evaluations" / stamp
     folder.mkdir(parents=True)
-    records = prepare_data()
     oracle_reader = Warehouse(settings, private_key)
     report = {
-        "mode": "local UCI SQLite + live Gemma (NOT Snowflake)"
-        if local_wine
-        else "Live Gemma + live Snowflake",
-        "method": "Developer-authored cases: wine regression cases were used during development; separately marked fresh cases are first-run holdouts. No oracle results enter prompts. Not an external blind benchmark.",
-        "model": settings.ollama_model,
+        "mode": "Live Gemma + live Snowflake",
+        "method": "Developer-authored cases; separately marked fresh cases are first-run holdouts. No oracle results enter prompts. Not an external blind benchmark.",
+        "model": settings.model_name,
         "planner_sha256": hashlib.sha256((ROOT / "app/planner.py").read_bytes()).hexdigest(),
         "cases": [],
         "created_at": stamp,
     }
     headers = {"X-API-Key": settings.api_key.get_secret_value()}
     print(
-        f"Starting {len(cases)} checks with {settings.ollama_model}. This can take several minutes; keep this terminal open.",
+        f"Starting {len(cases)} checks with {settings.model_name}. This can take several minutes; keep this terminal open.",
         flush=True,
     )
     with TestClient(app) as client:
@@ -200,8 +208,8 @@ def run_evaluation(app, settings: Settings, private_key: bytes | None, local_win
             }
             try:
                 expected = None
-                if case.get("oracle_python"):
-                    expected = python_oracle(case["oracle_python"], records)
+                if case.get("oracle_wdi"):
+                    expected = wdi_oracle(case["oracle_wdi"])
                 elif case.get("oracle_sql"):
                     raw = oracle_reader.execute(
                         CompiledQuery(case["oracle_sql"], [], 100), "oracle:" + case["id"]
@@ -236,7 +244,7 @@ def run_evaluation(app, settings: Settings, private_key: bytes | None, local_win
                     assert tables_equal(output, expected), (
                         "Values/groups differ from independent ground truth"
                     )
-                    verify_lineage(body, live=not local_wine)
+                    verify_lineage(body, live=True)
                     entry["expected"] = expected
                     entry["query_ids"] = [
                         e["query_id"] for e in body["evidence"] if e.get("kind") != "calculation"
@@ -284,50 +292,3 @@ def run_evaluation(app, settings: Settings, private_key: bytes | None, local_win
     (folder / "REPORT.md").write_text("\n".join(lines) + "\n")
     print(f"Evaluation: {report['passed']}/{report['total']}; report {folder / 'REPORT.md'}", flush=True)
     return report
-
-
-class LocalWineReader:
-    """Explicit offline evaluation adapter. Never masquerades as Snowflake evidence."""
-
-    def __init__(self, records):
-        self.connection = sqlite3.connect(":memory:", check_same_thread=False)
-        self.connection.execute(
-            "CREATE TABLE wines (WINE_TYPE TEXT, QUALITY INTEGER, ALCOHOL REAL, RESIDUAL_SUGAR REAL)"
-        )
-        self.connection.executemany(
-            "INSERT INTO wines VALUES (?,?,?,?)",
-            [(row[1], row[-1], float(row[-2]), float(row[5])) for row in records],
-        )
-
-    def execute(self, query, run_id):
-        sql = query.sql.replace("DATAMIND_DEMO.UCI.WINE_QUALITY_WORKING_V1", "wines").replace("%s", "?")
-        cursor = self.connection.execute(sql, query.parameters)
-        rows = cursor.fetchmany(query.limit + 1)
-        return {
-            "id": "query_1",
-            "query_id": None,
-            "engine": "local SQLite evaluation only",
-            "sql": sql,
-            "submitted_snowflake_sql": query.sql,
-            "parameters": query.parameters,
-            "columns": [column[0] for column in cursor.description],
-            "rows": [list(row) for row in rows[: query.limit]],
-            "truncated": len(rows) > query.limit,
-            "row_count": min(len(rows), query.limit),
-        }
-
-
-def main():
-    settings = Settings().model_copy(update={"history_path": ROOT / "data/local-evaluation.sqlite3"})
-    dataset = load_datasets(settings)["uci_wine_quality"]
-    reader = LocalWineReader(prepare_data())
-    try:
-        service = QuestionService(settings, dataset, Planner(settings, dataset), reader)
-        report = run_evaluation(create_app(settings, service=service), settings, None, local_wine=True)
-        raise SystemExit(0 if report["passed"] == report["total"] else 1)
-    finally:
-        reader.connection.close()
-
-
-if __name__ == "__main__":
-    main()

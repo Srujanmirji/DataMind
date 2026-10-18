@@ -344,16 +344,16 @@ def test_analytical_drop_and_update_are_not_write_requests(settings, dataset, mo
 def test_scalar_limit_does_not_cover_missing_question_threshold(settings, monkeypatch):
     from app.datasets import load_datasets
 
-    dataset = load_datasets(settings)["uci_wine_quality"]
+    dataset = load_datasets(settings)["worldbank_wdi"]
     plan = {
         "status": "query",
         "analysis": "share",
-        "metrics": ["sample_count"],
-        "filters": [{"field": "wine_type", "operator": "eq", "values": ["WHITE"]}],
+        "metrics": ["country_count"],
+        "filters": [{"field": "region", "operator": "eq", "values": ["SOUTH ASIA"]}],
         "reference_filters": [],
         "limit": 8,
     }
-    payloads = [{"mode": "share", "reason": "Percentage of samples"}, plan, plan]
+    payloads = [{"mode": "share", "reason": "Percentage of countries"}, plan, plan]
     responses = []
     for payload in payloads:
         response = Mock()
@@ -365,7 +365,9 @@ def test_scalar_limit_does_not_cover_missing_question_threshold(settings, monkey
     client.post.side_effect = responses
     monkeypatch.setattr(httpx, "Client", Mock(return_value=client))
     with pytest.raises(BackendError, match="invalid analysis plan"):
-        Planner(settings, dataset).plan("Among white wines, what percentage scored 8 or higher?")
+        Planner(settings, dataset).plan(
+            "Among South Asian countries in 2023, what percentage had a fertility rate of 8 or higher?"
+        )
 
 
 @pytest.mark.parametrize("target,reference", [([1993], [1994]), ([1993, 1994], [1993])])

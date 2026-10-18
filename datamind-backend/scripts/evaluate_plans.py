@@ -28,7 +28,7 @@ def main():
     cases = json.loads((ROOT / "evaluation/questions.json").read_text())["cases"]
     report = {
         "mode": "Live Gemma semantic plans only; NO Snowflake execution",
-        "model": settings.ollama_model,
+        "model": settings.model_name,
         "created_at": datetime.now(UTC).isoformat(),
         "cases": [],
     }

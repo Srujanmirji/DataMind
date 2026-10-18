@@ -1,5 +1,27 @@
 # Validation — 18 October 2026
 
+## Current hosted configuration and plan cache
+
+18 October 2026: Gemma `gemma-4-26b-a4b-it` via Google AI Studio is running with
+live Snowflake. 96 automated tests and Ruff pass (one optional Pillow test skipped).
+Live checks: India's 2022 life expectancy = 71.698 years (16.4s), and internet use
+14.9% (2015) to 60.2523% (2023), +304.377852% (25.8s).
+
+Plan caching reuses only validated successful query plans for one hour (256 per
+dataset, memory only). Identical life-expectancy requests took 16.11s then 1.43s;
+Snowflake query IDs were `01c7cfdb-000e-1619-0000-0002b3de7b3d` and
+`01c7cfdb-000e-16df-0002-b3de000183a6`. SQL and calculations still run each time.
+Tests cover expiry, configuration invalidation, fresh rows and IDs, two-query
+comparisons, bounded storage and refusal/error exclusion.
+
+Full hosted evaluation is pending. The initial World Bank local-model run was 8/10;
+subsequent runs were 15/16 overall and 9/10 World Bank, followed by 14/16 after a
+speed change that was reverted. Later fixes have not had a completed full evaluation.
+These are developer-authored tests, not an external blind benchmark.
+
+The sections below are historical: wine data and its data-change proof were removed
+when switching to World Bank WDI. Their scores do not establish current coverage.
+
 ## Current feature: multi-step analysis 0.2.0
 
 - 85 automated tests pass; Ruff check/format pass; mypy checks all 13 app modules;
