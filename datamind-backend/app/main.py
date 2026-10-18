@@ -68,6 +68,18 @@ def create_app(
             },
         )
 
+    @app.get("/")
+    def root():
+        return {
+            "name": "DataMind Backend API",
+            "version": "0.2.0",
+            "status": "online",
+            "docs": "/docs",
+            "health": "/health",
+            "datasets": "/datasets",
+            "message": "DataMind backend is active. Visit /docs for interactive Swagger UI.",
+        }
+
     @app.get("/health")
     def health():
         return {
