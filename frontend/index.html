@@ -2708,8 +2708,10 @@
   <script>
     // DataMind API client: datasets, questions, answers and evidence.
     (function () {
-      // Same origin when served by the backend (http://127.0.0.1:8000/); local file falls back to it.
-      const API = location.protocol.startsWith('http') ? '' : 'http://127.0.0.1:8000';
+      // Use same origin if already served on port 8000; otherwise point to backend on port 8000.
+      const API = (location.port === '8000') ? '' : 'http://127.0.0.1:8000';
+
+
       const DEFAULT_DATASET = 'worldbank_wdi';
       const EXAMPLES = {
         worldbank_wdi: [
