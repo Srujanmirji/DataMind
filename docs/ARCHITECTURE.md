@@ -1,5 +1,8 @@
 # Architecture
 
+> **Legacy document.** This describes the superseded `src/datamind/` skeleton (Gemma 4, Streamlit).
+> The working system is [`datamind-backend/`](../datamind-backend/README.md).
+
 DataMind answers a plain-language question by **running SQL in Snowflake** and
 using **Gemma 4** only to interpret the question and explain the returned rows.
 The model never executes anything; code never invents facts.

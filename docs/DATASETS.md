@@ -1,5 +1,8 @@
 # Datasets, licences and preparation (S5)
 
+> **Legacy document.** This describes the superseded `src/datamind/` skeleton (Gemma 4, Streamlit).
+> The working system is [`datamind-backend/`](../datamind-backend/README.md).
+
 No dataset files are committed to this repository (gate G4). `data/` and
 `*.csv` are git-ignored.
 

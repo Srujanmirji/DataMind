@@ -1,5 +1,8 @@
 # Evaluation
 
+> **Legacy document.** This describes the superseded `src/datamind/` skeleton (Gemma 4, Streamlit).
+> The working system is [`datamind-backend/`](../datamind-backend/README.md).
+
 Judges score correctness against ground truth they compute themselves, on
 questions you have not seen — and a Poor correctness score caps PS1 at 50.
 This folder is how we find out first.
