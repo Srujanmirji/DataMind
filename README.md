@@ -31,6 +31,7 @@ src/datamind/        agent pipeline, Gemma backends, SQL guard, Snowflake client
 eval/                question set with hand-written reference SQL and expected results
 tests/               unit tests (+ executable spec for the SQL guard)
 docs/                architecture, datasets & licences, compliance tracker
+team/                who owns what, task lists, order of work
 ```
 
 ## Setup
