@@ -13,6 +13,8 @@ class CompiledQuery:
     sql: str
     parameters: list[str | int]
     limit: int
+    columns: list[str] | None = None
+
 
 
 def compile_plan(plan: Plan, dataset: dict, database: str, schema: str) -> CompiledQuery:
@@ -88,4 +90,5 @@ def compile_plan(plan: Plan, dataset: dict, database: str, schema: str) -> Compi
         sql += "\nORDER BY " + ", ".join(ordering)
     # Fetch one extra group to detect truncation; never limit the source rows.
     sql += f"\nLIMIT {plan.limit + 1}"
-    return CompiledQuery(sql, parameters, plan.limit)
+    return CompiledQuery(sql, parameters, plan.limit, columns=selected)
+

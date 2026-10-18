@@ -58,9 +58,14 @@ class Planner:
                     }
                     for m in messages[1:]
                 ],
-                "generationConfig": {"temperature": 0, "maxOutputTokens": 2000},
+                "generationConfig": {
+                    "temperature": 0,
+                    "maxOutputTokens": 4096,
+                    "responseMimeType": "application/json",
+                },
             },
         )
+
         if response.status_code == 429:
             raise BackendError("model_rate_limited", "Hosted Gemma is rate limited. Wait and retry.", 429)
         response.raise_for_status()

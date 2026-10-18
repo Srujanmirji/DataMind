@@ -43,10 +43,11 @@ def main():
     if args.dev:
         if args.replace:
             stop_previous(args.port)
-        app = create_app(settings)
+        app = create_app(settings, dev_mode=True)
         print(f"DataMind server running in DEV mode on http://127.0.0.1:{args.port}...")
         uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
         return
+
     if not settings.snowflake_account or not settings.snowflake_user:
         raise SystemExit(
             "Missing account/login name. Copy .env.example to .env and edit it, or use --dev for local mode."

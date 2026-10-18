@@ -22,17 +22,21 @@ FRONTEND = ROOT.parent / "frontend"
 
 
 def create_app(
-    settings: Settings | None = None, private_key: bytes | None = None, service: QuestionService | None = None
+    settings: Settings | None = None,
+    private_key: bytes | None = None,
+    service: QuestionService | None = None,
+    dev_mode: bool = False,
 ) -> FastAPI:
     settings = settings or Settings()
     catalog = load_datasets(settings)
     lock = Lock()
     services = {
         dataset_id: QuestionService(
-            settings, dataset, Planner(settings, dataset), Warehouse(settings, private_key), lock
+            settings, dataset, Planner(settings, dataset), Warehouse(settings, private_key, dev_mode=dev_mode), lock
         )
         for dataset_id, dataset in catalog.items()
     }
+
     if service is not None:
         services[service.dataset["id"]] = service
     store = RunStore(settings.history_path)
