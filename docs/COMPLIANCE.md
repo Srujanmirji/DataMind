@@ -20,7 +20,7 @@ Last updated: 18 October 2026, after the 18/18 live evaluation.
 | G2 | Judge can run without undisclosed creds/paid services, or feasible path documented | `README.md` "Fresh installation"; Snowflake trial + local Ollama, no paid services | 🟡 not yet tried on a clean machine by someone outside the team |
 | G3 | Demo shows the real system | Recording of a live run with query IDs | ❌ |
 | G4 | Dataset sources + licences disclosed; no non-redistributable data committed | `UCI_DATA.md`, `/README.md` "Datasets and licences"; `data/` is git-ignored | ✅ |
-| G5 | No keys/tokens/passwords in repo | `.env` and `*.p8` ignored; key stays in `~/.snowflake/`; manual scan of tracked files and the handoff zip found none (18 Oct) | 🟡 no automated secret scan in CI (there is no CI yet) |
+| G5 | No keys/tokens/passwords in repo | `.env` and `*.p8` ignored; key stays in `~/.snowflake/`; manual scan of tracked files and the handoff zip found none (18 Oct) | 🟡 no automated secret scan; `/.github/workflows/ci.yml` runs only lint and tests |
 | P1 | Snowflake used meaningfully | Every answer is computed by SQL run in Snowflake; responses carry query IDs | ✅ |
 | P2 | Gemma used meaningfully | Gemma 3 12B routes each question and writes its typed plan (`app/planner.py`) | ✅ |
 | P3 | Answers derived from queries run at question time | Each question runs fresh queries; data-change proof 1,277 → 1,278 → 1,277 (`VALIDATION.md`) | ✅ |
@@ -36,7 +36,7 @@ Last updated: 18 October 2026, after the 18/18 live evaluation.
 | M5 | Inspectable evidence (SQL, rows, query ID) | Response `evidence`: SQL, bound parameters, rows, query ID | ✅ in the API; no UI shows it yet |
 | M6 | Ambiguity, missing data, empty results, unsupported | Clarification / refusal states; live cases `tpch_undefined_best`, `wine_missing_dates`, `wine_injection`, `wine_zero_reference` pass | ✅ |
 | M7 | Meaningful Snowflake + Gemma integration | `README.md` "Architecture and safety" | ✅ |
-| M8 | Working, reproducible OSS implementation | `requirements.txt`, `pyproject.toml`, 85 tests, 18/18 live eval | 🟡 no CI; no outside reproduction yet |
+| M8 | Working, reproducible OSS implementation | `requirements.txt`, `pyproject.toml`, 85 tests, 18/18 live eval | 🟡 CI exists but tests only the legacy root package, not `datamind-backend/`; no outside reproduction yet |
 
 ## Submission items (S1–S10)
 
@@ -67,5 +67,5 @@ Last updated: 18 October 2026, after the 18/18 live evaluation.
 
 1. **Demo recording** (G3, S7, S9): a failed gate means not ranked.
 2. **A UI** showing the evidence (M5, PS1 extras): the API is ready; see `UI_HANDOFF.md`.
-3. **CI with tests and a secret scan** (G5, M8).
+3. **CI for `datamind-backend/`** (Python 3.13, its tests) **plus a secret scan** (G5, M8). The current workflow covers only the legacy skeleton.
 4. **One clean-machine run** by someone outside the core work (G2).
