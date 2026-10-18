@@ -12,9 +12,10 @@ analysis with SQL, query IDs and calculation evidence.
 - [Connect a teammate's laptop to Snowflake](datamind-backend/TEAM_ACCESS.md)
 - [Measured results and remaining live-verification limits](datamind-backend/VALIDATION.md)
 
-The backend has 85 passing automated tests, 12/12 local UCI answer checks and 6/6
-TPC-H semantic-plan checks. The full 18-case live Snowflake run is incomplete;
-two live cases passed before its process exited. See the validation record.
+The backend passes **18/18** cases in the live evaluation (real Gemma 3 12B plus real
+Snowflake, checked against independent oracles), along with 85 automated tests.
+The cases are developer-authored, not an external blind benchmark. Details and
+Snowflake query IDs are in the validation record.
 
 The sections below document the original `src/datamind/` skeleton and its design.
 Use the backend links above for the implemented demo and current setup.

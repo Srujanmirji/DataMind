@@ -384,6 +384,10 @@ benchmark. Independent static SQL verifies TPC-H, and direct Python arithmetic o
 the original downloaded UCI observations verifies wine answers. Expected answers
 and oracle code are never included in model prompts.
 
+Latest live result (18 October 2026): **18/18** with Gemma 3 12B and Snowflake.
+See [VALIDATION.md](VALIDATION.md) for the run, the bug the first attempt caught,
+and sample query IDs.
+
 For private-key-free planner development, `.venv/bin/python -m scripts.evaluate`
 uses real Gemma plus SQLite loaded with the original UCI data. Its reports are
 explicitly labelled **NOT Snowflake** and cannot establish live warehouse integration.

@@ -33,19 +33,11 @@ answers from the old backend, not live tests of the new multi-step feature.
   copy. Actual distinct Snowflake query IDs and restored/source-unchanged checks are
   in data/change-demo/proof.json and REPORT.md. The original source was not edited.
 
-## Current live boundary
-
-The old user-started server remains running on port 8000 with its unlocked key.
-New code has not replaced that process. Full new-feature Snowflake evaluation needs
-one private local unlock via `python run.py --evaluate --replace`. It executes only
-SELECT queries and replaces the old DataMind listener only after all cases pass.
-The passphrase is neither available to the agent nor stored in the project.
-Local SQLite evidence is explicitly labelled and is not live Snowflake proof.
+## Known caveats
 
 The test client emits an existing Starlette/httpx deprecation warning; tests and
 runtime HTTP requests pass despite the warning. Concurrent edits between the two
 queries can change comparison inputs; calculations do not promise one snapshot.
-
 
 ## Final local model evaluation
 
@@ -60,16 +52,30 @@ blind benchmark. Latest TPC-H semantic plans: **6/6 passed**, with metric, targe
 baseline, grouping and all-groups limit checked; source SQL was compiled, not executed.
 Plan report: `data/planner-evaluation/results.json`.
 
-## Partial live 0.2.0 evaluation
+## Live 0.2.0 evaluation — 18/18 (18 October 2026)
 
-The user privately unlocked the key and started `run.py --evaluate --replace`.
-Two TPC-H cases passed with actual Snowflake query IDs and independent SQL oracles:
-year-over-year order counts and France's average-order-value comparison. The process
-then exited before completing the other cases; the old server was left running.
-Partial results: `data/evaluations/20261018T081248Z-ad449718/results.json`.
-The year comparison returned **226,645 -> 227,597**, difference **952** and percentage
-change **0.420040%**. Source query IDs:
-`01c7ceed-000e-1619-0000-0002b3de71a5` and `01c7ceee-000e-1673-0000-0002b3de81ad`.
-Do not claim the entire 18-case live suite passed or that 0.2.0 replaced the old server.
-The evaluator now prints RUN case counters before each operation so long model
-inference is visibly distinguished from a stopped process.
+Live Gemma 3 12B and live Snowflake, started privately by the user with
+`run.py --evaluate --replace`. All **18/18** cases passed against independent oracles
+(static SQL for TPC-H, source-data arithmetic for UCI): 6 TPC-H and 12 UCI cases,
+including ambiguity, missing dates, zero baselines and a prompt-injection refusal.
+Because every case passed, 0.2.0 replaced the old server on port 8000.
+Report: `data/evaluations/20261018T094254Z-0c3b86bb/REPORT.md` (local; `data/` is gitignored).
+
+The first full live attempt scored **17/18**
+(`data/evaluations/20261018T092139Z-820c8a89`). The failure was real: Snowflake's
+`AVG` over an integer column returns 6 decimals, so the white-versus-red quality
+percentage came out as 4.291785% instead of the exact 4.291800%. Average metrics now
+cast inputs to `NUMBER(38, 6)`, which gives 12-decimal results. The re-run returned
+4.291800%. SQLite returns floats, which is why local runs had not shown this.
+
+Sample evidence from the 18/18 run:
+
+| Case | Answer | Snowflake query IDs |
+|---|---|---|
+| 1993 → 1994 order counts | 226,645 → 227,597; +952; +0.420040% | `01c7cf47-000e-1673-0000-0002b3de82bd`, `01c7cf47-000e-16b8-0002-b3de0001317e` |
+| White vs red mean quality | 5.877909 vs 5.636023; +0.241887; +4.291800% | `01c7cf4a-000e-16cf-0002-b3de000160ca`, `01c7cf4a-000e-16d0-0002-b3de000150ca` |
+
+Earlier partial attempt (2 cases, before the fix):
+`data/evaluations/20261018T081248Z-ad449718`. The evaluator prints RUN case
+counters before each operation so long model inference is visibly distinguished
+from a stopped process.
