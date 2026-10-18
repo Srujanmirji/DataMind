@@ -124,8 +124,9 @@
       position: fixed;
       inset: 0;
       overflow: hidden;
-      background: #0a0d12;
+      background: radial-gradient(ellipse at 50% 15%, #162447 0%, #0c1020 50%, #070913 100%);
     }
+
 
     .stage-canvas {
       position: absolute;
@@ -2118,8 +2119,12 @@
     (function () {
       const canvas = document.getElementById('glassFoldCanvas');
       if (!canvas) return;
-      const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
-      if (!gl) return;
+      const gl = canvas.getContext('webgl', { antialias: false, alpha: false }) ||
+                 canvas.getContext('experimental-webgl', { antialias: false, alpha: false });
+      if (!gl) {
+        console.warn('WebGL not available; using CSS stage gradient.');
+        return;
+      }
 
       const VERTEX = `
         attribute vec2 position;
@@ -2131,9 +2136,14 @@
       `;
 
       const FRAGMENT = `
+        #ifdef GL_FRAGMENT_PRECISION_HIGH
         precision highp float;
+        #else
+        precision mediump float;
+        #endif
 
         uniform float u_time;
+
         uniform vec3 u_color1;
         uniform vec3 u_color2;
         uniform vec3 u_color3;
@@ -2444,6 +2454,7 @@
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') closeAllDropdowns();
       });
+
     })();
 
     // User Authentication & Personalization Engine

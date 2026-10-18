@@ -56,10 +56,9 @@ Last updated: 18 October 2026, after switching to World Bank WDI and connecting 
 ## PS1 extras
 
 | Item | Where | Status |
-|---|---|---|
 | Evidence of grounding (query IDs / history, comparison with independent results) | `VALIDATION.md` current hosted smoke checks and historical evaluation query IDs; independent oracles in `scripts/evaluate.py` | ✅ |
 | Demo of answer changing when data changes | To redo on `DATAMIND_DEMO.WORLDBANK` | ❌ |
-| Evidence of Snowflake and Gemma roles | UI shows the Snowflake query ID per answer; `/health` reports the model | ✅ |
+| Evidence of Snowflake and Gemma roles | Rendered in Glassmorphic Web UI and Streamlit UI; Snowflake query ID per answer; `/health` reports the model | ✅ |
 | Evaluation question set with expected answers (recommended) | `evaluation/questions.json` + oracles | ✅ |
 | Reproducible Snowflake setup script (recommended) | `sql/setup.sql`, `TEAM_ACCESS.md` | 🟡 run by us; not by an outsider |
 
@@ -67,4 +66,6 @@ Last updated: 18 October 2026, after switching to World Bank WDI and connecting 
 
 1. **Demo recording** (G3, S7, S9): a failed gate means not ranked.
 2. **Data-change proof on World Bank data** (P3, PS1 extra).
-3. **One clean-machine run** by someone outside the core work (G2).
+3. **One clean-machine test / outsider run** (G2): verify reproducible fresh install instructions on an external machine.
+4. **Connecting Friend's Snowflake & Cloud/Local Gemma**: hook up credentials to `.env` for final end-to-end video recording.
+

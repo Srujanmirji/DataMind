@@ -88,7 +88,9 @@ def test_multimodal_empty_input_rejected():
     assert response.json()["error"]["code"] == "invalid_input"
 
 
-def test_multimodal_route_disabled_by_default():
-    app = create_app(service=MagicMock(dataset={"id": "tpch_orders"}))
+def test_multimodal_route_disabled_by_default(monkeypatch):
+    monkeypatch.delenv("ENABLE_MULTIMODAL", raising=False)
+    app = create_app(settings=Settings(enable_multimodal=False), service=MagicMock(dataset={"id": "tpch_orders"}))
     response = TestClient(app).post("/questions/multimodal", data={"question": "How many orders?"})
     assert response.status_code == 404
+
