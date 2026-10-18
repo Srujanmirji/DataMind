@@ -7,7 +7,10 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=ROOT / ".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=[ROOT / ".env", ROOT.parent / ".env"],
+        extra="ignore",
+    )
 
     snowflake_account: str = ""
     snowflake_user: str = ""

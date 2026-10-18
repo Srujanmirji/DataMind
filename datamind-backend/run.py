@@ -29,18 +29,32 @@ def main():
         action="store_true",
         help="Gracefully replace only a verified existing DataMind server on this port.",
     )
+    parser.add_argument(
+        "--dev",
+        action="store_true",
+        help="Start server in development mode without requiring Snowflake credentials.",
+    )
     args = parser.parse_args()
     if not 1 <= args.port <= 65535:
         parser.error("Port must be in 1..65535.")
     if listener(args.port) is not None and not args.replace:
         raise SystemExit("DataMind already occupies this port. Use --replace or choose another --port.")
+    settings = Settings()
+    if args.dev:
+        if args.replace:
+            stop_previous(args.port)
+        app = create_app(settings)
+        print(f"DataMind server running in DEV mode on http://127.0.0.1:{args.port}...")
+        uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
+        return
     if args.demo:
         from scripts.demo import begin_report
 
         begin_report()
-    settings = Settings()
     if not settings.snowflake_account or not settings.snowflake_user:
-        raise SystemExit("Missing account/login name. Copy .env.example to .env and edit it.")
+        raise SystemExit(
+            "Missing account/login name. Copy .env.example to .env and edit it, or use --dev for local mode."
+        )
     key_path = settings.snowflake_private_key_path.expanduser()
     if not key_path.is_file():
         raise SystemExit(f"Private key not found: {key_path}")
