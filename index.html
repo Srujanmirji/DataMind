@@ -567,8 +567,178 @@
       position: relative;
     }
 
-    .modal-overlay.open .login-modal {
+    .modal-overlay.open .login-modal,
+    .modal-overlay.open .nav-modal {
       transform: translateY(0) scale(1);
+    }
+
+    /* Navigation Dialog Modal */
+    .nav-modal {
+      width: min(94vw, 700px);
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      background: rgba(16, 20, 32, 0.96);
+      backdrop-filter: blur(36px) saturate(140%);
+      -webkit-backdrop-filter: blur(36px) saturate(140%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      border-radius: 24px;
+      padding: 24px 26px 26px;
+      transform: translateY(16px) scale(0.96);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      color: #e2e8f0;
+      overflow: hidden;
+    }
+
+    .nav-modal-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 18px;
+      margin-right: 42px;
+      flex-shrink: 0;
+    }
+
+    .nav-modal-tab {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      background: transparent;
+      border: none;
+    }
+
+    .nav-modal-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-modal-tab.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .nav-tab-body {
+      overflow-y: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    .nav-tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      animation: fadeInTab 0.22s ease-out;
+    }
+
+    .nav-tab-content.active {
+      display: flex;
+    }
+
+    @keyframes fadeInTab {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .nav-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .nav-info-card {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-info-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .nav-info-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-card-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .nav-card-title {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .nav-card-desc {
+      font-size: 12px;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .nav-card-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      width: fit-content;
+      margin-top: 4px;
+    }
+
+    .nav-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(168, 85, 247, 0.35));
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      margin-top: 6px;
+      width: fit-content;
+    }
+
+    .nav-action-btn:hover {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.55), rgba(168, 85, 247, 0.55));
+      box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+      transform: translateY(-0.5px);
     }
 
     .modal-close-btn {
@@ -950,6 +1120,7 @@
       gap: calc(8 * var(--u));
       width: 100%;
       margin-top: calc(12 * var(--u));
+      min-width: 0;
     }
 
     .tools-left {
@@ -957,7 +1128,8 @@
       align-items: center;
       gap: calc(6 * var(--u));
       min-width: 0;
-      flex-shrink: 1;
+      flex: 1 1 auto;
+      overflow: hidden;
     }
 
     /* Plus Button */
@@ -1072,6 +1244,9 @@
       align-items: center;
       gap: calc(var(--chip-gap) * var(--u));
       height: calc(30 * var(--u));
+      min-width: 0;
+      flex: 0 1 auto;
+      overflow: hidden;
     }
 
     .chip {
@@ -1120,6 +1295,7 @@
       gap: calc(7 * var(--u));
       margin-left: auto;
       flex-shrink: 0;
+      min-width: 0;
     }
 
     /* Model Dropdown Trigger */
@@ -1139,6 +1315,18 @@
       transition: color .18s ease, background .18s ease;
       background: transparent;
       border: none;
+      max-width: calc(220 * var(--u));
+      min-width: 0;
+      flex-shrink: 0;
+    }
+
+    #modelNameText {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+      max-width: calc(180 * var(--u));
+      vertical-align: middle;
     }
 
     .model:hover {
@@ -1872,10 +2060,10 @@
 
         <!-- Center Nav Links -->
         <nav class="nav-links" aria-label="Main navigation">
-          <a href="#" class="nav-item">Features</a>
-          <a href="#" class="nav-item">Datasets</a>
-          <a href="#" class="nav-item">Analytics</a>
-          <a href="#" class="nav-item">Docs</a>
+          <a href="#features" class="nav-item" id="navFeatures">Features</a>
+          <a href="#datasets" class="nav-item" id="navDatasets">Datasets</a>
+          <a href="#analytics" class="nav-item" id="navAnalytics">Analytics</a>
+          <a href="#docs" class="nav-item" id="navDocs">Docs</a>
         </nav>
 
         <!-- Right Get Started Button -->
@@ -1928,10 +2116,10 @@
       <div class="sheet">
         <div class="sheet-inner">
           <div class="sheet-panel">
-            <a href="#" class="sheet-link">Features</a>
-            <a href="#" class="sheet-link">Datasets</a>
-            <a href="#" class="sheet-link">Analytics</a>
-            <a href="#" class="sheet-link">Docs</a>
+            <a href="#features" class="sheet-link" id="sheetFeatures">Features</a>
+            <a href="#datasets" class="sheet-link" id="sheetDatasets">Datasets</a>
+            <a href="#analytics" class="sheet-link" id="sheetAnalytics">Analytics</a>
+            <a href="#docs" class="sheet-link" id="sheetDocs">Docs</a>
             <a href="#" class="sheet-cta" id="sheetGetStarted">Get Started</a>
           </div>
         </div>
@@ -2457,198 +2645,297 @@
 
     })();
 
-    // User Authentication & Personalization Engine
+    // User Authentication, Personalization Engine & Navigation Modals
     (function () {
-      const modalOverlay = document.getElementById('loginModalOverlay');
-      const modalCloseBtn = document.getElementById('modalCloseBtn');
-      const btnGetStarted = document.getElementById('btnGetStarted');
-      const sheetGetStarted = document.getElementById('sheetGetStarted');
-      const loginForm = document.getElementById('loginForm');
-      const loginNameInput = document.getElementById('loginNameInput');
-      const loginEmailInput = document.getElementById('loginEmailInput');
-      const quickProfileBtns = document.querySelectorAll('.quick-profile-btn');
+      function initAuthAndNav() {
+        const modalOverlay = document.getElementById('loginModalOverlay');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const btnGetStarted = document.getElementById('btnGetStarted');
+        const sheetGetStarted = document.getElementById('sheetGetStarted');
+        const loginForm = document.getElementById('loginForm');
+        const loginNameInput = document.getElementById('loginNameInput');
+        const loginEmailInput = document.getElementById('loginEmailInput');
+        const quickProfileBtns = document.querySelectorAll('.quick-profile-btn');
 
-      const userProfileWrap = document.getElementById('userProfileWrap');
-      const btnUserProfile = document.getElementById('btnUserProfile');
-      const profileDropdown = document.getElementById('profileDropdown');
-      const btnLogout = document.getElementById('btnLogout');
+        const userProfileWrap = document.getElementById('userProfileWrap');
+        const btnUserProfile = document.getElementById('btnUserProfile');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const btnLogout = document.getElementById('btnLogout');
 
-      const navUserName = document.getElementById('navUserName');
-      const navUserAvatar = document.getElementById('navUserAvatar');
-      const menuUserName = document.getElementById('menuUserName');
-      const menuUserEmail = document.getElementById('menuUserEmail');
-      const menuUserAvatar = document.getElementById('menuUserAvatar');
+        const navUserName = document.getElementById('navUserName');
+        const navUserAvatar = document.getElementById('navUserAvatar');
+        const menuUserName = document.getElementById('menuUserName');
+        const menuUserEmail = document.getElementById('menuUserEmail');
+        const menuUserAvatar = document.getElementById('menuUserAvatar');
 
-      const badgeText = document.getElementById('badgeText');
-      const userGreetingSub = document.getElementById('userGreetingSub');
-      const greetingUserName = document.getElementById('greetingUserName');
-      const aiTextarea = document.getElementById('aiTextarea');
+        const badgeText = document.getElementById('badgeText');
+        const userGreetingSub = document.getElementById('userGreetingSub');
+        const greetingUserName = document.getElementById('greetingUserName');
+        const aiTextarea = document.getElementById('aiTextarea');
 
-      function openLoginModal() {
-        if (!modalOverlay) return;
-        modalOverlay.classList.add('open');
-        setTimeout(() => loginNameInput?.focus(), 150);
-      }
+        function openLoginModal() {
+          const overlay = document.getElementById('loginModalOverlay');
+          if (!overlay) return;
+          overlay.classList.add('open');
+          setTimeout(() => document.getElementById('loginNameInput')?.focus(), 150);
+        }
 
-      function closeLoginModal() {
-        if (!modalOverlay) return;
-        modalOverlay.classList.remove('open');
-      }
+        function closeLoginModal() {
+          const overlay = document.getElementById('loginModalOverlay');
+          if (!overlay) return;
+          overlay.classList.remove('open');
+        }
 
-      if (btnGetStarted) {
-        btnGetStarted.addEventListener('click', function (e) {
-          e.preventDefault();
-          openLoginModal();
-        });
-      }
+        if (btnGetStarted) {
+          btnGetStarted.addEventListener('click', function (e) {
+            e.preventDefault();
+            openLoginModal();
+          });
+        }
 
-      if (sheetGetStarted) {
-        sheetGetStarted.addEventListener('click', function (e) {
-          e.preventDefault();
+        if (sheetGetStarted) {
+          sheetGetStarted.addEventListener('click', function (e) {
+            e.preventDefault();
+            const menuCheckbox = document.getElementById('menu');
+            if (menuCheckbox) menuCheckbox.checked = false;
+            openLoginModal();
+          });
+        }
+
+        if (modalCloseBtn) {
+          modalCloseBtn.addEventListener('click', closeLoginModal);
+        }
+
+        if (modalOverlay) {
+          modalOverlay.addEventListener('click', function (e) {
+            if (e.target === modalOverlay) closeLoginModal();
+          });
+        }
+
+        // Nav Details Dialog Modal Handlers
+        const navModalOverlay = document.getElementById('navModalOverlay');
+        const navModalCloseBtn = document.getElementById('navModalCloseBtn');
+        const navTabs = document.querySelectorAll('.nav-modal-tab');
+
+        function switchNavTab(tabName) {
+          const tabs = document.querySelectorAll('.nav-modal-tab');
+          tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabName));
+          const contents = {
+            features: document.getElementById('tabFeatures'),
+            datasets: document.getElementById('tabDatasets'),
+            analytics: document.getElementById('tabAnalytics'),
+            docs: document.getElementById('tabDocs')
+          };
+          Object.entries(contents).forEach(([name, el]) => {
+            if (el) el.classList.toggle('active', name === tabName);
+          });
+        }
+
+        function openNavModal(tabName) {
+          const overlay = document.getElementById('navModalOverlay');
+          if (!overlay) return;
+          switchNavTab(tabName || 'features');
+          overlay.classList.add('open');
           const menuCheckbox = document.getElementById('menu');
           if (menuCheckbox) menuCheckbox.checked = false;
-          openLoginModal();
-        });
-      }
-
-      if (modalCloseBtn) {
-        modalCloseBtn.addEventListener('click', closeLoginModal);
-      }
-
-      if (modalOverlay) {
-        modalOverlay.addEventListener('click', function (e) {
-          if (e.target === modalOverlay) closeLoginModal();
-        });
-      }
-
-      function applyUserLogin(user) {
-        if (!user || !user.name) return;
-        const fullName = user.name.trim();
-        const firstName = fullName.split(' ')[0] || fullName;
-        const initial = fullName.charAt(0).toUpperCase();
-        const email = user.email || `${firstName.toLowerCase()}@datamind.ai`;
-
-        // Hide "Get Started", show profile pill
-        if (btnGetStarted) btnGetStarted.style.display = 'none';
-        if (sheetGetStarted) sheetGetStarted.textContent = `Signed in as ${firstName}`;
-        if (userProfileWrap) userProfileWrap.style.display = 'inline-flex';
-
-        if (navUserName) navUserName.textContent = firstName;
-        if (navUserAvatar) navUserAvatar.textContent = initial;
-        if (menuUserName) menuUserName.textContent = fullName;
-        if (menuUserEmail) menuUserEmail.textContent = email;
-        if (menuUserAvatar) menuUserAvatar.textContent = initial;
-
-        // Personalize Hero
-        if (badgeText) badgeText.textContent = `Pro Workspace Connected • ${firstName}`;
-        if (greetingUserName) greetingUserName.textContent = firstName;
-        if (userGreetingSub) userGreetingSub.style.display = 'inline-flex';
-
-        // Personalize Composer placeholder
-        if (aiTextarea) {
-          aiTextarea.setAttribute('placeholder', `Ask anything about your data, ${firstName}...`);
         }
 
-        // Save to localStorage
-        try {
-          localStorage.setItem('datamind_user', JSON.stringify({ name: fullName, email: email }));
-        } catch (e) {}
-
-        closeLoginModal();
-      }
-
-      function applyUserLogout() {
-        try {
-          localStorage.removeItem('datamind_user');
-        } catch (e) {}
-
-        if (btnGetStarted) btnGetStarted.style.display = 'inline-flex';
-        if (sheetGetStarted) sheetGetStarted.textContent = 'Get Started';
-        if (userProfileWrap) userProfileWrap.style.display = 'none';
-        if (profileDropdown) profileDropdown.classList.remove('open');
-
-        // Reset Hero
-        if (badgeText) badgeText.textContent = 'Next-Gen Snowflake AI Engine';
-        if (userGreetingSub) userGreetingSub.style.display = 'none';
-
-        // Reset Composer
-        if (aiTextarea) {
-          aiTextarea.setAttribute('placeholder', 'Ask anything about your data in plain language...');
+        function closeNavModal() {
+          const overlay = document.getElementById('navModalOverlay');
+          if (!overlay) return;
+          overlay.classList.remove('open');
         }
-      }
 
-      if (loginForm) {
-        loginForm.addEventListener('submit', function (e) {
-          e.preventDefault();
-          const name = loginNameInput.value.trim();
-          const email = loginEmailInput.value.trim();
-          if (name) {
-            applyUserLogin({ name, email });
-          }
+        // Expose globally for inline button calls or programmatic switches
+        window.openNavModal = openNavModal;
+        window.closeNavModal = closeNavModal;
+        window.switchNavTab = switchNavTab;
+
+        navTabs.forEach(btn => {
+          btn.addEventListener('click', () => switchNavTab(btn.dataset.tab));
         });
-      }
 
-      quickProfileBtns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          const name = btn.getAttribute('data-name');
-          const email = btn.getAttribute('data-email');
-          if (name) {
-            applyUserLogin({ name, email });
-          }
-        });
-      });
-
-      // Profile dropdown toggle
-      if (btnUserProfile && profileDropdown) {
-        btnUserProfile.addEventListener('click', function (e) {
-          e.stopPropagation();
-          const isOpen = profileDropdown.classList.contains('open');
-          const plusDropdown = document.getElementById('plusDropdown');
-          const modelDropdown = document.getElementById('modelDropdown');
-          if (plusDropdown) plusDropdown.classList.remove('open');
-          if (modelDropdown) modelDropdown.classList.remove('open');
-
-          if (!isOpen) {
-            profileDropdown.classList.add('open');
-            btnUserProfile.setAttribute('aria-expanded', 'true');
-          } else {
-            profileDropdown.classList.remove('open');
-            btnUserProfile.setAttribute('aria-expanded', 'false');
-          }
-        });
-      }
-
-      if (btnLogout) {
-        btnLogout.addEventListener('click', function () {
-          applyUserLogout();
-        });
-      }
-
-      // Close profile dropdown on outside click
-      document.addEventListener('click', function (e) {
-        if (profileDropdown && !profileDropdown.contains(e.target) && e.target !== btnUserProfile) {
-          profileDropdown.classList.remove('open');
-          if (btnUserProfile) btnUserProfile.setAttribute('aria-expanded', 'false');
+        if (navModalCloseBtn) {
+          navModalCloseBtn.addEventListener('click', closeNavModal);
         }
-      });
 
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
+        if (navModalOverlay) {
+          navModalOverlay.addEventListener('click', (e) => {
+            if (e.target === navModalOverlay) closeNavModal();
+          });
+        }
+
+        ['Features', 'Datasets', 'Analytics', 'Docs'].forEach(name => {
+          const idName = name.toLowerCase();
+          const desktopLink = document.getElementById('nav' + name);
+          const mobileLink = document.getElementById('sheet' + name);
+          if (desktopLink) {
+            desktopLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              openNavModal(idName);
+            });
+          }
+          if (mobileLink) {
+            mobileLink.addEventListener('click', (e) => {
+              e.preventDefault();
+              openNavModal(idName);
+            });
+          }
+        });
+
+        window.selectDatasetFromModal = function(id) {
+          document.dispatchEvent(new CustomEvent('datamind:dataset', { detail: id }));
+          closeNavModal();
+        };
+
+        const btnTryFeatureQuery = document.getElementById('btnTryFeatureQuery');
+        if (btnTryFeatureQuery) {
+          btnTryFeatureQuery.addEventListener('click', () => {
+            closeNavModal();
+            const ta = document.querySelector('.ai-textarea') || document.getElementById('aiTextarea');
+            if (ta) {
+              ta.value = "What were the top 5 countries by GDP per capita in 2023?";
+              ta.focus();
+              document.dispatchEvent(new CustomEvent('datamind:ask', { detail: ta.value }));
+            }
+          });
+        }
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeLoginModal();
+            closeNavModal();
+          }
+        });
+
+        function applyUserLogin(user) {
+          if (!user || !user.name) return;
+          const fullName = user.name.trim();
+          const firstName = fullName.split(' ')[0] || fullName;
+          const initial = fullName.charAt(0).toUpperCase();
+          const email = user.email || `${firstName.toLowerCase()}@datamind.ai`;
+
+          // Hide "Get Started", show profile pill
+          if (btnGetStarted) btnGetStarted.style.display = 'none';
+          if (sheetGetStarted) sheetGetStarted.textContent = `Signed in as ${firstName}`;
+          if (userProfileWrap) userProfileWrap.style.display = 'inline-flex';
+
+          if (navUserName) navUserName.textContent = firstName;
+          if (navUserAvatar) navUserAvatar.textContent = initial;
+          if (menuUserName) menuUserName.textContent = fullName;
+          if (menuUserEmail) menuUserEmail.textContent = email;
+          if (menuUserAvatar) menuUserAvatar.textContent = initial;
+
+          // Personalize Hero
+          if (badgeText) badgeText.textContent = `Pro Workspace Connected • ${firstName}`;
+          if (greetingUserName) greetingUserName.textContent = firstName;
+          if (userGreetingSub) userGreetingSub.style.display = 'inline-flex';
+
+          // Personalize Composer placeholder
+          if (aiTextarea) {
+            aiTextarea.setAttribute('placeholder', `Ask anything about your data, ${firstName}...`);
+          }
+
+          // Save to localStorage
+          try {
+            localStorage.setItem('datamind_user', JSON.stringify({ name: fullName, email: email }));
+          } catch (e) {}
+
           closeLoginModal();
-          if (profileDropdown) profileDropdown.classList.remove('open');
         }
-      });
 
-      // Check saved user on startup
-      try {
-        const saved = localStorage.getItem('datamind_user');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed && parsed.name) {
-            applyUserLogin(parsed);
+        function applyUserLogout() {
+          try {
+            localStorage.removeItem('datamind_user');
+          } catch (e) {}
+
+          if (btnGetStarted) btnGetStarted.style.display = 'inline-flex';
+          if (sheetGetStarted) sheetGetStarted.textContent = 'Get Started';
+          if (userProfileWrap) userProfileWrap.style.display = 'none';
+          if (profileDropdown) profileDropdown.classList.remove('open');
+
+          // Reset Hero
+          if (badgeText) badgeText.textContent = 'Next-Gen Snowflake AI Engine';
+          if (userGreetingSub) userGreetingSub.style.display = 'none';
+
+          // Reset Composer
+          if (aiTextarea) {
+            aiTextarea.setAttribute('placeholder', 'Ask anything about your data in plain language...');
           }
         }
-      } catch (e) {}
+
+        if (loginForm) {
+          loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const name = loginNameInput.value.trim();
+            const email = loginEmailInput.value.trim();
+            if (name) {
+              applyUserLogin({ name, email });
+            }
+          });
+        }
+
+        quickProfileBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const name = btn.getAttribute('data-name');
+            const email = btn.getAttribute('data-email');
+            if (name) {
+              applyUserLogin({ name, email });
+            }
+          });
+        });
+
+        // Profile dropdown toggle
+        if (btnUserProfile && profileDropdown) {
+          btnUserProfile.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = profileDropdown.classList.contains('open');
+            const plusDropdown = document.getElementById('plusDropdown');
+            const modelDropdown = document.getElementById('modelDropdown');
+            if (plusDropdown) plusDropdown.classList.remove('open');
+            if (modelDropdown) modelDropdown.classList.remove('open');
+
+            if (!isOpen) {
+              profileDropdown.classList.add('open');
+              btnUserProfile.setAttribute('aria-expanded', 'true');
+            } else {
+              profileDropdown.classList.remove('open');
+              btnUserProfile.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
+
+        if (btnLogout) {
+          btnLogout.addEventListener('click', function () {
+            applyUserLogout();
+          });
+        }
+
+        // Close profile dropdown on outside click
+        document.addEventListener('click', function (e) {
+          if (profileDropdown && !profileDropdown.contains(e.target) && e.target !== btnUserProfile) {
+            profileDropdown.classList.remove('open');
+            if (btnUserProfile) btnUserProfile.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        // Check saved user on startup
+        try {
+          const saved = localStorage.getItem('datamind_user');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && parsed.name) {
+              applyUserLogin(parsed);
+            }
+          }
+        } catch (e) {}
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAuthAndNav);
+      } else {
+        initAuthAndNav();
+      }
     })();
   </script>
 
@@ -2705,11 +2992,204 @@
       </div>
     </div>
   </div>
+
+  <!-- Navigation Details Modal -->
+  <div class="modal-overlay" id="navModalOverlay">
+    <div class="nav-modal" id="navModal">
+      <button type="button" class="modal-close-btn" id="navModalCloseBtn" aria-label="Close modal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Modal Tabs Bar -->
+      <div class="nav-modal-tabs">
+        <button type="button" class="nav-modal-tab active" data-tab="features">Features</button>
+        <button type="button" class="nav-modal-tab" data-tab="datasets">Datasets</button>
+        <button type="button" class="nav-modal-tab" data-tab="analytics">Analytics</button>
+        <button type="button" class="nav-modal-tab" data-tab="docs">Docs</button>
+      </div>
+
+      <div class="nav-tab-body">
+        <!-- Tab 1: Features -->
+        <div class="nav-tab-content active" id="tabFeatures">
+          <div style="margin-bottom: 4px;">
+            <h2 style="font-size: 19px; font-weight: 600; color: #fff;">DataMind Engine Architecture</h2>
+            <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">Conversational analytics powered by Gemma 4 and Snowflake</p>
+          </div>
+          <div class="nav-card-grid">
+            <div class="nav-info-card">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">🧠</span>
+                <span class="nav-card-title">Gemma 4 Plan Engine</span>
+              </div>
+              <p class="nav-card-desc">Decomposes questions into formal query plans across 4 analytical modes: aggregate, compare cohorts, calculate share %, and above-average baselines.</p>
+              <span class="nav-card-badge">Zero Hallucination</span>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">❄️</span>
+                <span class="nav-card-title">Snowflake Warehouse</span>
+              </div>
+              <p class="nav-card-desc">Compiles safe, parameterized ANSI-SQL with deterministic joins, executed through authorized sessions with explicit query timeouts.</p>
+              <span class="nav-card-badge">Read-Only Enforced</span>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">🛡️</span>
+                <span class="nav-card-title">Zero Write SQL Guard</span>
+              </div>
+              <p class="nav-card-desc">Multi-layer protection rejects any destructive SQL (DROP, DELETE, TRUNCATE, INSERT, ALTER) before execution ever touches the warehouse.</p>
+              <span class="nav-card-badge">Safety First</span>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">📊</span>
+                <span class="nav-card-title">Auditable Evidence Cards</span>
+              </div>
+              <p class="nav-card-desc">Every answer displays exact executed SQL, Snowflake Query ID, duration in milliseconds, and structured result tables.</p>
+              <span class="nav-card-badge">Verifiable Claims</span>
+            </div>
+          </div>
+          <button type="button" class="nav-action-btn" id="btnTryFeatureQuery">
+            <span>Try an Example Query in Composer</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- Tab 2: Datasets -->
+        <div class="nav-tab-content" id="tabDatasets">
+          <div style="margin-bottom: 4px;">
+            <h2 style="font-size: 19px; font-weight: 600; color: #fff;">Connected Snowflake Datasets</h2>
+            <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">Pre-configured trusted datasets with verified schemas and metric definitions</p>
+          </div>
+          <div class="nav-card-grid">
+            <div class="nav-info-card" id="cardDatasetWdi" style="cursor: pointer;">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">🌐</span>
+                <span class="nav-card-title">World Bank WDI</span>
+              </div>
+              <p class="nav-card-desc">217 economies from 1990 to 2024. 18 indicators including GDP per capita, population, internet penetration, electricity access, and life expectancy.</p>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px;">
+                <span class="nav-card-badge">7,595 Country-Years</span>
+                <button type="button" class="nav-action-btn" onclick="selectDatasetFromModal('worldbank_wdi')" style="margin: 0; padding: 4px 12px; font-size: 11.5px;">Select Dataset</button>
+              </div>
+            </div>
+            <div class="nav-info-card" id="cardDatasetTpch" style="cursor: pointer;">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">📦</span>
+                <span class="nav-card-title">TPC-H Orders & Geography</span>
+              </div>
+              <p class="nav-card-desc">Standard benchmark order data joined with customer, nation, and region dimensions. One source row per order with complete customer geography.</p>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px;">
+                <span class="nav-card-badge">1,500,000 Orders</span>
+                <button type="button" class="nav-action-btn" onclick="selectDatasetFromModal('tpch_orders')" style="margin: 0; padding: 4px 12px; font-size: 11.5px;">Select Dataset</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Analytics -->
+        <div class="nav-tab-content" id="tabAnalytics">
+          <div style="margin-bottom: 4px;">
+            <h2 style="font-size: 19px; font-weight: 600; color: #fff;">Live Telemetry & Analytics</h2>
+            <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">Active runtime configuration and session performance metrics</p>
+          </div>
+          <div class="nav-card-grid">
+            <div class="nav-info-card">
+              <div class="nav-card-title" style="color: #94a3b8; font-size: 11px; text-transform: uppercase;">Active Warehouse</div>
+              <div style="font-size: 15px; font-weight: 600; color: #fff;">SNOWFLAKE_LEARNING_WH</div>
+              <div style="font-size: 12px; color: #38bdf8;">Role: DATAMIND_READER</div>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-card-title" style="color: #94a3b8; font-size: 11px; text-transform: uppercase;">AI Reasoning Model</div>
+              <div style="font-size: 15px; font-weight: 600; color: #fff;">Gemma 4 (26B IT)</div>
+              <div style="font-size: 12px; color: #a78bfa;">Google AI Studio API</div>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-card-title" style="color: #94a3b8; font-size: 11px; text-transform: uppercase;">Database Scope</div>
+              <div style="font-size: 15px; font-weight: 600; color: #fff;">SNOWFLAKE_SAMPLE_DATA</div>
+              <div style="font-size: 12px; color: #34d399;">TPCH_SF1 & WORLDBANK</div>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-card-title" style="color: #94a3b8; font-size: 11px; text-transform: uppercase;">Query Latency</div>
+              <div style="font-size: 15px; font-weight: 600; color: #fff;">~120 ms</div>
+              <div style="font-size: 12px; color: #f59e0b;">Cached Plans &lt; 2 ms</div>
+            </div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 12px; padding: 14px;">
+            <div style="font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 6px;">Recent Session Queries</div>
+            <div id="analyticsQueryList" style="font-size: 12px; color: #94a3b8; display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(255, 255, 255, 0.04); border-radius: 8px;">
+                <span>How many orders were placed in 1995?</span>
+                <span style="color: #34d399; font-weight: 500;">1.5M orders • 0s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Docs -->
+        <div class="nav-tab-content" id="tabDocs">
+          <div style="margin-bottom: 4px;">
+            <h2 style="font-size: 19px; font-weight: 600; color: #fff;">Documentation & Resources</h2>
+            <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">Comprehensive technical documentation, guides, and OpenAPI endpoints</p>
+          </div>
+          <div class="nav-card-grid">
+            <div class="nav-info-card">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">⚡</span>
+                <span class="nav-card-title">Interactive Swagger API</span>
+              </div>
+              <p class="nav-card-desc">Explore and test live REST API endpoints with interactive schema documentation and execute test queries.</p>
+              <a href="http://127.0.0.1:8001/docs" target="_blank" rel="noopener noreferrer" class="nav-action-btn">
+                <span>Open /docs</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              </a>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">📐</span>
+                <span class="nav-card-title">System Architecture</span>
+              </div>
+              <p class="nav-card-desc">End-to-end dataflow diagram, pipeline separation, Gemma prompting contract, and query compilation specs.</p>
+              <a href="https://github.com/ZERODAY-2026/Codex/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener noreferrer" class="nav-action-btn">
+                <span>View Architecture</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              </a>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">🛡️</span>
+                <span class="nav-card-title">Compliance Tracker</span>
+              </div>
+              <p class="nav-card-desc">Official compliance tracking covering evaluation gates G1 through G8 and technical contribution rubric.</p>
+              <a href="https://github.com/ZERODAY-2026/Codex/blob/main/docs/COMPLIANCE.md" target="_blank" rel="noopener noreferrer" class="nav-action-btn">
+                <span>View Compliance</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              </a>
+            </div>
+            <div class="nav-info-card">
+              <div class="nav-info-card-header">
+                <span class="nav-card-icon">📚</span>
+                <span class="nav-card-title">Dataset Schemas</span>
+              </div>
+              <p class="nav-card-desc">Complete field references, measure definitions, foreign key relationships, and query limitations.</p>
+              <a href="https://github.com/ZERODAY-2026/Codex/blob/main/docs/DATASETS.md" target="_blank" rel="noopener noreferrer" class="nav-action-btn">
+                <span>View Schemas</span>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <script>
     // DataMind API client: datasets, questions, answers and evidence.
     (function () {
-      // Use same origin if already served on port 8000; otherwise point to backend on port 8000.
-      const API = (location.port === '8000') ? '' : 'http://127.0.0.1:8000';
+      // Use same origin if already served on backend port; otherwise point to backend (port 8001 in dev).
+      const API = (location.port === '8000' || location.port === '8001') ? '' : (window.DATA_MIND_BACKEND_URL || 'http://127.0.0.1:8001');
 
 
       const DEFAULT_DATASET = 'worldbank_wdi';
@@ -3067,10 +3547,26 @@
         }
       }
 
+      const SHORT_NAMES = {
+        worldbank_wdi: 'World Bank WDI',
+        tpch_orders: 'TPC-H Orders',
+        uci_wine_quality: 'Wine Quality',
+      };
+
+      function datasetShortName(d) {
+        if (!d) return '';
+        if (d.short_name) return d.short_name;
+        if (SHORT_NAMES[d.id]) return SHORT_NAMES[d.id];
+        const raw = String(d.name || d.id || '').replace(/â€“|â€”/g, '—');
+        const first = raw.split(/[\u2014\u2013\-—–]/)[0].trim();
+        return first.length > 20 ? first.slice(0, 20) + '…' : first;
+      }
+
       function selectDataset(id) {
         current = datasets.find(function (d) { return d.id === id; }) || datasets[0];
         if (!current) return;
-        pickerLabel.textContent = current.name.split(' — ')[0];
+        pickerLabel.textContent = datasetShortName(current);
+        pickerLabel.title = current.name || '';
         pickerMenu.querySelectorAll('.dropdown-item').forEach(function (item) {
           const selected = item.getAttribute('data-dataset') === current.id;
           item.classList.toggle('is-selected', selected);
@@ -3114,7 +3610,8 @@
           item.setAttribute('role', 'menuitemradio');
           item.setAttribute('data-dataset', d.id);
           const text = el('div');
-          text.appendChild(el('div', 'dropdown-item-title', d.name));
+          const cleanName = String(d.name || '').replace(/â€“|â€”/g, '—');
+          text.appendChild(el('div', 'dropdown-item-title', cleanName));
           item.appendChild(text);
           pickerMenu.appendChild(item);
         });

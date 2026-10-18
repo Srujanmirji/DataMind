@@ -61,7 +61,6 @@ class Planner:
                 "generationConfig": {
                     "temperature": 0,
                     "maxOutputTokens": 4096,
-                    "responseMimeType": "application/json",
                 },
             },
         )
