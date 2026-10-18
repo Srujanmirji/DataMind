@@ -200,7 +200,10 @@ never from an uploaded user file. Schema discovery is not automatic.
 ## Fresh installation on another machine
 
 Tested locally on macOS / Apple M5, 16 GB RAM, Python 3.13. Current model:
-Gemma 3 4B Q4_K_M, about 3.35 GB download; digest begins `68ceab7e468a`.
+Gemma 3 12B (`gemma3:12b`), about 8.2 GB download; digest begins `b92b218582c5`.
+It needs about 8 GB GPU/unified memory at 8,192 context. On smaller machines set
+`OLLAMA_MODEL=gemma3:4b` (3.4 GB), but expect worse answers: it scored 4/8 on our
+held-out UCI evaluation versus 12/12 for 12B.
 Ollama client reported version 0.31.1. Pin/model-record your own environment.
 
 ```bash

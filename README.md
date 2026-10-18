@@ -30,7 +30,7 @@ Use the backend links above for the implemented demo and current setup.
 ## DataMind — our solution
 
 Ask a question in plain language; get an answer **computed by SQL in Snowflake**,
-explained by **Gemma 4**, with the executed query, the Snowflake query ID and the
+explained by **Gemma 3 12B** (local, via Ollama), with the executed query, the Snowflake query ID and the
 result rows shown beside it. If the question is ambiguous, unanswerable from the
 data, or unsafe, DataMind says so instead of guessing.
 
@@ -43,10 +43,12 @@ Built for ZeroDay OSS Hacktoberfest 2026 — PS1 "DataMind: Talk to Your Data".
 
 ## How it works
 
+Implemented backend (`datamind-backend/`):
+
 ```
-question → Gemma 4 classifies → Gemma 4 writes SQL → guard checks SQL
-        → Snowflake runs it (read-only role) → Gemma 4 explains the rows
-        → code verifies every number in the answer appears in the rows
+question → Gemma 3 12B routes it and writes a typed plan → Python validates the plan
+        → Python compiles safe SQL → Snowflake runs it (read-only role)
+        → answer cites the executed query, query ID and result cells
 ```
 
 Details, diagram and the role of each technology: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
