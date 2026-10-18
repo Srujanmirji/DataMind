@@ -64,6 +64,11 @@ including `http://127.0.0.1:3000` if that is your frontend's origin.
 | GET | `/runs/{run_id}` | Previously saved response and execution evidence |
 | GET | `/openapi.json` | Machine-readable API description |
 
+`POST /questions/multimodal` (audio/image input) exists in `app/multimodal.py` but is
+**disabled**. It does not yet interpret audio or images: it derives the question from the
+file name or a fixed prompt. It is enabled only with `ENABLE_MULTIMODAL=true`, for
+development, until Gemma reads the input itself.
+
 Example request from another Terminal tab:
 
 ```bash

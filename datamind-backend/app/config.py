@@ -26,3 +26,5 @@ class Settings(BaseSettings):
     dataset_path: Path = ROOT / "datasets" / "tpch_orders.json"
     additional_dataset_paths: list[Path] = [ROOT / "datasets" / "uci_wine_quality.json"]
     history_path: Path = ROOT / "data" / "runs.sqlite3"
+    # Off until audio/image are actually interpreted by Gemma; today the processor guesses from file names.
+    enable_multimodal: bool = False

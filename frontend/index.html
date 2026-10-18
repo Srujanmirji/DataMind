@@ -1170,52 +1170,12 @@
       transform: rotate(180deg);
     }
 
-    /* Tool Buttons: Attach & Mic */
-    .tool-btn {
-      color: #A9AAAD;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      width: calc(28 * var(--u));
-      height: calc(28 * var(--u));
-      border-radius: 50%;
-      background: transparent;
-      border: none;
-      transition: color .18s ease, background .18s ease;
-      flex-shrink: 0;
-    }
 
-    .tool-btn:hover {
-      color: #ffffff;
-      background: rgba(255, 255, 255, .08);
-    }
 
-    .tool-btn svg {
-      display: block;
-      width: calc(17 * var(--u));
-      height: calc(17 * var(--u));
-    }
 
-    .tool-btn.btn-attach svg {
-      fill: currentColor;
-    }
 
-    .tool-btn.btn-mic svg {
-      stroke: currentColor;
-    }
 
-    .tool-btn.listening {
-      color: #F49D70;
-      background: rgba(244, 157, 112, .15);
-      animation: micPulse 1.5s infinite;
-    }
 
-    @keyframes micPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
 
     /* Orange Send Circle */
     .send {
@@ -1525,15 +1485,7 @@
         width: 6.8px;
       }
 
-      .tool-btn {
-        width: 28px;
-        height: 28px;
-      }
 
-      .tool-btn svg {
-        width: 16px;
-        height: 16px;
-      }
 
       .send {
         width: clamp(30px, 3.4vw, 36px);
@@ -1751,10 +1703,6 @@
         font-size: 11px;
       }
 
-      .tool-btn {
-        width: 28px;
-        height: 28px;
-      }
 
       .send {
         width: 34px;
@@ -2046,7 +1994,7 @@
               </div>
             </div>
 
-            <!-- Right Controls: Model, Attach, Mic, Send -->
+            <!-- Right Controls: Model, Send -->
             <div class="tools-right">
               <!-- Model Dropdown -->
               <div class="dropdown-menu-wrap" id="modelMenuWrap">
@@ -2091,32 +2039,6 @@
                   </button>
                 </div>
               </div>
-
-              <!-- Attach Paperclip -->
-              <button
-                type="button"
-                class="tool-btn btn-attach"
-                id="btnAttach"
-                aria-label="Attach file"
-              >
-                <svg viewBox="0 0 20 20">
-                  <path d="M14.7071 4.29289C13.7308 3.31658 12.1479 3.31658 11.1716 4.29289L5.51472 9.94975C3.95262 11.5118 3.95262 14.0445 5.51472 15.6066C7.07682 17.1687 9.60948 17.1687 11.1716 15.6066L16.8284 9.94975C17.2189 9.55922 17.2189 8.92606 16.8284 8.53553C16.4379 8.14501 15.8047 8.14501 15.4142 8.53553L9.75736 14.1924C8.97631 14.9734 7.71 14.9734 6.92893 14.1924C6.14788 13.4113 6.14788 12.145 6.92893 11.364L12.5858 5.70711C12.781 5.51184 13.0976 5.51184 13.2929 5.70711C13.4882 5.90237 13.4882 6.21895 13.2929 6.41421L8.34315 11.364C7.95262 11.7545 7.95262 12.3877 8.34315 12.7782C8.73367 13.1687 9.36683 13.1687 9.75736 12.7782L14.7071 7.82843C15.6834 6.85212 15.6834 5.2692 14.7071 4.29289Z" />
-                </svg>
-              </button>
-
-              <!-- Mic Button -->
-              <button
-                type="button"
-                class="tool-btn btn-mic"
-                id="btnMic"
-                aria-label="Use voice input"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                  <line x1="12" y1="19" x2="12" y2="22"></line>
-                </svg>
-              </button>
 
               <!-- Send Button -->
               <button
@@ -2352,7 +2274,6 @@
       const btnModel = document.getElementById('btnModel');
       const modelDropdown = document.getElementById('modelDropdown');
       const modelNameText = document.getElementById('modelNameText');
-      const btnMic = document.getElementById('btnMic');
       let waveTimeout;
 
       function closeAllDropdowns() {
@@ -2466,18 +2387,6 @@
           }
         });
       });
-
-      // Mic Voice Input Toggle
-      if (btnMic && textarea) {
-        btnMic.addEventListener('click', function () {
-          btnMic.classList.toggle('listening');
-          if (btnMic.classList.contains('listening')) {
-            textarea.setAttribute('placeholder', 'Listening to voice query...');
-          } else {
-            textarea.setAttribute('placeholder', 'Ask anything about your data in plain language...');
-          }
-        });
-      }
 
       // Close dropdowns on outside click or Escape
       document.addEventListener('click', closeAllDropdowns);

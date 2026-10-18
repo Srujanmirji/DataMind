@@ -1,9 +1,13 @@
 import io
 from unittest.mock import MagicMock
 
+import pytest
 from fastapi.testclient import TestClient
 
+from app.config import Settings
 from app.main import create_app
+
+ENABLED = Settings(enable_multimodal=True)
 
 
 def test_multimodal_audio_input(monkeypatch):
@@ -18,7 +22,7 @@ def test_multimodal_audio_input(monkeypatch):
         "warnings": [],
     }
 
-    app = create_app(service=mock_service)
+    app = create_app(settings=ENABLED, service=mock_service)
     client = TestClient(app)
 
     # Fake audio bytes (e.g. WAV header)
@@ -39,6 +43,7 @@ def test_multimodal_audio_input(monkeypatch):
 
 
 def test_multimodal_image_input(monkeypatch):
+    pytest.importorskip("PIL")
     mock_service = MagicMock()
     mock_service.dataset = {"id": "tpch_orders"}
     mock_service.ask.return_value = {
@@ -50,7 +55,7 @@ def test_multimodal_image_input(monkeypatch):
         "warnings": [],
     }
 
-    app = create_app(service=mock_service)
+    app = create_app(settings=ENABLED, service=mock_service)
     client = TestClient(app)
 
     # 1x1 PNG fake bytes
@@ -72,7 +77,7 @@ def test_multimodal_image_input(monkeypatch):
 
 
 def test_multimodal_empty_input_rejected():
-    app = create_app()
+    app = create_app(settings=ENABLED)
     client = TestClient(app)
 
     response = client.post(
@@ -81,3 +86,9 @@ def test_multimodal_empty_input_rejected():
     )
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "invalid_input"
+
+
+def test_multimodal_route_disabled_by_default():
+    app = create_app(service=MagicMock(dataset={"id": "tpch_orders"}))
+    response = TestClient(app).post("/questions/multimodal", data={"question": "How many orders?"})
+    assert response.status_code == 404

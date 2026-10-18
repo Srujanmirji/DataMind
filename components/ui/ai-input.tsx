@@ -2029,14 +2029,16 @@ export function AIInput({
               />
             ) : null}
 
-            <button
-              aria-label="Use voice input"
-              className="@[21rem]:flex hidden size-8 shrink-0 items-center justify-center rounded-full text-foreground/60 transition-colors hover:text-foreground sm:size-9"
-              onClick={onMicClick}
-              type="button"
-            >
-              <Mic aria-hidden="true" className="size-[18px]" />
-            </button>
+            {onMicClick ? (
+              <button
+                aria-label="Use voice input"
+                className="@[21rem]:flex hidden size-8 shrink-0 items-center justify-center rounded-full text-foreground/60 transition-colors hover:text-foreground sm:size-9"
+                onClick={onMicClick}
+                type="button"
+              >
+                <Mic aria-hidden="true" className="size-[18px]" />
+              </button>
+            ) : null}
 
             <button
               aria-label="Send message"
