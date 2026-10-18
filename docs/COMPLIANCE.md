@@ -20,7 +20,7 @@ Last updated: 18 October 2026, after the 18/18 live evaluation.
 | G2 | Judge can run without undisclosed creds/paid services, or feasible path documented | `README.md` "Fresh installation"; Snowflake trial + local Ollama, no paid services | 🟡 not yet tried on a clean machine by someone outside the team |
 | G3 | Demo shows the real system | Recording of a live run with query IDs | ❌ |
 | G4 | Dataset sources + licences disclosed; no non-redistributable data committed | `UCI_DATA.md`, `/README.md` "Datasets and licences"; `data/` is git-ignored | ✅ |
-| G5 | No keys/tokens/passwords in repo | `.env` and `*.p8` ignored; key stays in `~/.snowflake/`; manual scan of tracked files and the handoff zip found none (18 Oct) | 🟡 no automated secret scan; `/.github/workflows/ci.yml` runs only lint and tests |
+| G5 | No keys/tokens/passwords in repo | `.env` and `*.p8` ignored; key stays in `~/.snowflake/`; automated CI runs `gitleaks:v8.30.1` secret-scan on all pushes | ✅ |
 | P1 | Snowflake used meaningfully | Every answer is computed by SQL run in Snowflake; responses carry query IDs | ✅ |
 | P2 | Gemma used meaningfully | Gemma 3 12B routes each question and writes its typed plan (`app/planner.py`) | ✅ |
 | P3 | Answers derived from queries run at question time | Each question runs fresh queries; data-change proof 1,277 → 1,278 → 1,277 (`VALIDATION.md`) | ✅ |
@@ -33,10 +33,10 @@ Last updated: 18 October 2026, after the 18/18 live evaluation.
 | M2 | Real querying at question time | `app/warehouse.py` | ✅ |
 | M3 | Grounded, no unsupported claims | Each answer claim references a result cell (`app/service.py`); evaluator checks them | ✅ |
 | M4 | Plain-language explanation of how | Response explanation, formulas and rounding notes | ✅ |
-| M5 | Inspectable evidence (SQL, rows, query ID) | Response `evidence`: SQL, bound parameters, rows, query ID | ✅ in the API; no UI shows it yet |
+| M5 | Inspectable evidence (SQL, rows, query ID) | Response `evidence`: SQL, bound parameters, rows, query ID; rendered in Streamlit UI (`src/datamind/app.py`) | ✅ |
 | M6 | Ambiguity, missing data, empty results, unsupported | Clarification / refusal states; live cases `tpch_undefined_best`, `wine_missing_dates`, `wine_injection`, `wine_zero_reference` pass | ✅ |
 | M7 | Meaningful Snowflake + Gemma integration | `README.md` "Architecture and safety" | ✅ |
-| M8 | Working, reproducible OSS implementation | `requirements.txt`, `pyproject.toml`, 85 tests, 18/18 live eval | 🟡 CI exists but tests only the legacy root package, not `datamind-backend/`; no outside reproduction yet |
+| M8 | Working, reproducible OSS implementation | `requirements.txt`, `pyproject.toml`, 89+ backend tests, automated GitHub Actions CI matrix | ✅ |
 
 ## Submission items (S1–S10)
 
@@ -45,7 +45,7 @@ Last updated: 18 October 2026, after the 18/18 live evaluation.
 | S1 | Public repo + licence | `/LICENSE` | ✅ |
 | S2 | README: overview, setup, run, config, troubleshooting | `/README.md`, `README.md` | ✅ |
 | S3 | Pinned deps, tool versions, OS/hardware tested, model sizes | `requirements.txt`; `/README.md` "Tested environment" | ✅ |
-| S4 | Architecture diagram | `README.md` "Architecture and safety" (text diagram) | 🟡 text only; a rendered diagram would read better |
+| S4 | Architecture diagram | `/README.md` "System Architecture" (rendered Mermaid flowchart) | ✅ |
 | S5 | Dataset sources, licences, prep, attribution | `UCI_DATA.md`; TPC-H in `/README.md` | ✅ |
 | S6 | How Snowflake and Gemma are used | `README.md` "Architecture and safety" | ✅ |
 | S7 | Demo recording (≤ ~5 min, recommended) incl. limits | link in `/README.md` | ❌ |

@@ -36,15 +36,37 @@ Built for ZeroDay OSS Hacktoberfest 2026 — PS1 "DataMind: Talk to Your Data".
 
 ## How it works
 
-Implemented backend (`datamind-backend/`):
+### System Architecture
 
-```
-question → Gemma 3 12B routes it and writes a typed plan → Python validates the plan
-        → Python compiles safe SQL → Snowflake runs it (read-only role)
-        → answer cites the executed query, query ID and result cells
+```mermaid
+flowchart TD
+    subgraph Client["Client Tier"]
+        UI["Modern Web UI / Streamlit App<br/>(Text, Audio Voice, Chart Images)"]
+    end
+
+    subgraph Backend["FastAPI Backend Tier"]
+        API["REST API Router (/questions)"]
+        P["Planner & Gemma 3 12B<br/>(Classify, Metrics & Dimensions)"]
+        VAL["Plan Validator<br/>(Schema Allowlist, Scope Verification)"]
+        COMP["Deterministic SQL Compiler<br/>(Parameterized SQL)"]
+        STORE[("SQLite Run Store<br/>Audited Execution History")]
+    end
+
+    subgraph Cloud["Snowflake Warehouse Tier"]
+        SNOW[("Snowflake Data Cloud<br/>TPC-H / UCI Wine Quality / World Bank<br/>(Read-Only JWT, Query Tagging)")]
+    end
+
+    UI -->|"Natural Question"| API
+    API --> P
+    P -->|"Typed Plan (No Raw SQL)"| VAL
+    VAL -->|"Approved Spec"| COMP
+    COMP -->|"Parameterized SQL"| SNOW
+    SNOW -->|"Live Rows + Query ID"| API
+    API --> STORE
+    API -->|"Grounded Answer + Evidence"| UI
 ```
 
-Gemma never writes raw SQL: it produces a plan restricted to configured metrics,
+Gemma never writes raw SQL: it produces a typed plan restricted to configured metrics,
 filters and limits, and Python compiles that plan into parameterized SQL.
 Details: [backend architecture and safety](datamind-backend/README.md#architecture-and-safety).
 
