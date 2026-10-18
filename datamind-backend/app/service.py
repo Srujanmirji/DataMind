@@ -27,7 +27,7 @@ class QuestionService:
         self._planner_version = hashlib.sha256(
             b"".join(
                 Path(__file__).with_name(name).read_bytes()
-                for name in ("planner.py", "models.py", "compiler.py", "analysis.py")
+                for name in ("planner.py", "models.py", "compiler.py", "analysis.py", "grounding.py")
             )
         ).hexdigest()
 
@@ -118,6 +118,15 @@ class QuestionService:
             and bool(rows)
             and all(row[evidence["columns"].index(count_metric)] == 0 for row in rows)
         )
+        missing_measurements = bool(rows) and all(
+            row[evidence["columns"].index(name)] is None for row in rows for name in plan.metrics
+        )
+        if missing_measurements:
+            result["status"] = "empty"
+            result["answer"] = (
+                "The requested measurements are unavailable in the selected dataset for these filters."
+            )
+            return result
         if not rows or zero_count:
             result["status"] = "empty"
             result["answer"] = self.dataset.get(
@@ -190,6 +199,14 @@ class QuestionService:
         result["status"] = "answered" if calculation["rows"] else "empty"
         if not calculation["rows"]:
             result["answer"] = "No groups are established as above the overall average for this scope."
+            return result
+        if plan.analysis in ("compare", "share") and any(
+            value is None for row in calculation["rows"] for value in row[:2]
+        ):
+            result["status"] = "empty"
+            result["answer"] = (
+                "A required measurement is unavailable in the selected dataset; this comparison cannot be established."
+            )
             return result
         summaries = []
         for row_index, row in enumerate(calculation["rows"][:5]):

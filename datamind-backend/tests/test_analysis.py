@@ -125,7 +125,7 @@ def test_above_average_uses_population_average_and_preserves_group_lineage(datas
     assert calculation["rows"] == [["C", "10.000000", "8.000000", "2.000000"]]
     assert calculation["inputs"][0]["query_1"]["row_index"] == 2
     queries = analysis_steps(plan, dataset, Settings(_env_file=None))
-    assert "GROUP BY" in queries[0].sql and "LIMIT 101" in queries[0].sql
+    assert "GROUP BY" in queries[0].sql and "LIMIT 501" in queries[0].sql
     assert (
         "GROUP BY" not in queries[1].sql
         and "AVG(CAST(w.LIFE_EXPECTANCY_YEARS AS NUMBER(38, 6)))" in queries[1].sql
@@ -138,7 +138,7 @@ def test_truncated_groups_are_rejected(dataset):
     )
     first = evidence("8", column="life_expectancy_years")
     first["truncated"] = True
-    with pytest.raises(BackendError, match="More than 100"):
+    with pytest.raises(BackendError, match="More than 500"):
         derive(plan, [first, evidence("7", "query_2", "life_expectancy_years")], dataset)
 
 

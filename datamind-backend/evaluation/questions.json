@@ -287,6 +287,74 @@
       "question": "Forecast India's GDP for the next ten years.",
       "expected_status": "unsupported",
       "suite": "fresh_holdout"
+    },
+    {
+      "id": "wdi_lowest10_total_gdp",
+      "dataset_id": "worldbank_wdi",
+      "question": "List the 10 countries with the lowest total GDP in 2023.",
+      "expected_status": "answered",
+      "analysis": "aggregate",
+      "oracle_wdi": "wdi_lowest10_total_gdp_2023",
+      "suite": "regression"
+    },
+    {
+      "id": "wdi_missing_year",
+      "dataset_id": "worldbank_wdi",
+      "question": "What is India's GDP?",
+      "expected_status": "needs_clarification",
+      "suite": "regression"
+    },
+    {
+      "id": "wdi_unrelated_sports",
+      "dataset_id": "worldbank_wdi",
+      "question": "Who won yesterday's cricket match?",
+      "expected_status": "unsupported",
+      "suite": "regression"
+    },
+    {
+      "id": "wdi_three_country_gdp_per_capita_2022",
+      "dataset_id": "worldbank_wdi",
+      "question": "Compare GDP per person in India, Brazil and China in 2022.",
+      "expected_status": "answered",
+      "analysis": "aggregate",
+      "suite": "flexible_queries",
+      "oracle_wdi": "wdi_three_country_gdp_per_capita_2022"
+    },
+    {
+      "id": "wdi_unemployment_over_8_5_2022",
+      "dataset_id": "worldbank_wdi",
+      "question": "Which countries had unemployment above 8.5 percent in 2022? List all matching countries and their unemployment rates.",
+      "expected_status": "answered",
+      "analysis": "aggregate",
+      "suite": "flexible_queries",
+      "oracle_wdi": "wdi_unemployment_over_8_5_2022"
+    },
+    {
+      "id": "wdi_india_latest_gdp",
+      "dataset_id": "worldbank_wdi",
+      "question": "What is the latest available GDP for India in this dataset?",
+      "expected_status": "answered",
+      "analysis": "aggregate",
+      "suite": "flexible_queries",
+      "oracle_wdi": "wdi_india_latest_gdp"
+    },
+    {
+      "id": "wdi_india_gdp_population_trend_2019_2023",
+      "dataset_id": "worldbank_wdi",
+      "question": "Show India’s GDP and population for every year from 2019 to 2023.",
+      "expected_status": "answered",
+      "analysis": "aggregate",
+      "suite": "flexible_queries",
+      "oracle_wdi": "wdi_india_gdp_population_trend_2019_2023"
+    },
+    {
+      "id": "wdi_india_gdp_life_expectancy_2022",
+      "dataset_id": "worldbank_wdi",
+      "question": "Show India’s GDP and how long people could expect to live at birth in 2022.",
+      "expected_status": "answered",
+      "analysis": "aggregate",
+      "suite": "flexible_queries",
+      "oracle_wdi": "wdi_india_gdp_life_expectancy_2022"
     }
   ]
 }

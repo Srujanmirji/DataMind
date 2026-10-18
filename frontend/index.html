@@ -3085,6 +3085,7 @@
         const analysis = result.analysis;
         const plan = result.plan || {};
         const points = [];
+        if (result.status === 'empty') return {title: result.answer || 'No available measurements.', sub: null, points: []};
 
         if (analysis && last && last.kind === 'calculation') {
           const row = last.rows[0] || [];
@@ -3103,6 +3104,9 @@
             return { title: label + ': ' + fmt(row[0]) + ' vs ' + fmt(row[1]), sub: (shared ? shared + ': ' : '') + target + ' compared with ' + base + '.', points: points };
           }
           if (analysis.kind === 'share') {
+            if (row[2] === null) {
+              return { title: 'Share unavailable', sub: 'The denominator is zero or a required measurement is unavailable.', points: [] };
+            }
             const share = Number(row[2]);
             points.push(fmt(row[0]) + ' out of ' + fmt(row[1]) + ' (' + label + ').');
             if (share > 0 && share < 50) points.push('Roughly 1 in ' + fmt(Math.round(100 / share)) + ' of the total.');
@@ -3259,7 +3263,6 @@
           summary.points.forEach(function (text) { list.appendChild(el('li', '', text)); });
           panel.appendChild(list);
         }
-        if (status === 'empty' && result.answer) panel.appendChild(el('p', 'result-sub', result.answer));
 
         const analysis = result.analysis;
         if (analysis && analysis.kind === 'compare') {
@@ -3299,6 +3302,7 @@
       function setBusy(state) {
         busy = state;
         btnSend.setAttribute('aria-disabled', state ? 'true' : 'false');
+        document.getElementById('btnModel').disabled = state;
         panel.setAttribute('aria-busy', state ? 'true' : 'false');
       }
 
@@ -3338,7 +3342,7 @@
           if (response.status === 422 && !body.status) body = { status: 'error', error: { code: 'invalid_input', message: 'Enter a question of at least three characters.' } };
           clearInterval(ticker);
           render(body, question);
-          panel.appendChild(el('p', 'meta', 'Answered in ' + Math.round((Date.now() - started) / 1000) + 's.'));
+          panel.appendChild(el('p', 'meta', (body.status === 'error' ? 'Request failed after ' : 'Response in ') + Math.round((Date.now() - started) / 1000) + 's.'));
           setTimeout(function () {
             panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }, 80);
@@ -3351,6 +3355,15 @@
       }
 
       function selectDataset(id) {
+        if (busy) return;
+        if (current && current.id !== id) {
+          panel.replaceChildren();
+          panel.hidden = true;
+          document.body.classList.remove('has-result');
+          const input = document.getElementById('aiTextarea');
+          input.value = '';
+          input.dispatchEvent(new Event('input'));
+        }
         current = datasets.find(function (d) { return d.id === id; }) || datasets[0];
         if (!current) return;
         pickerLabel.textContent = 'World Bank WDI (1990–2024)';

@@ -244,7 +244,7 @@ class Warehouse:
                     "id": "query_1",
                     "query_id": cursor.sfqid,
                     "sql": query.sql,
-                    "parameters": query.parameters,
+                    "parameters": [json_value(value) for value in query.parameters],
                     "columns": columns,
                     "rows": [[json_value(value) for value in row] for row in rows[: query.limit]],
                     "row_count": min(len(rows), query.limit),

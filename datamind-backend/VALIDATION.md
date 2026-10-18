@@ -1,5 +1,32 @@
 # Validation — 18 October 2026
 
+## Selected-dataset grounding checks — 18 October 2026
+
+162 automated tests pass; Ruff passes. Tests cover invented/omitted country filters,
+wrong years and wrong metrics, a single year incorrectly widened to a range,
+clarification/refusal at both planning stages, and missing measurement handling.
+
+Live hosted Gemma checks correctly refused sports, a mixed GDP/prime-minister request,
+a World Bank question with TPC-H selected, and an instruction to answer from memory.
+Missing-year GDP and an undefined "best country" question asked for clarification.
+All six returned no SQL evidence. Two positive checks initially hit the API rate limit;
+on retry, India 2022 life expectancy returned 71.698 in 13.0s and the top-five GDP-per-capita
+ranking for 2023 returned Monaco, Liechtenstein, Luxembourg, Bermuda and Ireland in 11.5s.
+Query IDs: `01c7cfeb-000e-16cf-0002-b3de00016742` and
+`01c7cfeb-000e-16f2-0002-b3de0001e00a`.
+
+The exact user query "List the 10 countries with the lowest total GDP in 2023"
+now passes after extending the explicit list-size check (the old check only recognized
+"top 10" / "10 lowest"). All ten returned rows match independent arithmetic on the
+World Bank API snapshot. First request: 13.6s, query ID
+`01c7cff4-000e-1619-0000-0002b3de7b65`; repeated request: 0.87s, cached plan with fresh
+Snowflake query ID `01c7cff4-000e-1619-0000-0002b3de7b69`.
+A separate Google HTTP 503 was observed during verification; the adapter now retries
+one temporary server failure and distinguishes it from access/configuration errors.
+
+These smoke checks do not establish perfect semantic interpretation or replace a full
+held-out evaluation. Conservative alias matching may ask users to restate unusual names.
+
 ## Current hosted configuration and plan cache
 
 18 October 2026: Gemma `gemma-4-26b-a4b-it` via Google AI Studio is running with
@@ -101,3 +128,33 @@ Earlier partial attempt (2 cases, before the fix):
 `data/evaluations/20261018T081248Z-ad449718`. The evaluator prints RUN case
 counters before each operation so long model inference is visibly distinguished
 from a stopped process.
+
+The local Gemma 3 12B + Snowflake UI question run passed 12/12 checks (7 answers, 4 clarification/refusal checks, and a repeated question). Answers were checked against the downloaded World Bank source. The repeated question used a cached plan and fresh SQL. Report: `data/ui-question-checks/20261018T125441Z/results.json`.
+
+Paraphrase handling now permits semantic descriptions without literal metric keywords, retains explicit-metric mismatch checks, and supports structured missing-detail clarification. All 18 loaded World Bank indicators are exposed in the catalog. Automated regressions exercise previously blocked paraphrases and all three newly exposed indicators.
+
+Fresh live paraphrase checks passed 4/4 against raw World Bank values for India in 2022: life expectancy 71.698 years, trade 50.697938% of GDP, adult literacy 76.32%, education spending 4.098658% of GDP. Local Gemma 12B took 32–47 seconds per first request. Report: `data/runtime/paraphrase-check.json`.
+
+Unicode punctuation regression: curly possessives such as “India’s” previously lost their word boundary during ASCII normalization and rejected a correct IND filter. Normalize punctuation to boundaries before transliteration. Regression tests cover curly quotes and modifier apostrophes while still rejecting a substituted CHN filter.
+
+
+Flexible query regression checks now cover bound decimal thresholds, non-finite/injection
+rejection, actual latest non-missing data per scope/group, missing year exposure rejection,
+multiple-country comparisons, mixed literal/paraphrased metric selection, and consideration
+of all 217 economies in above-average analysis. Source-data oracles and five independent
+questions are saved in `evaluation/questions.json`; they are not passed to model prompts.
+
+Live hosted checks matched raw World Bank data for the three-country GDP-per-capita
+comparison (23.98s), all 51 countries with unemployment above 8.5% in 2022 (19.79s),
+and India's latest available GDP (2024: 3,760,813,470,500.86 USD, 26.50s). Missing entity
+clarification and unrelated sports refusal returned no evidence. A trend request initially
+failed plan generation; the clarified year-by-year routing prompt subsequently produced the
+correct five-year, two-metric plan. Some requests hit Google's rate limit; those were recorded
+as failures rather than counted as passes. Follow-up live query results are recorded separately.
+
+Final hosted API rerun after restart: latest available India GDP passed (24.79s),
+the 2019–2023 GDP/population trend passed all five years against the raw source
+(25.70s), and the identical latest question passed with a cached plan and a distinct
+fresh Snowflake query ID (1.61s). Report: `data/runtime/flexible-final-results.json`.
+A question combining literal GDP with “how long people could expect to live” also
+passed (17.19s); both returned measures matched the raw World Bank source.
