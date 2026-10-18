@@ -3,9 +3,15 @@
 import hashlib
 import json
 import sqlite3
+import sys
 from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation, localcontext
+from pathlib import Path
 from uuid import uuid4
+
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 from fastapi.testclient import TestClient
 
