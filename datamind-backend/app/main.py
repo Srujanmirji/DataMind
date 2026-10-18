@@ -4,13 +4,14 @@ import sqlite3
 from threading import Lock
 from uuid import UUID
 
-from fastapi import Depends, FastAPI, Header, Request
+from fastapi import Depends, FastAPI, File, Form, Header, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import Settings
 from app.datasets import load_datasets
 from app.models import Question
+from app.multimodal import multimodal_processor
 from app.planner import BackendError, Planner
 from app.service import QuestionService
 from app.store import RunStore
@@ -96,6 +97,42 @@ def create_app(
         try:
             store.save(result)
         except sqlite3.Error:
+            result["warnings"].append("Run history could not be saved; keep this response as evidence.")
+        return result
+
+    @app.post("/questions/multimodal", dependencies=[Depends(authorize)])
+    async def questions_multimodal(
+        question: str = Form(default=""),
+        dataset_id: str = Form(default="tpch_orders"),
+        audio: UploadFile | None = File(default=None),  # noqa: B008
+        image: UploadFile | None = File(default=None),  # noqa: B008
+    ):
+        text_query = question.strip()
+        if audio is not None:
+            audio_bytes = await audio.read()
+            text_query = multimodal_processor.process_audio(audio_bytes, audio.filename or "audio.wav")
+        elif image is not None:
+            image_bytes = await image.read()
+            text_query = multimodal_processor.process_image(image_bytes, image.filename or "image.png")
+            if question.strip():
+                text_query = f"{question.strip()} (Context: {text_query})"
+
+        if not text_query:
+            raise BackendError("invalid_input", "Please provide a question, audio clip, or image.", 422)
+
+        selected_service = services.get(dataset_id)
+        if selected_service is None:
+            raise BackendError("unknown_dataset", "Unknown dataset. See GET /datasets.", 404)
+
+        result = selected_service.ask(Question(question=text_query, dataset_id=dataset_id))
+        result["multimodal"] = {
+            "has_audio": audio is not None,
+            "has_image": image is not None,
+            "extracted_query": text_query,
+        }
+        try:
+            store.save(result)
+        except (sqlite3.Error, KeyError):
             result["warnings"].append("Run history could not be saved; keep this response as evidence.")
         return result
 
