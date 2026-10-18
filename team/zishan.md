@@ -1,7 +1,8 @@
-# Zishan — Snowflake & data
+# Zishan — Snowflake, data & eval runner
 
-**Owns:** `snowflake/`, `src/datamind/snowflake_client.py`, `src/datamind/schema.py`, `config/datasets/`
-**Rubric weight carried:** Snowflake integration (15), reusability on a second dataset (8)
+**Owns:** `snowflake/`, `src/datamind/snowflake_client.py`, `src/datamind/schema.py`, `config/datasets/`, `src/datamind/eval_runner.py`
+**Rubric weight carried:** Snowflake integration (15), reusability on a second dataset (8), correctness evidence (20)
+**Mentor for Vishal** on SQL and the eval files.
 
 ## Tasks
 
@@ -23,6 +24,14 @@
 - [ ] Evidence query: SQL that lists all `datamind`-tagged queries from `QUERY_HISTORY`
   (for the submission's "Snowflake query IDs or history").
 - [ ] Watch credit use; adjust the resource monitor quota if needed.
+- [ ] Give Vishal Snowsight access with the read-only role; walk through one query together.
+- [ ] Write reference SQL for Vishal's answerable questions (joins, multi-step); review
+  every reference SQL Vishal writes. Fill `expected` values + query IDs in
+  `eval/questions_tpch.yaml`. Grow the set to 30+.
+- [ ] Write `eval/questions_owid_energy.yaml` (10+ questions, incl. missing-data cases).
+- [ ] Implement `eval_runner`: run agent + reference SQL, compare (numeric tolerance, set
+  equality for lists), check expected status, write JSON + Markdown report with query IDs.
+  Commit a curated report to `eval/results/` with pass rate by category, failures included.
 
 ## Definition of done
 
@@ -32,5 +41,5 @@
 
 ## Depends on / unblocks
 
-- Needs: nothing. Start immediately.
-- Unblocks: Srujan (agent), Vishal (eval runner needs `run_query` for reference SQL).
+- Needs: nothing to start. The full eval run needs Srujan's `DataMindAgent.ask`.
+- Unblocks: Srujan (agent), Vishal (Snowsight access, SQL review), Saisudheer (results for README S8).

@@ -14,8 +14,8 @@
 - [ ] Session history for follow-up questions; dataset picker in the sidebar.
 - [ ] Basic accessibility: readable contrast, no meaning by colour alone, tables with headers.
 - [ ] Add a secret scan to CI (e.g. gitleaks action) for gate G5.
-- [ ] Fresh-clone test: follow the README from scratch on a clean machine; fix every step
-  that fails (C5).
+- [ ] Fix every `docs` issue Vishal files from the fresh-clone tests (C5); help Vishal
+  with Git and the first PR.
 - [ ] Fill every `_TODO_` in `README.md`: tested environment, testing results, reproduce the
   demo, technical contribution, judge evaluation path.
 - [ ] Keep `docs/COMPLIANCE.md` current; run a gate check before submission.
@@ -30,5 +30,6 @@
 
 ## Depends on / unblocks
 
-- Needs: Srujan's `DataMindAgent.ask` for the live UI; Vishal's eval report for S8.
+- Needs: Srujan's `DataMindAgent.ask` for the live UI; Zishan's eval report for S8;
+  Vishal's fresh-clone and QA issues.
 - Unblocks: the submission.

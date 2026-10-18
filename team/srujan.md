@@ -1,6 +1,6 @@
-# Srujan — Lead · Gemma & agent pipeline
+# Srujan — Lead · Gemma, agent pipeline & SQL guard
 
-**Owns:** `src/datamind/agent.py`, `src/datamind/llm/`
+**Owns:** `src/datamind/agent.py`, `src/datamind/llm/`, `src/datamind/sql_guard.py`
 **Rubric weight carried:** Gemma integration (12), NL-to-data interaction (10), and most of correctness (20)
 
 ## Tasks
@@ -10,6 +10,14 @@
   `docs/ARCHITECTURE.md`. Everything else in prompt design depends on this.
 - [ ] Implement `AIStudioBackend.generate`: temperature 0, latency timing, 429 retry with
   exponential backoff, clear error on bad key/model id.
+- [ ] Implement `validate_sql` with `sqlglot` (Snowflake dialect) until
+  `tests/test_sql_guard_contract.py` has **zero xfails**: single statement, SELECT/WITH only,
+  allowlisted tables (qualify unqualified names, ignore CTE names), no
+  `RESULT_SCAN`/`INFER_SCHEMA`, LIMIT capped and reported. Do this early — it's well
+  specified by the tests and it gates every query.
+- [ ] Add adversarial guard tests: comments hiding statements, quoted identifiers,
+  `SELECT ... INTO`, subqueries into other schemas, case tricks. Use Vishal's unsafe
+  question list as input.
 - [ ] Implement `OllamaBackend.generate` (fallback; lower priority).
 - [ ] `DataMindAgent.classify` → JSON `{status, reason, clarifying_question}`; validate the enum.
 - [ ] `DataMindAgent.generate_sql` → JSON `{sql, assumptions[]}` using
@@ -31,6 +39,6 @@
 
 ## Depends on / unblocks
 
-- Needs: Zishan's `SnowflakeClient` + `SchemaCatalog`, Vishal's `validate_sql`.
-  Until then, use fakes that return canned `QueryResult`s.
-- Unblocks: Saisudheer (UI), Vishal (eval runner).
+- Needs: Zishan's `SnowflakeClient` + `SchemaCatalog`. Until then, use fakes that
+  return canned `QueryResult`s.
+- Unblocks: Saisudheer (UI), Zishan (eval runner), Vishal (manual QA).

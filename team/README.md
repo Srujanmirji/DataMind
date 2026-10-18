@@ -2,12 +2,16 @@
 
 | Member | Role | Owns |
 |---|---|---|
-| [Srujan](srujan.md) | Lead · Gemma & agent pipeline | `src/datamind/agent.py`, `src/datamind/llm/` |
-| [Zishan](zishan.md) | Snowflake & data | `snowflake/`, `src/datamind/snowflake_client.py`, `src/datamind/schema.py`, `config/datasets/` |
-| [Vishal](vishal.md) | Safety & correctness | `src/datamind/sql_guard.py`, `src/datamind/eval_runner.py`, `eval/` |
+| [Srujan](srujan.md) | Lead · Gemma, agent pipeline, SQL guard | `src/datamind/agent.py`, `src/datamind/llm/`, `src/datamind/sql_guard.py` |
+| [Zishan](zishan.md) | Snowflake, data & eval runner | `snowflake/`, `src/datamind/snowflake_client.py`, `src/datamind/schema.py`, `config/datasets/`, `src/datamind/eval_runner.py` |
+| [Vishal](vishal.md) | QA, eval questions, newcomer testing (beginner; mentored) | `eval/questions_*.yaml` content, bug/docs issues |
 | [Saisudheer](saisudheer.md) | UI, docs & submission | `src/datamind/app.py`, `README.md`, `docs/`, demo video |
 
 Owners review every PR that touches their files. Anyone may open a PR anywhere.
+
+Vishal is starting as a beginner: correctness-critical code (guard, eval runner) stays
+with experienced members, and Zishan reviews every reference SQL Vishal writes. Answer
+Vishal's questions quickly — confusion found early is a docs fix, not a judge's complaint.
 
 ## Shared rules
 
@@ -41,8 +45,10 @@ Deadlines come from the organizers; fill them in here when announced.
 ```
 Zishan: SnowflakeClient ──┐
                           ├──> Srujan: DataMindAgent ──> Saisudheer: UI ──> demo
-Vishal: validate_sql  ────┘            │
-                                       └──> Vishal: eval runner ──> results in README
+Srujan: validate_sql  ────┘            │                      │
+                                       │                      └──> Vishal: manual QA ──> issues
+Vishal: questions ──> Zishan: reference SQL + expected values ──┐
+                                       └──> Zishan: eval runner ┴──> results in README
 ```
 
 Until a dependency lands, code against the interface with a fake (see each file).

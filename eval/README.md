@@ -6,6 +6,7 @@ This folder is how we find out first.
 
 - `questions_<dataset>.yaml`: question, independent `reference_sql`, expected
   value and expected status (covers joins, multi-step, follow-ups and every M6 case).
+- Question content: Vishal. Reference SQL review, expected values and the runner: Zishan.
 - `datamind-eval --dataset tpch` (not yet implemented, `src/datamind/eval_runner.py`)
   runs both paths and writes a report to `eval/runs/` (git-ignored).
 - Copy a verified report to `eval/results/` and summarise it in the README's
