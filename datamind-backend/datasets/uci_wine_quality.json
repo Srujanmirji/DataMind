@@ -20,21 +20,21 @@
       "supports_share": true
     },
     "average_quality": {
-      "sql": "AVG(w.QUALITY)",
+      "sql": "AVG(CAST(w.QUALITY AS NUMBER(38, 6)))",
       "label": "Average quality score",
       "description": "Arithmetic mean of sensory quality scores on a 0\u201310 scale",
       "aggregation": "average",
       "supports_share": false
     },
     "average_alcohol": {
-      "sql": "AVG(w.ALCOHOL)",
+      "sql": "AVG(CAST(w.ALCOHOL AS NUMBER(38, 6)))",
       "label": "Average alcohol (% by volume)",
       "description": "Mean alcohol content, percent by volume",
       "aggregation": "average",
       "supports_share": false
     },
     "average_residual_sugar": {
-      "sql": "AVG(w.RESIDUAL_SUGAR)",
+      "sql": "AVG(CAST(w.RESIDUAL_SUGAR AS NUMBER(38, 6)))",
       "label": "Average residual sugar (g/dm3)",
       "description": "Mean residual sugar in g/dm3",
       "aggregation": "average",

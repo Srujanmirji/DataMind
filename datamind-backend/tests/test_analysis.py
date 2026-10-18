@@ -126,7 +126,7 @@ def test_above_average_uses_population_average_and_preserves_group_lineage(datas
     assert calculation["inputs"][0]["query_1"]["row_index"] == 2
     queries = analysis_steps(plan, dataset, Settings(_env_file=None))
     assert "GROUP BY" in queries[0].sql and "LIMIT 101" in queries[0].sql
-    assert "GROUP BY" not in queries[1].sql and "AVG(w.QUALITY)" in queries[1].sql
+    assert "GROUP BY" not in queries[1].sql and "AVG(CAST(w.QUALITY AS NUMBER(38, 6)))" in queries[1].sql
 
 
 def test_truncated_groups_are_rejected(dataset):

@@ -26,7 +26,7 @@
       "supports_share": true
     },
     "average_order_value": {
-      "sql": "AVG(o.O_TOTALPRICE)",
+      "sql": "AVG(CAST(o.O_TOTALPRICE AS NUMBER(38, 6)))",
       "description": "Average order total price; currency unspecified",
       "label": "Average order value",
       "aggregation": "average",
