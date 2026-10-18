@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datamind"
+version = "0.1.0"
+description = "Talk to your data: natural-language questions answered by SQL run in Snowflake, with Gemma 4 for interpretation and explanation."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+# Exact pins for reproducibility (submission item S3).
+dependencies = [
+    "snowflake-connector-python==4.8.0",
+    "sqlglot==30.20.0",
+    "PyYAML==6.0.3",
+    "python-dotenv==1.2.1",
+    "streamlit==1.64.0",
+    "ollama==0.6.2",
+    "google-genai==2.29.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.0.3",
+    "ruff==0.16.10",
+]
+
+[project.scripts]
+datamind-eval = "datamind.eval_runner:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+xfail_strict = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

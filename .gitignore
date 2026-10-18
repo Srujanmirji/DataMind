@@ -1,0 +1,29 @@
+# Secrets — never commit these (gate G5)
+.env
+*.p8
+*.pem
+connections.toml
+
+# Data — never commit dataset copies (gate G4)
+data/
+*.csv
+*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Eval run outputs (commit curated results under eval/results/ deliberately)
+eval/runs/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,32 @@
+# Second dataset, switched in purely through configuration (rubric criterion 7).
+# Loaded into your own Snowflake database by snowflake/10_load_owid_energy.sql.
+name: owid_energy
+display_name: Our World in Data — energy by country and year
+description: >
+  Country-year time series of energy consumption, electricity mix and related
+  indicators. Many country-years have missing values; recent years and small
+  countries are sparse. Rows also include aggregates (World, continents, income
+  groups) that have no ISO code — exclude them when ranking countries.
+source:
+  provider: Our World in Data
+  url: https://github.com/owid/energy-data
+  licence: CC BY 4.0 (attribute Our World in Data and the underlying sources listed in their codebook)
+
+snowflake:
+  database: DATAMIND
+  schema: OWID
+
+tables:
+  - name: ENERGY
+    description: One row per (COUNTRY, YEAR). ISO_CODE is null for aggregate regions.
+
+relationships: []
+
+glossary:
+  country: a row with a non-null ISO_CODE (aggregates such as "World" are excluded)
+  renewables share: RENEWABLES_SHARE_ELEC, percent of electricity generation
+  per capita energy: ENERGY_PER_CAPITA, kWh per person
+
+guardrails:
+  max_rows: 200
+  query_timeout_s: 60
