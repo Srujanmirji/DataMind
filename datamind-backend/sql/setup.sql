@@ -1,0 +1,9 @@
+-- ADMIN SETUP ONLY. Run statements individually in Snowsight.
+-- Change the quoted user name to your Snowflake NAME (not necessarily LOGIN_NAME).
+USE ROLE ACCOUNTADMIN;
+CREATE ROLE IF NOT EXISTS DATAMIND_READER;
+GRANT USAGE ON WAREHOUSE SNOWFLAKE_LEARNING_WH TO ROLE DATAMIND_READER;
+GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE_SAMPLE_DATA TO ROLE DATAMIND_READER;
+-- Replace YOUR_USER_NAME before executing:
+-- GRANT ROLE DATAMIND_READER TO USER "YOUR_USER_NAME";
+-- Register your public key separately. Never paste private keys into SQL.

@@ -1,0 +1,94 @@
+"""Unlock the key once, then start a single local API worker."""
+
+import argparse
+import getpass
+
+import uvicorn
+from cryptography.hazmat.primitives import serialization
+
+from app.config import Settings
+from app.launcher import listener, stop_previous
+from app.main import create_app
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--demo",
+        action="store_true",
+        help="Load real UCI Wine Quality data, prove the answer changes, restore, then serve.",
+    )
+    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument(
+        "--evaluate",
+        action="store_true",
+        help="Run independent-answer evaluation with real Gemma/Snowflake, then serve.",
+    )
+    parser.add_argument(
+        "--replace",
+        action="store_true",
+        help="Gracefully replace only a verified existing DataMind server on this port.",
+    )
+    args = parser.parse_args()
+    if not 1 <= args.port <= 65535:
+        parser.error("Port must be in 1..65535.")
+    if listener(args.port) is not None and not args.replace:
+        raise SystemExit("DataMind already occupies this port. Use --replace or choose another --port.")
+    if args.demo:
+        from scripts.demo import begin_report
+
+        begin_report()
+    settings = Settings()
+    if not settings.snowflake_account or not settings.snowflake_user:
+        raise SystemExit("Missing account/login name. Copy .env.example to .env and edit it.")
+    key_path = settings.snowflake_private_key_path.expanduser()
+    if not key_path.is_file():
+        raise SystemExit(f"Private key not found: {key_path}")
+    secret = settings.snowflake_private_key_passphrase
+    passphrase = secret.get_secret_value() if secret else getpass.getpass("Private-key passphrase: ")
+    try:
+        key = serialization.load_pem_private_key(key_path.read_bytes(), password=passphrase.encode())
+    except (ValueError, TypeError):
+        raise SystemExit("Could not unlock the private key. Check the passphrase and key format.") from None
+    private_key = key.private_bytes(
+        serialization.Encoding.DER, serialization.PrivateFormat.PKCS8, serialization.NoEncryption()
+    )
+    del passphrase, key
+    app = create_app(settings, private_key)
+    if args.demo:
+        from scripts.demo import admin_session, count_from_answer, prove_change, record_failure
+        from scripts.uci_wine import prepare_data, provision
+
+        print(
+            "Provisioning real UCI Wine Quality using ACCOUNTADMIN; normal API stays DATAMIND_READER.",
+            flush=True,
+        )
+        try:
+            with admin_session(settings, private_key) as connection:
+                provision(connection, settings, prepare_data())
+                report = prove_change(app, connection, settings)
+        except BaseException as exc:
+            record_failure(exc)
+            raise
+        totals = [count_from_answer(report[stage]) for stage in ("before", "after", "restored_answer")]
+        print(
+            "UCI DATA-CHANGE PROOF PASSED (quality >= 7 count): "
+            + " -> ".join(f"{value:,}" for value in totals),
+            flush=True,
+        )
+        print("Evidence: data/change-demo/REPORT.md and proof.json", flush=True)
+    if args.evaluate:
+        from scripts.evaluate import run_evaluation
+
+        evaluation = run_evaluation(app, settings, private_key)
+        if evaluation["passed"] != evaluation["total"]:
+            raise SystemExit(
+                "Evaluation failed; previous server was left running. Inspect data/evaluations/latest.json."
+            )
+    if args.replace:
+        stop_previous(args.port)
+    uvicorn.run(app, host="127.0.0.1", port=args.port, log_level="info")
+
+
+if __name__ == "__main__":
+    main()

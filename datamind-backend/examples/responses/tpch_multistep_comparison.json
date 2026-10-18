@@ -1,0 +1,216 @@
+{
+  "run_id": "34c8f520-4e67-4fc2-8615-5c37f790c6be",
+  "dataset_id": "tpch_orders",
+  "question": "From 1993 to 1994, how did the number of orders change in absolute and percentage terms?",
+  "created_at": "2026-10-18T08:13:38.042619+00:00",
+  "status": "answered",
+  "answer": "target_value: 227597.000000; reference_value: 226645.000000; difference: 952.000000; percent_change: 0.420040.",
+  "plan": {
+    "status": "query",
+    "message": "",
+    "metrics": [
+      "order_count"
+    ],
+    "dimensions": [],
+    "filters": [
+      {
+        "field": "order_year",
+        "operator": "eq",
+        "values": [
+          1994
+        ]
+      }
+    ],
+    "sort": [],
+    "limit": 100,
+    "analysis": "compare",
+    "reference_filters": [
+      {
+        "field": "order_year",
+        "operator": "eq",
+        "values": [
+          1993
+        ]
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "id": "query_1",
+      "query_id": "01c7ceed-000e-1619-0000-0002b3de71a5",
+      "sql": "SELECT COUNT(*) AS \"order_count\"\nFROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.ORDERS o\nLEFT JOIN SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.CUSTOMER c ON o.O_CUSTKEY = c.C_CUSTKEY\nLEFT JOIN SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.NATION n ON c.C_NATIONKEY = n.N_NATIONKEY\nLEFT JOIN SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.REGION r ON n.N_REGIONKEY = r.R_REGIONKEY\nWHERE YEAR(o.O_ORDERDATE) = %s\nLIMIT 101",
+      "parameters": [
+        1994
+      ],
+      "columns": [
+        "order_count"
+      ],
+      "rows": [
+        [
+          227597
+        ]
+      ],
+      "row_count": 1,
+      "truncated": false,
+      "duration_ms": 17291,
+      "numeric_encoding": "Fixed-point decimals are JSON strings to preserve precision.",
+      "kind": "query"
+    },
+    {
+      "id": "query_2",
+      "query_id": "01c7ceee-000e-1673-0000-0002b3de81ad",
+      "sql": "SELECT COUNT(*) AS \"order_count\"\nFROM SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.ORDERS o\nLEFT JOIN SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.CUSTOMER c ON o.O_CUSTKEY = c.C_CUSTKEY\nLEFT JOIN SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.NATION n ON c.C_NATIONKEY = n.N_NATIONKEY\nLEFT JOIN SNOWFLAKE_SAMPLE_DATA.TPCH_SF1.REGION r ON n.N_REGIONKEY = r.R_REGIONKEY\nWHERE YEAR(o.O_ORDERDATE) = %s\nLIMIT 101",
+      "parameters": [
+        1993
+      ],
+      "columns": [
+        "order_count"
+      ],
+      "rows": [
+        [
+          226645
+        ]
+      ],
+      "row_count": 1,
+      "truncated": false,
+      "duration_ms": 8538,
+      "numeric_encoding": "Fixed-point decimals are JSON strings to preserve precision.",
+      "kind": "query"
+    },
+    {
+      "id": "calculation_1",
+      "kind": "calculation",
+      "query_id": null,
+      "sql": null,
+      "parameters": [],
+      "row_count": 1,
+      "analysis": "compare",
+      "metric": "order_count",
+      "rounding": "Derived values rounded half-up to six decimal places; decisions use original precision.",
+      "columns": [
+        "target_value",
+        "reference_value",
+        "difference",
+        "percent_change"
+      ],
+      "rows": [
+        [
+          "227597.000000",
+          "226645.000000",
+          "952.000000",
+          "0.420040"
+        ]
+      ],
+      "truncated": false,
+      "formulas": {
+        "difference": "target_value - reference_value",
+        "percent_change": "(target_value - reference_value) / reference_value * 100"
+      },
+      "inputs": [
+        {
+          "target": {
+            "evidence_id": "query_1",
+            "row_index": 0,
+            "column": "order_count"
+          },
+          "reference": {
+            "evidence_id": "query_2",
+            "row_index": 0,
+            "column": "order_count"
+          }
+        }
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "metric": "target_value",
+      "value": "227597.000000",
+      "evidence_id": "calculation_1",
+      "row_index": 0,
+      "column": "target_value"
+    },
+    {
+      "metric": "reference_value",
+      "value": "226645.000000",
+      "evidence_id": "calculation_1",
+      "row_index": 0,
+      "column": "reference_value"
+    },
+    {
+      "metric": "difference",
+      "value": "952.000000",
+      "evidence_id": "calculation_1",
+      "row_index": 0,
+      "column": "difference"
+    },
+    {
+      "metric": "percent_change",
+      "value": "0.420040",
+      "evidence_id": "calculation_1",
+      "row_index": 0,
+      "column": "percent_change"
+    }
+  ],
+  "warnings": [
+    "Only order-level aggregates and configured dimensions/filters are supported in this version.",
+    "Customer counts include only customers with orders; geography means customer geography.",
+    "Order value has unspecified currency and is not labelled revenue or profit.",
+    "Date coverage is historical; do not assume the dataset contains the current year.",
+    "Top-N results are a selected ranking, not all groups. Supported multi-step modes: scalar comparison/percentage change, share of total, and above-population-average groups. Forecasts, raw records, arbitrary multi-query chains and conversational follow-ups are unsupported.",
+    "The two query IDs are separate executions; concurrent data edits may affect comparability."
+  ],
+  "analysis": {
+    "kind": "compare",
+    "metric": "order_count",
+    "target_filters": [
+      {
+        "field": "order_year",
+        "operator": "eq",
+        "values": [
+          1994
+        ]
+      }
+    ],
+    "reference_filters": [
+      {
+        "field": "order_year",
+        "operator": "eq",
+        "values": [
+          1993
+        ]
+      }
+    ]
+  },
+  "explanation": {
+    "metrics": {
+      "order_count": "Number of orders"
+    },
+    "grouped_by": [],
+    "filters": [
+      {
+        "field": "order_year",
+        "operator": "eq",
+        "values": [
+          1994
+        ]
+      }
+    ],
+    "reference_filters": [
+      {
+        "field": "order_year",
+        "operator": "eq",
+        "values": [
+          1993
+        ]
+      }
+    ],
+    "sort": [],
+    "source": "https://docs.snowflake.com/en/user-guide/sample-data",
+    "method": "Two validated Snowflake queries followed by deterministic Decimal calculations.",
+    "formulas": {
+      "difference": "target_value - reference_value",
+      "percent_change": "(target_value - reference_value) / reference_value * 100"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "status": "error",
+  "error": {
+    "code": "unknown_dataset",
+    "message": "Unknown dataset. See GET /datasets."
+  }
+}

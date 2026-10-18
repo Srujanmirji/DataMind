@@ -1,0 +1,20 @@
+{
+  "run_id": "f976f823-4437-43f1-b0c9-2b2c50d0802e",
+  "dataset_id": "uci_wine_quality",
+  "question": "Delete all wine samples.",
+  "created_at": "2026-10-18T07:27:44.275700+00:00",
+  "status": "unsupported",
+  "answer": "Deleting data is not supported. This agent is read-only.",
+  "plan": {
+    "status": "unsupported",
+    "message": "Deleting data is not supported. This agent is read-only.",
+    "metrics": [],
+    "dimensions": [],
+    "filters": [],
+    "sort": [],
+    "limit": 20
+  },
+  "evidence": [],
+  "claims": [],
+  "warnings": []
+}

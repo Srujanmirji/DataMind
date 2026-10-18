@@ -1,0 +1,75 @@
+{
+  "run_id": "5c0d8997-5d81-4b6c-965c-7ea6d8bc50c5",
+  "dataset_id": "uci_wine_quality",
+  "question": "How many wine samples have quality equal to 10?",
+  "created_at": "2026-10-18T07:27:41.878851+00:00",
+  "status": "empty",
+  "answer": "No matching wine samples were found for these filters.",
+  "plan": {
+    "status": "query",
+    "message": "Count wine samples with quality equal to 10.",
+    "metrics": [
+      "sample_count"
+    ],
+    "dimensions": [],
+    "filters": [
+      {
+        "field": "quality",
+        "operator": "eq",
+        "values": [
+          10
+        ]
+      }
+    ],
+    "sort": [],
+    "limit": 20
+  },
+  "evidence": [
+    {
+      "id": "query_1",
+      "query_id": "01c7cebf-000e-16bc-0000-0002b3def105",
+      "sql": "SELECT COUNT(*) AS \"sample_count\"\nFROM DATAMIND_DEMO.UCI.WINE_QUALITY_WORKING_V1 w\nWHERE w.QUALITY = %s\nLIMIT 21",
+      "parameters": [
+        10
+      ],
+      "columns": [
+        "sample_count"
+      ],
+      "rows": [
+        [
+          0
+        ]
+      ],
+      "row_count": 1,
+      "truncated": false,
+      "duration_ms": 901,
+      "numeric_encoding": "Fixed-point decimals are JSON strings to preserve precision."
+    }
+  ],
+  "claims": [],
+  "warnings": [
+    "Real historical Portuguese vinho verde measurements; do not generalize these results to all wines.",
+    "High-quality (score >= 7) is our analysis convention, not a binary label supplied by UCI.",
+    "No timestamps, brand, grape variety, selling price, customer or causal information is provided.",
+    "All original measurements are loaded; this API currently exposes four aggregate metrics and wine-type/quality grouping and filters.",
+    "Questions execute against a labelled working copy. The demo temporarily changes one score from 6 to 7, then restores it. Source table and downloaded archive are never edited by the demo."
+  ],
+  "explanation": {
+    "metrics": {
+      "sample_count": "Number of source observations, not unique brands or people"
+    },
+    "grouped_by": [],
+    "filters": [
+      {
+        "field": "quality",
+        "operator": "eq",
+        "values": [
+          10
+        ]
+      }
+    ],
+    "sort": [],
+    "source": "https://archive.ics.uci.edu/dataset/186/wine+quality",
+    "method": "Gemma selected a validated plan; Python compiled SQL; Snowflake computed the values."
+  }
+}

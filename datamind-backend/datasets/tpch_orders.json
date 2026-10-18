@@ -1,0 +1,172 @@
+{
+  "id": "tpch_orders",
+  "name": "TPC-H orders and customer geography",
+  "description": "Synthetic benchmark order data, joined to customer, nation and region. One source row per order. Historical sample data, not current real-world sales.",
+  "source": "https://docs.snowflake.com/en/user-guide/sample-data",
+  "licence_note": "Reference Snowflake's shared sample data in your own account; no data copy is distributed in this repository. Review provider terms before redistribution.",
+  "from": "{database}.{schema}.ORDERS o",
+  "joins": [
+    "LEFT JOIN {database}.{schema}.CUSTOMER c ON o.O_CUSTKEY = c.C_CUSTKEY",
+    "LEFT JOIN {database}.{schema}.NATION n ON c.C_NATIONKEY = n.N_NATIONKEY",
+    "LEFT JOIN {database}.{schema}.REGION r ON n.N_REGIONKEY = r.R_REGIONKEY"
+  ],
+  "metrics": {
+    "order_count": {
+      "sql": "COUNT(*)",
+      "description": "Number of orders",
+      "label": "Order count",
+      "aggregation": "count",
+      "supports_share": true
+    },
+    "total_order_value": {
+      "sql": "SUM(o.O_TOTALPRICE)",
+      "description": "Sum of order total prices; not profit or a separately defined revenue measure. Currency is unspecified.",
+      "label": "Total order value",
+      "aggregation": "sum",
+      "supports_share": true
+    },
+    "average_order_value": {
+      "sql": "AVG(o.O_TOTALPRICE)",
+      "description": "Average order total price; currency unspecified",
+      "label": "Average order value",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "customer_count": {
+      "sql": "COUNT(DISTINCT o.O_CUSTKEY)",
+      "description": "Distinct customers with orders, not all customers in CUSTOMER",
+      "label": "Customers with orders",
+      "aggregation": "count",
+      "supports_share": true
+    }
+  },
+  "dimensions": {
+    "nation": {
+      "sql": "n.N_NAME",
+      "type": "text",
+      "description": "Customer nation, uppercase e.g. FRANCE"
+    },
+    "region": {
+      "sql": "r.R_NAME",
+      "type": "text",
+      "description": "Customer region, uppercase: AFRICA, AMERICA, ASIA, EUROPE, MIDDLE EAST"
+    },
+    "segment": {
+      "sql": "c.C_MKTSEGMENT",
+      "type": "text",
+      "description": "Customer segment, uppercase: AUTOMOBILE, BUILDING, FURNITURE, HOUSEHOLD, MACHINERY"
+    },
+    "order_year": {
+      "sql": "YEAR(o.O_ORDERDATE)",
+      "type": "integer",
+      "description": "Calendar year of order date"
+    },
+    "order_month": {
+      "sql": "TO_CHAR(o.O_ORDERDATE, 'YYYY-MM')",
+      "type": "text",
+      "description": "Calendar year and month, YYYY-MM"
+    },
+    "order_status": {
+      "sql": "o.O_ORDERSTATUS",
+      "type": "text",
+      "description": "F=fulfilled, O=open, P=partially fulfilled"
+    },
+    "order_priority": {
+      "sql": "o.O_ORDERPRIORITY",
+      "type": "text",
+      "description": "Order priority, e.g. 1-URGENT or 2-HIGH"
+    }
+  },
+  "filter_fields": {
+    "order_date": {
+      "sql": "o.O_ORDERDATE",
+      "type": "date",
+      "description": "Order date, ISO YYYY-MM-DD; use explicit boundaries for years"
+    }
+  },
+  "limitations": [
+    "Only order-level aggregates and configured dimensions/filters are supported in this version.",
+    "Customer counts include only customers with orders; geography means customer geography.",
+    "Order value has unspecified currency and is not labelled revenue or profit.",
+    "Date coverage is historical; do not assume the dataset contains the current year.",
+    "Top-N results are a selected ranking, not all groups. Supported multi-step modes: scalar comparison/percentage change, share of total, and above-population-average groups. Forecasts, raw records, arbitrary multi-query chains and conversational follow-ups are unsupported."
+  ],
+  "count_metric": "order_count",
+  "planning_notes": "Counting orders -> order_count; total order value -> total_order_value; average order value -> average_order_value; distinct customers WITH orders -> customer_count. All customers is unsupported. Revenue, sales, performance and best are ambiguous: ask for clarification, never silently use total_order_value. Product/line-item analysis is unsupported on this order dataset. Nation, region, segment and priority values are uppercase. For a single year use order_year eq [1995] with integer 1995, no grouping unless requested. Date ranges use order_date. Example count plan: {\"status\":\"query\",\"message\":\"Count orders.\",\"metrics\":[\"order_count\"],\"dimensions\":[],\"filters\":[],\"sort\":[],\"limit\":20}.",
+  "analysis_examples": [
+    {
+      "question": "Compare average order value in 1998 against 1997 including percent change.",
+      "plan": {
+        "status": "query",
+        "message": "Run the requested analysis.",
+        "metrics": [
+          "average_order_value"
+        ],
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "order_year",
+            "operator": "eq",
+            "values": [
+              1998
+            ]
+          }
+        ],
+        "sort": [],
+        "limit": 20,
+        "analysis": "compare",
+        "reference_filters": [
+          {
+            "field": "order_year",
+            "operator": "eq",
+            "values": [
+              1997
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "question": "What share of all orders have customer nation Japan?",
+      "plan": {
+        "status": "query",
+        "message": "Run the requested analysis.",
+        "metrics": [
+          "order_count"
+        ],
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "nation",
+            "operator": "eq",
+            "values": [
+              "JAPAN"
+            ]
+          }
+        ],
+        "sort": [],
+        "limit": 20,
+        "analysis": "share",
+        "reference_filters": []
+      }
+    },
+    {
+      "question": "Which regions have average order value above the overall average?",
+      "plan": {
+        "status": "query",
+        "message": "Run the requested analysis.",
+        "metrics": [
+          "average_order_value"
+        ],
+        "dimensions": [
+          "region"
+        ],
+        "filters": [],
+        "sort": [],
+        "limit": 20,
+        "analysis": "above_average",
+        "reference_filters": []
+      }
+    }
+  ]
+}

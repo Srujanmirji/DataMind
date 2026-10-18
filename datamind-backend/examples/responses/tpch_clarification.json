@@ -1,0 +1,20 @@
+{
+  "run_id": "fa366fb9-59c8-4eab-9af8-659f2bf2868e",
+  "dataset_id": "tpch_orders",
+  "question": "What is our revenue?",
+  "created_at": "2026-10-18T07:27:32.946739+00:00",
+  "status": "needs_clarification",
+  "answer": "Which configured metric do you want?",
+  "plan": {
+    "status": "needs_clarification",
+    "message": "Which configured metric do you want?",
+    "metrics": [],
+    "dimensions": [],
+    "filters": [],
+    "sort": [],
+    "limit": 20
+  },
+  "evidence": [],
+  "claims": [],
+  "warnings": []
+}

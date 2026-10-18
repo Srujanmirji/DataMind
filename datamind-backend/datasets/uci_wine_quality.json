@@ -1,0 +1,157 @@
+{
+  "id": "uci_wine_quality",
+  "name": "UCI Wine Quality \u2014 red and white samples",
+  "description": "All 6,497 real red/white vinho verde wine samples from UCI Wine Quality. One row per source observation. Source values are preserved in a separate baseline table; this dataset queries a labelled working copy restored after the data-change demo.",
+  "source": "https://archive.ics.uci.edu/dataset/186/wine+quality",
+  "doi": "https://doi.org/10.24432/C56S3T",
+  "licence_note": "CC BY 4.0. Cortez, P., Cerdeira, A., Almeida, F., Matos, T., & Reis, J. (2009). Wine Quality [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C56S3T. Added wine_type and stable source-row IDs; a quality score is temporarily changed only in the labelled demo working copy, then restored.",
+  "database": "DATAMIND_DEMO",
+  "schema": "UCI",
+  "from": "{database}.{schema}.WINE_QUALITY_WORKING_V1 w",
+  "joins": [],
+  "count_metric": "sample_count",
+  "empty_message": "No matching wine samples were found for these filters.",
+  "metrics": {
+    "sample_count": {
+      "sql": "COUNT(*)",
+      "label": "Wine sample count",
+      "description": "Number of source observations, not unique brands or people",
+      "aggregation": "count",
+      "supports_share": true
+    },
+    "average_quality": {
+      "sql": "AVG(w.QUALITY)",
+      "label": "Average quality score",
+      "description": "Arithmetic mean of sensory quality scores on a 0\u201310 scale",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "average_alcohol": {
+      "sql": "AVG(w.ALCOHOL)",
+      "label": "Average alcohol (% by volume)",
+      "description": "Mean alcohol content, percent by volume",
+      "aggregation": "average",
+      "supports_share": false
+    },
+    "average_residual_sugar": {
+      "sql": "AVG(w.RESIDUAL_SUGAR)",
+      "label": "Average residual sugar (g/dm3)",
+      "description": "Mean residual sugar in g/dm3",
+      "aggregation": "average",
+      "supports_share": false
+    }
+  },
+  "dimensions": {
+    "wine_type": {
+      "sql": "w.WINE_TYPE",
+      "type": "text",
+      "description": "RED or WHITE; preserve uppercase"
+    },
+    "quality": {
+      "sql": "w.QUALITY",
+      "type": "integer",
+      "description": "Sensory quality score from 0 through 10"
+    }
+  },
+  "filter_fields": {},
+  "planning_notes": "Count wines/samples -> sample_count; average quality -> average_quality; average alcohol -> average_alcohol; average residual sugar -> average_residual_sugar. High-quality means our explicit analysis threshold quality >= 7, not a separate source category. Filter wine_type with RED or WHITE, quality with integers. Never invent sales, revenue, dates, customers, country, wine brands or grape types. Example 'How many wine samples have a quality score of at least 7?': {\"status\":\"query\",\"message\":\"Count samples with quality at least 7.\",\"metrics\":[\"sample_count\"],\"dimensions\":[],\"filters\":[{\"field\":\"quality\",\"operator\":\"gte\",\"values\":[7]}],\"sort\":[],\"limit\":20}.",
+  "limitations": [
+    "Real historical Portuguese vinho verde measurements; do not generalize these results to all wines.",
+    "High-quality (score >= 7) is our analysis convention, not a binary label supplied by UCI.",
+    "No timestamps, brand, grape variety, selling price, customer or causal information is provided.",
+    "All original measurements are loaded; this API currently exposes four aggregate metrics and wine-type/quality grouping and filters.",
+    "Questions execute against a labelled working copy. The demo temporarily changes one score from 6 to 7, then restores it. Source table and downloaded archive are never edited by the demo.",
+    "Multi-step support is bounded to two scalar scopes, subset shares, and groups above the row-weighted population average; arbitrary chains and conversational follow-ups are unsupported."
+  ],
+  "analysis_examples": [
+    {
+      "question": "Compare average alcohol of red wines against white wines.",
+      "plan": {
+        "status": "query",
+        "message": "Run the requested analysis.",
+        "metrics": [
+          "average_alcohol"
+        ],
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "wine_type",
+            "operator": "eq",
+            "values": [
+              "RED"
+            ]
+          }
+        ],
+        "sort": [],
+        "limit": 20,
+        "analysis": "compare",
+        "reference_filters": [
+          {
+            "field": "wine_type",
+            "operator": "eq",
+            "values": [
+              "WHITE"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "question": "What percentage of red wine samples have quality at least 7?",
+      "plan": {
+        "status": "query",
+        "message": "Run the requested analysis.",
+        "metrics": [
+          "sample_count"
+        ],
+        "dimensions": [],
+        "filters": [
+          {
+            "field": "wine_type",
+            "operator": "eq",
+            "values": [
+              "RED"
+            ]
+          },
+          {
+            "field": "quality",
+            "operator": "gte",
+            "values": [
+              7
+            ]
+          }
+        ],
+        "sort": [],
+        "limit": 20,
+        "analysis": "share",
+        "reference_filters": [
+          {
+            "field": "wine_type",
+            "operator": "eq",
+            "values": [
+              "RED"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "question": "Which wine types have average quality above the overall average?",
+      "plan": {
+        "status": "query",
+        "message": "Run the requested analysis.",
+        "metrics": [
+          "average_quality"
+        ],
+        "dimensions": [
+          "wine_type"
+        ],
+        "filters": [],
+        "sort": [],
+        "limit": 20,
+        "analysis": "above_average",
+        "reference_filters": []
+      }
+    }
+  ]
+}

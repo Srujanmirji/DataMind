@@ -1,5 +1,24 @@
 # PS1 — DataMind: Talk to Your Data
 
+## Working backend and team setup
+
+The implemented FastAPI backend lives in [`datamind-backend/`](datamind-backend/).
+It uses local **Gemma 3 12B**, Snowflake **TPC-H SF1**, and real **UCI Wine Quality**.
+It supports aggregates, two-cohort comparisons, subset percentages and pooled-average
+analysis with SQL, query IDs and calculation evidence.
+
+- [Backend installation and launch](datamind-backend/README.md)
+- [Frontend API contract](datamind-backend/UI_HANDOFF.md)
+- [Connect a teammate's laptop to Snowflake](datamind-backend/TEAM_ACCESS.md)
+- [Measured results and remaining live-verification limits](datamind-backend/VALIDATION.md)
+
+The backend has 85 passing automated tests, 12/12 local UCI answer checks and 6/6
+TPC-H semantic-plan checks. The full 18-case live Snowflake run is incomplete;
+two live cases passed before its process exited. See the validation record.
+
+The sections below document the original `src/datamind/` skeleton and its design.
+Use the backend links above for the implemented demo and current setup.
+
 > **Problem statement (ZeroDay OSS Hacktoberfest 2026, PS1).** Organizations hold large
 > amounts of data, but getting answers from it usually takes SQL skills or hours of manual
 > searching, so the people who understand the questions best are often the least able to
@@ -17,7 +36,7 @@ data, or unsafe, DataMind says so instead of guessing.
 
 Built for ZeroDay OSS Hacktoberfest 2026 — PS1 "DataMind: Talk to Your Data".
 
-> **Status: skeleton.** Interfaces, configuration, Snowflake setup scripts, the
+> **Legacy `src/datamind/` status: skeleton.** Interfaces, configuration, Snowflake setup scripts, the
 > evaluation set and docs are in place. The agent pipeline is not implemented yet
 > (`NotImplementedError` in `src/datamind/`). See [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md)
 > for what is done and what is not.

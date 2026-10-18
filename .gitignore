@@ -1,7 +1,10 @@
 # Secrets (gate G5)
 .env
+.env.*
+!.env.example
 *.p8
 *.pem
+*.key
 
 # Dataset files (gate G4)
 data/
